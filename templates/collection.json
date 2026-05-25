@@ -1,1 +1,273 @@
-{"sections":{"banner":{"type":"main-collection-banner","settings":{"show_collection_description":false,"show_collection_image":false,"color_background_main":"rgba(0,0,0,0)","color_text_main":"rgba(0,0,0,0)","height":"small"}},"product-grid":{"type":"main-collection-product-grid","blocks":{"rating_4Q9Qe8":{"type":"rating","settings":{}},"title":{"type":"title","settings":{}},"price":{"type":"price","settings":{}},"quick_buy":{"type":"quick_buy","settings":{"show_only_available":false,"variant_default":true,"show_price":true,"unavailable_variants":"hide"}}},"block_order":["rating_4Q9Qe8","title","price","quick_buy"],"custom_css":[".product-item__price span {font-size: 17px; font-weight: 700;}"],"settings":{"products_number":32,"enable_filtering":true,"enable_sorting":true,"filters_position":"top"}},"text_columns_icons_fjDNt9":{"type":"text-columns-icons","blocks":{"image_FibWEQ":{"type":"image","settings":{"icon":"delivery","image":"shopify:\/\/shop_images\/reshot-icon-earth-ZH3JT7UPE9_1.png","crop":true,"title":"Bæredygtigt","caption":"Skift plasten ud med designs, der varer ved. Her er der fokus på kvalitet, design og bæredygtighed.","link":"","color_background_main":"rgba(0,0,0,0)","color_icons_main":"rgba(0,0,0,0)","color_text_main":"rgba(0,0,0,0)","color_borders_main":"rgba(0,0,0,0)","seo_h_tag":"h3"}},"image_4jKFnL":{"type":"image","settings":{"icon":"time-limit","image":"shopify:\/\/shop_images\/reshot-icon-star-V2DB3QXMN8.png","crop":false,"title":"4,5 stjerner på Trustpilot","caption":"Flere end 150 femstjernede anmeldelser på Trustpilot","link":"","color_background_main":"rgba(0,0,0,0)","color_icons_main":"rgba(0,0,0,0)","color_text_main":"rgba(0,0,0,0)","color_borders_main":"rgba(0,0,0,0)","seo_h_tag":"h3"}},"image_egXUU3":{"type":"image","settings":{"icon":"time","crop":true,"title":"10 års garanti","caption":"10 års garanti, der dækker alle vores produkter i rustfrit stål.","link":"","color_background_main":"rgba(0,0,0,0)","color_icons_main":"rgba(0,0,0,0)","color_text_main":"rgba(0,0,0,0)","color_borders_main":"rgba(0,0,0,0)","seo_h_tag":"h3"}},"image_FW8xkV":{"type":"image","settings":{"icon":"delivery","crop":true,"title":"Gratis og hurtig levering","caption":"Gratis levering på ordre over 400 kr.","link":"","color_background_main":"rgba(0,0,0,0)","color_icons_main":"rgba(0,0,0,0)","color_text_main":"rgba(0,0,0,0)","color_borders_main":"rgba(0,0,0,0)","seo_h_tag":"h3"}}},"block_order":["image_FibWEQ","image_4jKFnL","image_egXUU3","image_FW8xkV"],"disabled":true,"settings":{"heading":"","subheading":"","section_heading_size":"text-size--regular","section_heading_layout":"section-heading--left section-heading--one-row","cta_label":"","cta_url":"","style":"slider","layout":"grid-4 grid-portable-3 grid-lap-2 grid-palm-1","border_radius":0,"hide_borders":true,"opacity_on_hover":false,"gutter_decrease":true,"seo_h_tag":"h2"}},"collection_list_nmV7Mj":{"type":"collection-list","blocks":{"collection_QyVVPk":{"type":"collection","settings":{"collection":"bento-box"}},"collection_QezWB3":{"type":"collection","settings":{"collection":"termoflasker","image":"shopify:\/\/shop_images\/Sports_Cap_white-Accessories-73-Sea_shell-3.jpg"}},"collection_enqMdC":{"type":"collection","settings":{"collection":"bivoks","image":"shopify:\/\/shop_images\/Beeswax_wrap_Stonemix_square_-_3_pcs._set-Beeswax_wraps-77-Stonemix-3.jpg"}},"collection_Tb99Fn":{"type":"collection","settings":{"collection":"silikone"}},"collection_KUUEwF":{"type":"collection","settings":{"collection":"termokrus"}},"collection_nNhDHV":{"type":"collection","settings":{"collection":"vandflasker"}},"collection_qi4YqG":{"type":"collection","settings":{"collection":"tekstiler","image":"shopify:\/\/shop_images\/French_linen_fitted_sheet_140_x_200-Beddings-153-White.png"}},"collection_DqFNbn":{"type":"collection","settings":{"collection":"termomadkasser"}},"collection_xQkPKA":{"type":"collection","settings":{"collection":"staalsugeroer","image":"shopify:\/\/shop_images\/Staalsugeroer_6-pak_Kombi-Reusable_Straws-31-Stainless_Steel_18_8-8.jpg"}},"collection_7EzHXy":{"type":"collection","settings":{"collection":"meal-prep-containers"}}},"block_order":["collection_QyVVPk","collection_QezWB3","collection_enqMdC","collection_Tb99Fn","collection_KUUEwF","collection_nNhDHV","collection_qi4YqG","collection_DqFNbn","collection_xQkPKA","collection_7EzHXy"],"settings":{"heading":"Se vores andre kollektioner","subheading":"Bæredygtige alternativer til plastik og andet","section_heading_size":"text-size--regular","section_heading_layout":"section-heading--left section-heading--one-row","show_view_all":false,"style":"slider","layout":"grid-4 grid-lap-3 grid-palm-2","image_aspect_ratio":"1.33333","image_border_radius":0,"gutter_decrease":false,"seo_h_tag":"h2"}},"collection_description_Kzne6Q":{"type":"collection-description","settings":{"heading":"","subheading":"","section_heading_size":"text-size--regular","section_heading_layout":"section-heading--left section-heading--one-row","gutter_decrease":false,"seo_h_tag":"h2"}}},"order":["banner","product-grid","text_columns_icons_fjDNt9","collection_list_nmV7Mj","collection_description_Kzne6Q"]}
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "sections": {
+    "banner": {
+      "type": "main-collection-banner",
+      "settings": {
+        "show_collection_description": false,
+        "show_collection_image": false,
+        "color_background_main": "rgba(0,0,0,0)",
+        "color_text_main": "rgba(0,0,0,0)",
+        "height": "small"
+      }
+    },
+    "product-grid": {
+      "type": "main-collection-product-grid",
+      "blocks": {
+        "rating_4Q9Qe8": {
+          "type": "rating",
+          "settings": {}
+        },
+        "title": {
+          "type": "title",
+          "settings": {}
+        },
+        "price": {
+          "type": "price",
+          "settings": {}
+        },
+        "quick_buy": {
+          "type": "quick_buy",
+          "settings": {
+            "show_only_available": false,
+            "variant_default": true,
+            "show_price": true,
+            "unavailable_variants": "hide"
+          }
+        }
+      },
+      "block_order": [
+        "rating_4Q9Qe8",
+        "title",
+        "price",
+        "quick_buy"
+      ],
+      "custom_css": [
+        ".product-item__price span {font-size: 17px; font-weight: 700;}"
+      ],
+      "settings": {
+        "products_number": 32,
+        "enable_filtering": true,
+        "enable_sorting": true,
+        "filters_position": "top"
+      }
+    },
+    "text_columns_icons_fjDNt9": {
+      "type": "text-columns-icons",
+      "blocks": {
+        "image_FibWEQ": {
+          "type": "image",
+          "settings": {
+            "icon": "delivery",
+            "crop": true,
+            "title": "Bæredygtigt",
+            "caption": "Skift plasten ud med designs, der varer ved. Her er der fokus på kvalitet, design og bæredygtighed.",
+            "link": "",
+            "color_background_main": "rgba(0,0,0,0)",
+            "color_icons_main": "rgba(0,0,0,0)",
+            "color_text_main": "rgba(0,0,0,0)",
+            "color_borders_main": "rgba(0,0,0,0)",
+            "seo_h_tag": "h3"
+          }
+        },
+        "image_4jKFnL": {
+          "type": "image",
+          "settings": {
+            "icon": "time-limit",
+            "crop": false,
+            "title": "4,5 stjerner på Trustpilot",
+            "caption": "Flere end 150 femstjernede anmeldelser på Trustpilot",
+            "link": "",
+            "color_background_main": "rgba(0,0,0,0)",
+            "color_icons_main": "rgba(0,0,0,0)",
+            "color_text_main": "rgba(0,0,0,0)",
+            "color_borders_main": "rgba(0,0,0,0)",
+            "seo_h_tag": "h3"
+          }
+        },
+        "image_egXUU3": {
+          "type": "image",
+          "settings": {
+            "icon": "time",
+            "crop": true,
+            "title": "10 års garanti",
+            "caption": "10 års garanti, der dækker alle vores produkter i rustfrit stål.",
+            "link": "",
+            "color_background_main": "rgba(0,0,0,0)",
+            "color_icons_main": "rgba(0,0,0,0)",
+            "color_text_main": "rgba(0,0,0,0)",
+            "color_borders_main": "rgba(0,0,0,0)",
+            "seo_h_tag": "h3"
+          }
+        },
+        "image_FW8xkV": {
+          "type": "image",
+          "settings": {
+            "icon": "delivery",
+            "crop": true,
+            "title": "Gratis og hurtig levering",
+            "caption": "Gratis levering på ordre over 400 kr.",
+            "link": "",
+            "color_background_main": "rgba(0,0,0,0)",
+            "color_icons_main": "rgba(0,0,0,0)",
+            "color_text_main": "rgba(0,0,0,0)",
+            "color_borders_main": "rgba(0,0,0,0)",
+            "seo_h_tag": "h3"
+          }
+        }
+      },
+      "block_order": [
+        "image_FibWEQ",
+        "image_4jKFnL",
+        "image_egXUU3",
+        "image_FW8xkV"
+      ],
+      "disabled": true,
+      "settings": {
+        "heading": "",
+        "subheading": "",
+        "section_heading_size": "text-size--regular",
+        "section_heading_layout": "section-heading--left section-heading--one-row",
+        "cta_label": "",
+        "cta_url": "",
+        "style": "slider",
+        "layout": "grid-4 grid-portable-3 grid-lap-2 grid-palm-1",
+        "border_radius": 0,
+        "hide_borders": true,
+        "opacity_on_hover": false,
+        "gutter_decrease": true,
+        "seo_h_tag": "h2"
+      }
+    },
+    "collection_list_nmV7Mj": {
+      "type": "collection-list",
+      "blocks": {
+        "collection_QyVVPk": {
+          "type": "collection",
+          "settings": {
+            "collection": "bento-box"
+          }
+        },
+        "collection_QezWB3": {
+          "type": "collection",
+          "settings": {
+            "collection": "termoflasker"
+          }
+        },
+        "collection_enqMdC": {
+          "type": "collection",
+          "settings": {
+            "collection": "bivoks"
+          }
+        },
+        "collection_Tb99Fn": {
+          "type": "collection",
+          "settings": {
+            "collection": "silikone"
+          }
+        },
+        "collection_KUUEwF": {
+          "type": "collection",
+          "settings": {
+            "collection": "termokrus"
+          }
+        },
+        "collection_nNhDHV": {
+          "type": "collection",
+          "settings": {
+            "collection": "vandflasker"
+          }
+        },
+        "collection_qi4YqG": {
+          "type": "collection",
+          "settings": {
+            "collection": "tekstiler"
+          }
+        },
+        "collection_DqFNbn": {
+          "type": "collection",
+          "settings": {
+            "collection": "termomadkasser"
+          }
+        },
+        "collection_xQkPKA": {
+          "type": "collection",
+          "settings": {
+            "collection": "staalsugeroer"
+          }
+        },
+        "collection_7EzHXy": {
+          "type": "collection",
+          "settings": {
+            "collection": "meal-prep-containers"
+          }
+        }
+      },
+      "block_order": [
+        "collection_QyVVPk",
+        "collection_QezWB3",
+        "collection_enqMdC",
+        "collection_Tb99Fn",
+        "collection_KUUEwF",
+        "collection_nNhDHV",
+        "collection_qi4YqG",
+        "collection_DqFNbn",
+        "collection_xQkPKA",
+        "collection_7EzHXy"
+      ],
+      "settings": {
+        "heading": "Se vores andre kollektioner",
+        "subheading": "Bæredygtige alternativer til plastik og andet",
+        "section_heading_size": "text-size--regular",
+        "section_heading_layout": "section-heading--left section-heading--one-row",
+        "show_view_all": false,
+        "style": "slider",
+        "layout": "grid-4 grid-lap-3 grid-palm-2",
+        "image_aspect_ratio": "1.33333",
+        "image_border_radius": 0,
+        "gutter_decrease": false,
+        "seo_h_tag": "h2"
+      }
+    },
+    "collection_description_Kzne6Q": {
+      "type": "collection-description",
+      "settings": {
+        "heading": "",
+        "subheading": "",
+        "section_heading_size": "text-size--regular",
+        "section_heading_layout": "section-heading--left section-heading--one-row",
+        "gutter_decrease": false,
+        "seo_h_tag": "h2"
+      }
+    },
+    "collection_faq_fiGqan": {
+      "type": "collection-faq",
+      "name": "Collection FAQ",
+      "settings": {
+        "heading": "FAQ",
+        "subheading": "",
+        "section_heading_size": "text-size--regular",
+        "section_heading_layout": "section-heading--left section-heading--one-row",
+        "open_first": true,
+        "gutter_decrease": false,
+        "seo_h_tag": "h2"
+      }
+    }
+  },
+  "order": [
+    "banner",
+    "product-grid",
+    "text_columns_icons_fjDNt9",
+    "collection_list_nmV7Mj",
+    "collection_description_Kzne6Q",
+    "collection_faq_fiGqan"
+  ]
+}
