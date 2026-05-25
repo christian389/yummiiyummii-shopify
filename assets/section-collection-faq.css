@@ -1,0 +1,107 @@
+.collection-faq__items {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+toggle-tab.toggle--collection-faq + toggle-tab.toggle--collection-faq {
+  border-top: none;
+}
+
+.toggle--collection-faq .toggle__icon,
+.toggle--collection-faq .toggle__icon-alternate {
+  display: none !important;
+}
+
+.toggle--collection-faq .toggle__title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 10px 0;
+  font-weight: var(--font-weight-body-primary-medium, 500);
+  font-size: 16px;
+  line-height: 26px;
+  transition: color 200ms ease;
+}
+
+.toggle--collection-faq .toggle__title + .toggle__content {
+  display: none;
+  padding: 0 0 10px;
+  border-top: none;
+}
+
+.toggle--collection-faq.opened .toggle__title + .toggle__content {
+  display: block;
+  padding-top: 20px;
+  padding-bottom: 10px;
+}
+
+.toggle--collection-faq .collection-faq__question {
+  flex: 1;
+  min-width: 0;
+  word-break: break-word;
+  color: #434343;
+  transition: color 200ms ease;
+}
+
+.toggle--collection-faq .collection-faq__icon {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 50px;
+  height: 50px;
+  color: #434343;
+  transition: color 200ms ease, transform 200ms ease;
+}
+
+.toggle--collection-faq .collection-faq__icon svg {
+  width: 50px;
+  height: 50px;
+  display: block;
+}
+
+.toggle--collection-faq .collection-faq__icon {
+  transform: rotate(180deg);
+}
+
+.toggle--collection-faq.opened .collection-faq__question,
+.toggle--collection-faq.opened .collection-faq__icon {
+  color: #4fa387;
+}
+
+.toggle--collection-faq.opened .collection-faq__icon {
+  transform: rotate(0deg);
+}
+
+.toggle--collection-faq .collection-faq__answer {
+  font-size: 16px;
+  line-height: 26px;
+  color: #000;
+  padding-inline-start: 0;
+}
+
+.toggle--collection-faq .collection-faq__answer p {
+  margin: 0 0 1em;
+}
+
+.toggle--collection-faq .collection-faq__answer p:last-child {
+  margin-bottom: 0;
+}
+
+.toggle--collection-faq:not(.opened) {
+  border-bottom: 1px solid rgba(0, 0, 0, 0.2);
+}
+
+.toggle--collection-faq.opened {
+  border-bottom: 1px solid rgba(0, 0, 0, 0.2);
+}
+
+@media screen and (max-width: 767px) {
+  .toggle--collection-faq .collection-faq__icon,
+  .toggle--collection-faq .collection-faq__icon svg {
+    width: 40px;
+    height: 40px;
+  }
+}

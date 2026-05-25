@@ -1,0 +1,209 @@
+{%- assign faq_items = collection.metafields.custom.faq.value -%}
+
+{%- if faq_items != blank -%}
+
+  {{ 'component-toggle.css' | asset_url | stylesheet_tag }}
+  {{ 'section-collection-faq.css' | asset_url | stylesheet_tag }}
+
+  <div class="container--large container--vertical-space{% if section.settings.gutter_decrease %}-small{% endif %} collection-faq" id="collection-faq-{{ section.id }}">
+
+    {%- render 'section-heading',
+      heading: section.settings.heading,
+      subheading: section.settings.subheading,
+      heading_size: section.settings.section_heading_size,
+      section_layout: section.settings.section_heading_layout,
+      seo_h_tag: section.settings.seo_h_tag
+    -%}
+
+    <div class="collection-faq__items">
+      <toggle-group>
+        {%- for faq in faq_items -%}
+          {%- assign faq_id = 'collection-faq-' | append: section.id | append: '-' | append: forloop.index -%}
+          {%- assign is_open = false -%}
+          {%- if forloop.first and section.settings.open_first -%}
+            {%- assign is_open = true -%}
+          {%- endif -%}
+
+          <toggle-tab class="toggle toggle--collection-faq{% if is_open %} opened{% endif %}">
+            <div
+              class="toggle__title collection-faq__header"
+              data-js-title
+              tabindex="0"
+              role="button"
+              aria-expanded="{% if is_open %}true{% else %}false{% endif %}"
+              aria-controls="{{ faq_id }}"
+            >
+              <span class="collection-faq__question">{{ faq.question }}</span>
+              <span class="collection-faq__icon" aria-hidden="true">
+                <svg width="50" height="50" viewBox="0 0 50 50" fill="none" xmlns="http://www.w3.org/2000/svg" focusable="false">
+                  <path d="M25 16L35 30H15L25 16Z" fill="currentColor"/>
+                </svg>
+              </span>
+            </div>
+
+            <div
+              id="{{ faq_id }}"
+              data-js-content
+              class="toggle__content collection-faq__answer rte remove-empty-space"
+              role="region"
+              {% unless is_open %}style="display: none;"{% endunless %}
+            >
+              {{ faq.answer | metafield_tag }}
+            </div>
+          </toggle-tab>
+        {%- endfor -%}
+      </toggle-group>
+    </div>
+
+  </div>
+
+  <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      "mainEntity": [
+        {%- for faq in faq_items -%}
+          {
+            "@type": "Question",
+            "name": {{ faq.question | json }},
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": {{ faq.answer | metafield_text | default: faq.answer | strip_html | json }}
+            }
+          }{%- unless forloop.last -%},{%- endunless -%}
+        {%- endfor -%}
+      ]
+    }
+  </script>
+
+  <script src="{{ 'component-toggle.js' | asset_url }}" defer></script>
+
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "Collection FAQ",
+  "class": "mount-toggles",
+  "settings": [
+    {
+      "type": "header",
+      "content": "t:sections.bundle-extra-words.sections.headings.name"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "t:sections.local-extra-words.sections.headings.heading",
+      "default": "FAQ"
+    },
+    {
+      "type": "inline_richtext",
+      "id": "subheading",
+      "label": "t:sections.local-extra-words.sections.headings.subheading"
+    },
+    {
+      "type": "select",
+      "id": "section_heading_size",
+      "label": "t:sections.bundle-extra-words.sections.headings.size.label",
+      "options": [
+        {
+          "value": "text-size--regular",
+          "label": "t:sections.bundle-extra-words.sections.headings.size.option_1"
+        },
+        {
+          "value": "text-size--large",
+          "label": "t:sections.bundle-extra-words.sections.headings.size.option_2"
+        }
+      ],
+      "default": "text-size--regular"
+    },
+    {
+      "type": "select",
+      "id": "section_heading_layout",
+      "label": "t:sections.bundle-extra-words.sections.headings.alignment.label",
+      "options": [
+        {
+          "value": "section-heading--left section-heading--one-row",
+          "label": "t:sections.bundle-extra-words.sections.headings.alignment.option_1",
+          "group": "t:sections.bundle-extra-words.sections.headings.layout.option_1"
+        },
+        {
+          "value": "section-heading--left section-heading--two-rows",
+          "label": "t:sections.bundle-extra-words.sections.headings.alignment.option_1",
+          "group": "t:sections.bundle-extra-words.sections.headings.layout.option_2"
+        },
+        {
+          "value": "section-heading--center section-heading--two-rows",
+          "label": "t:sections.bundle-extra-words.sections.headings.alignment.option_2",
+          "group": "t:sections.bundle-extra-words.sections.headings.layout.option_2"
+        }
+      ],
+      "default": "section-heading--left section-heading--one-row"
+    },
+    {
+      "type": "header",
+      "content": "FAQ"
+    },
+    {
+      "type": "paragraph",
+      "content": "FAQ items are loaded from the collection metafield custom.faq (Collection FAQ metaobjects). Add entries in Shopify Admin under each collection."
+    },
+    {
+      "type": "checkbox",
+      "id": "open_first",
+      "label": "t:sections.faq.settings.open_first.label",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "t:sections.bundle-extra-words.sections.headings.gutter.label"
+    },
+    {
+      "type": "checkbox",
+      "id": "gutter_decrease",
+      "label": "t:sections.bundle-extra-words.sections.headings.gutter.content",
+      "default": false
+    },
+    {
+      "type": "header",
+      "content": "t:sections.refactor_words.seo.name"
+    },
+    {
+      "type": "select",
+      "id": "seo_h_tag",
+      "label": "t:sections.refactor_words.seo.label",
+      "info": "t:sections.refactor_words.seo.info",
+      "options": [
+        {
+          "value": "h1",
+          "label": "H1"
+        },
+        {
+          "value": "h2",
+          "label": "H2"
+        },
+        {
+          "value": "h3",
+          "label": "H3"
+        },
+        {
+          "value": "h4",
+          "label": "H4"
+        },
+        {
+          "value": "span",
+          "label": "span"
+        }
+      ],
+      "default": "h2"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Collection FAQ"
+    }
+  ],
+  "enabled_on": {
+    "templates": ["collection"]
+  }
+}
+{% endschema %}
