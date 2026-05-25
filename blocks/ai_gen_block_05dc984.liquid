@@ -1,0 +1,523 @@
+{% doc %}
+  @prompt
+    A hero section that shows text on the left and a video on the right
+{% enddoc %}
+{% assign ai_gen_id = block.id | replace: '_', '' | downcase %}
+
+{% style %}
+  .ai-hero-section-{{ ai_gen_id }} {
+    padding: {{ block.settings.padding_top }}px 0 {{ block.settings.padding_bottom }}px;
+    background-color: {{ block.settings.background_color }};
+  }
+
+  .ai-hero-container-{{ ai_gen_id }} {
+    max-width: {{ settings.theme_max_width }}px;
+    margin: 0 auto;
+    padding: 0 20px;
+  }
+
+  .ai-hero-content-{{ ai_gen_id }} {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: {{ settings.grid_gap }}px;
+    align-items: center;
+    min-height: {{ block.settings.min_height }}px;
+  }
+
+  .ai-hero-text-{{ ai_gen_id }} {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+  }
+
+  .ai-hero-heading-{{ ai_gen_id }} {
+    font-family: {{ settings.headings_font_primary.family }}, {{ settings.headings_font_primary.fallback_families }};
+    font-weight: {{ settings.headings_font_primary.weight }};
+    font-size: {{ block.settings.heading_size }}px;
+    line-height: {{ settings.headings_line }};
+    color: {{ block.settings.heading_color }};
+    margin: 0;
+  }
+
+  .ai-hero-subheading-{{ ai_gen_id }} {
+    font-family: {{ settings.body_font_primary.family }}, {{ settings.body_font_primary.fallback_families }};
+    font-weight: {{ settings.body_font_primary.weight }};
+    font-size: {{ block.settings.subheading_size }}px;
+    line-height: {{ settings.body_line }};
+    color: {{ block.settings.subheading_color }};
+    margin: 0;
+  }
+
+  .ai-hero-description-{{ ai_gen_id }} {
+    font-family: {{ settings.body_font_primary.family }}, {{ settings.body_font_primary.fallback_families }};
+    font-weight: {{ settings.body_font_primary.weight }};
+    font-size: {{ block.settings.description_size }}px;
+    line-height: {{ settings.body_line }};
+    color: {{ block.settings.description_color }};
+  }
+
+  .ai-hero-buttons-{{ ai_gen_id }} {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+
+  .ai-hero-button-{{ ai_gen_id }} {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 12px 24px;
+    font-family: {{ settings.body_font_primary.family }}, {{ settings.body_font_primary.fallback_families }};
+    font-weight: {{ settings.body_font_primary.weight }};
+    font-size: 16px;
+    text-decoration: none;
+    border-radius: {{ settings.border_radius_buttons }}px;
+    border: {{ settings.border_width_buttons }}px solid;
+    transition: all 0.3s ease;
+    cursor: pointer;
+  }
+
+  .ai-hero-button-primary-{{ ai_gen_id }} {
+    background-color: {{ block.settings.primary_btn_bg }};
+    color: {{ block.settings.primary_btn_text }};
+    border-color: {{ block.settings.primary_btn_bg }};
+  }
+
+  .ai-hero-button-primary-{{ ai_gen_id }}:hover {
+    background-color: {{ block.settings.primary_btn_hover_bg }};
+    color: {{ block.settings.primary_btn_hover_text }};
+    border-color: {{ block.settings.primary_btn_hover_bg }};
+  }
+
+  .ai-hero-button-secondary-{{ ai_gen_id }} {
+    background-color: {{ block.settings.secondary_btn_bg }};
+    color: {{ block.settings.secondary_btn_text }};
+    border-color: {{ block.settings.secondary_btn_border }};
+  }
+
+  .ai-hero-button-secondary-{{ ai_gen_id }}:hover {
+    background-color: {{ block.settings.secondary_btn_hover_bg }};
+    color: {{ block.settings.secondary_btn_hover_text }};
+    border-color: {{ block.settings.secondary_btn_hover_border }};
+  }
+
+  .ai-hero-video-{{ ai_gen_id }} {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    min-height: 400px;
+    border-radius: {{ settings.widgets_border_radius }}px;
+    overflow: hidden;
+  }
+
+  .ai-hero-video-element-{{ ai_gen_id }} {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .ai-hero-video-placeholder-{{ ai_gen_id }} {
+    width: 100%;
+    height: 100%;
+    background-color: #f4f4f4;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    border-radius: {{ settings.widgets_border_radius }}px;
+  }
+
+  .ai-hero-empty-state-{{ ai_gen_id }} {
+    position: absolute;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 12px 20px;
+    background-color: rgba(0, 0, 0, 0.7);
+    color: white;
+    font-size: 14px;
+    border-radius: 4px;
+    text-align: center;
+    pointer-events: none;
+  }
+
+  .ai-hero-video-placeholder-{{ ai_gen_id }} svg {
+    width: 100%;
+    height: 100%;
+    max-width: 300px;
+    max-height: 300px;
+  }
+
+  @media screen and (max-width: 768px) {
+    .ai-hero-content-{{ ai_gen_id }} {
+      grid-template-columns: 1fr;
+      gap: 40px;
+      text-align: {{ block.settings.mobile_text_alignment }};
+    }
+
+    .ai-hero-heading-{{ ai_gen_id }} {
+      font-size: {{ block.settings.heading_size | times: 0.8 }}px;
+    }
+
+    .ai-hero-subheading-{{ ai_gen_id }} {
+      font-size: {{ block.settings.subheading_size | times: 0.9 }}px;
+    }
+
+    .ai-hero-description-{{ ai_gen_id }} {
+      font-size: {{ block.settings.description_size | times: 0.9 }}px;
+    }
+
+    .ai-hero-video-{{ ai_gen_id }} {
+      min-height: 300px;
+    }
+
+    .ai-hero-buttons-{{ ai_gen_id }} {
+      justify-content: {{ block.settings.mobile_text_alignment }};
+    }
+  }
+{% endstyle %}
+
+<div class="ai-hero-section-{{ ai_gen_id }}" {{ block.shopify_attributes }}>
+  <div class="ai-hero-container-{{ ai_gen_id }}">
+    <div class="ai-hero-content-{{ ai_gen_id }}">
+      <div class="ai-hero-text-{{ ai_gen_id }}">
+        {% if block.settings.heading != blank %}
+          <h1 class="ai-hero-heading-{{ ai_gen_id }}">{{ block.settings.heading }}</h1>
+        {% endif %}
+
+        {% if block.settings.subheading != blank %}
+          <h2 class="ai-hero-subheading-{{ ai_gen_id }}">{{ block.settings.subheading }}</h2>
+        {% endif %}
+
+        {% if block.settings.description != blank %}
+          <div class="ai-hero-description-{{ ai_gen_id }}">{{ block.settings.description }}</div>
+        {% endif %}
+
+        {% if block.settings.primary_btn_label != blank or block.settings.secondary_btn_label != blank %}
+          <div class="ai-hero-buttons-{{ ai_gen_id }}">
+            {% if block.settings.primary_btn_label != blank %}
+              <a
+                href="{{ block.settings.primary_btn_link | default: '#' }}"
+                class="ai-hero-button-{{ ai_gen_id }} ai-hero-button-primary-{{ ai_gen_id }}"
+              >
+                {{ block.settings.primary_btn_label }}
+              </a>
+            {% endif %}
+
+            {% if block.settings.secondary_btn_label != blank %}
+              <a
+                href="{{ block.settings.secondary_btn_link | default: '#' }}"
+                class="ai-hero-button-{{ ai_gen_id }} ai-hero-button-secondary-{{ ai_gen_id }}"
+              >
+                {{ block.settings.secondary_btn_label }}
+              </a>
+            {% endif %}
+          </div>
+        {% endif %}
+      </div>
+
+      <div class="ai-hero-video-{{ ai_gen_id }}">
+        {% if block.settings.video %}
+          <video
+            class="ai-hero-video-element-{{ ai_gen_id }}"
+            {% if block.settings.autoplay %}autoplay{% endif %}
+            {% if block.settings.muted %}muted{% endif %}
+            {% if block.settings.loop %}loop{% endif %}
+            {% if block.settings.controls %}controls{% endif %}
+            playsinline
+            preload="metadata"
+          >
+            <source src="{{ block.settings.video }}" type="video/mp4">
+            Your browser does not support the video tag.
+          </video>
+        {% else %}
+          <div class="ai-hero-video-placeholder-{{ ai_gen_id }}">
+            {{ 'hero-apparel-1' | placeholder_svg_tag }}
+            <div class="ai-hero-empty-state-{{ ai_gen_id }}">
+              Add a video to complete your hero section
+            </div>
+          </div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Hero with video",
+  "tag": null,
+  "settings": [
+    {
+      "type": "header",
+      "content": "Content"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Welcome to our store"
+    },
+    {
+      "type": "text",
+      "id": "subheading",
+      "label": "Subheading",
+      "default": "Discover amazing products"
+    },
+    {
+      "type": "richtext",
+      "id": "description",
+      "label": "Description",
+      "default": "<p>Experience the best quality products with exceptional service. Join thousands of satisfied customers who trust our brand.</p>"
+    },
+    {
+      "type": "header",
+      "content": "Video"
+    },
+    {
+      "type": "video",
+      "id": "video",
+      "label": "Video"
+    },
+    {
+      "type": "checkbox",
+      "id": "autoplay",
+      "label": "Autoplay video",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "muted",
+      "label": "Mute video",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "loop",
+      "label": "Loop video",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "controls",
+      "label": "Show video controls",
+      "default": false
+    },
+    {
+      "type": "header",
+      "content": "Buttons"
+    },
+    {
+      "type": "text",
+      "id": "primary_btn_label",
+      "label": "Primary button text",
+      "default": "Shop now"
+    },
+    {
+      "type": "url",
+      "id": "primary_btn_link",
+      "label": "Primary button link"
+    },
+    {
+      "type": "text",
+      "id": "secondary_btn_label",
+      "label": "Secondary button text",
+      "default": "Learn more"
+    },
+    {
+      "type": "url",
+      "id": "secondary_btn_link",
+      "label": "Secondary button link"
+    },
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "range",
+      "id": "min_height",
+      "min": 400,
+      "max": 800,
+      "step": 50,
+      "unit": "px",
+      "label": "Minimum height",
+      "default": 500
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 0,
+      "max": 200,
+      "step": 10,
+      "unit": "px",
+      "label": "Top padding",
+      "default": 60
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 0,
+      "max": 200,
+      "step": 10,
+      "unit": "px",
+      "label": "Bottom padding",
+      "default": 60
+    },
+    {
+      "type": "select",
+      "id": "mobile_text_alignment",
+      "label": "Mobile text alignment",
+      "options": [
+        {
+          "value": "left",
+          "label": "Left"
+        },
+        {
+          "value": "center",
+          "label": "Center"
+        },
+        {
+          "value": "right",
+          "label": "Right"
+        }
+      ],
+      "default": "center"
+    },
+    {
+      "type": "header",
+      "content": "Colors"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "heading_color",
+      "label": "Heading color",
+      "default": "#000000"
+    },
+    {
+      "type": "color",
+      "id": "subheading_color",
+      "label": "Subheading color",
+      "default": "#000000"
+    },
+    {
+      "type": "color",
+      "id": "description_color",
+      "label": "Description color",
+      "default": "#000000"
+    },
+    {
+      "type": "header",
+      "content": "Typography"
+    },
+    {
+      "type": "range",
+      "id": "heading_size",
+      "min": 24,
+      "max": 96,
+      "step": 2,
+      "unit": "px",
+      "label": "Heading size",
+      "default": 48
+    },
+    {
+      "type": "range",
+      "id": "subheading_size",
+      "min": 16,
+      "max": 48,
+      "step": 2,
+      "unit": "px",
+      "label": "Subheading size",
+      "default": 24
+    },
+    {
+      "type": "range",
+      "id": "description_size",
+      "min": 14,
+      "max": 24,
+      "step": 1,
+      "unit": "px",
+      "label": "Description size",
+      "default": 16
+    },
+    {
+      "type": "header",
+      "content": "Primary button"
+    },
+    {
+      "type": "color",
+      "id": "primary_btn_bg",
+      "label": "Background color",
+      "default": "#000000"
+    },
+    {
+      "type": "color",
+      "id": "primary_btn_text",
+      "label": "Text color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "primary_btn_hover_bg",
+      "label": "Hover background color",
+      "default": "#333333"
+    },
+    {
+      "type": "color",
+      "id": "primary_btn_hover_text",
+      "label": "Hover text color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "header",
+      "content": "Secondary button"
+    },
+    {
+      "type": "color",
+      "id": "secondary_btn_bg",
+      "label": "Background color",
+      "default": "transparent"
+    },
+    {
+      "type": "color",
+      "id": "secondary_btn_text",
+      "label": "Text color",
+      "default": "#000000"
+    },
+    {
+      "type": "color",
+      "id": "secondary_btn_border",
+      "label": "Border color",
+      "default": "#000000"
+    },
+    {
+      "type": "color",
+      "id": "secondary_btn_hover_bg",
+      "label": "Hover background color",
+      "default": "#000000"
+    },
+    {
+      "type": "color",
+      "id": "secondary_btn_hover_text",
+      "label": "Hover text color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "secondary_btn_hover_border",
+      "label": "Hover border color",
+      "default": "#000000"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Hero with video"
+    }
+  ]
+}
+{% endschema %}

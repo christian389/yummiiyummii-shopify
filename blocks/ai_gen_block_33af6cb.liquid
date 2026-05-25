@@ -1,0 +1,523 @@
+{% doc %}
+  @prompt
+    Please build me a section that starts with a centered headline at the top, followed by a simple and clean 2x2 grid of four blocks placed in the center of the page. Each block should contain a short headline and a small body text, presented in a clear and easy-to-read way.
+    
+    Below the four blocks, include a single full-width highlight element that stands out slightly from the rest of the section. This element should feature a large number on the left side and a short descriptive sentence on the right side, creating a clear visual emphasis.
+    
+    The section should have consistent spacing between the headline, the grid, and the bottom highlight to keep the layout structured and easy to scan.
+    
+{% enddoc %}
+{% assign ai_gen_id = block.id | replace: '_', '' | downcase %}
+
+{% style %}
+  .ai-feature-grid-{{ ai_gen_id }} {
+    display: block;
+    width: {{ block.settings.desktop_width_percent }}%;
+    max-width: 100%;
+    margin: 0 auto;
+    padding: {{ block.settings.section_padding }}px 20px;
+  }
+
+  .ai-feature-grid__headline-{{ ai_gen_id }} {
+    text-align: center;
+    font-size: {{ block.settings.headline_size }}px;
+    color: {{ block.settings.headline_color }};
+    margin: 0 0 {{ block.settings.spacing_after_headline }}px 0;
+    line-height: 1.2;
+  }
+
+  .ai-feature-grid__grid-{{ ai_gen_id }} {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: {{ block.settings.grid_gap }}px;
+    margin-bottom: {{ block.settings.spacing_before_highlight }}px;
+  }
+
+  .ai-feature-grid__block-{{ ai_gen_id }} {
+    background-color: {{ block.settings.block_background }};
+    padding: {{ block.settings.block_padding }}px;
+    border-radius: {{ block.settings.block_border_radius }}px;
+    text-align: {{ block.settings.block_text_align }};
+  }
+
+  .ai-feature-grid__block-headline-{{ ai_gen_id }} {
+    font-size: {{ block.settings.block_headline_size }}px;
+    color: {{ block.settings.block_headline_color }};
+    margin: 0 0 {{ block.settings.block_text_spacing }}px 0;
+    line-height: 1.3;
+  }
+
+  .ai-feature-grid__block-text-{{ ai_gen_id }} {
+    font-size: {{ block.settings.block_text_size }}px;
+    color: {{ block.settings.block_text_color }};
+    line-height: 1.5;
+    margin: 0;
+  }
+
+  .ai-feature-grid__highlight-{{ ai_gen_id }} {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 30px;
+    background-color: {{ block.settings.highlight_background }};
+    padding: {{ block.settings.highlight_padding }}px;
+    border-radius: {{ block.settings.highlight_border_radius }}px;
+  }
+
+  .ai-feature-grid__highlight-number-{{ ai_gen_id }} {
+    font-size: {{ block.settings.highlight_number_size }}px;
+    font-weight: 700;
+    color: {{ block.settings.highlight_number_color }};
+    line-height: 1;
+    flex-shrink: 0;
+  }
+
+  .ai-feature-grid__highlight-text-{{ ai_gen_id }} {
+    font-size: {{ block.settings.highlight_text_size }}px;
+    color: {{ block.settings.highlight_text_color }};
+    line-height: 1.4;
+    margin: 0;
+  }
+
+  @media screen and (max-width: 749px) {
+    .ai-feature-grid__headline-{{ ai_gen_id }} {
+      font-size: calc({{ block.settings.headline_size }}px * 0.7);
+    }
+
+    .ai-feature-grid__grid-{{ ai_gen_id }} {
+      grid-template-columns: 1fr;
+      gap: {{ block.settings.grid_gap | times: 0.7 }}px;
+    }
+
+    .ai-feature-grid__block-{{ ai_gen_id }} {
+      padding: {{ block.settings.block_padding | times: 0.8 }}px;
+    }
+
+    .ai-feature-grid__block-headline-{{ ai_gen_id }} {
+      font-size: calc({{ block.settings.block_headline_size }}px * 0.9);
+    }
+
+    .ai-feature-grid__block-text-{{ ai_gen_id }} {
+      font-size: calc({{ block.settings.block_text_size }}px * 0.95);
+    }
+
+    .ai-feature-grid__highlight-{{ ai_gen_id }} {
+      flex-direction: column;
+      text-align: center;
+      gap: 20px;
+      padding: {{ block.settings.highlight_padding | times: 0.7 }}px;
+    }
+
+    .ai-feature-grid__highlight-number-{{ ai_gen_id }} {
+      font-size: calc({{ block.settings.highlight_number_size }}px * 0.7);
+    }
+
+    .ai-feature-grid__highlight-text-{{ ai_gen_id }} {
+      font-size: calc({{ block.settings.highlight_text_size }}px * 0.9);
+    }
+  }
+{% endstyle %}
+
+<div class="ai-feature-grid-{{ ai_gen_id }}" {{ block.shopify_attributes }}>
+  {% if block.settings.main_headline != blank %}
+    <h2 class="ai-feature-grid__headline-{{ ai_gen_id }}">
+      {{ block.settings.main_headline }}
+    </h2>
+  {% endif %}
+
+  <div class="ai-feature-grid__grid-{{ ai_gen_id }}">
+    {% if block.settings.block_1_headline != blank or block.settings.block_1_text != blank %}
+      <div class="ai-feature-grid__block-{{ ai_gen_id }}">
+        {% if block.settings.block_1_headline != blank %}
+          <h3 class="ai-feature-grid__block-headline-{{ ai_gen_id }}">
+            {{ block.settings.block_1_headline }}
+          </h3>
+        {% endif %}
+        {% if block.settings.block_1_text != blank %}
+          <div class="ai-feature-grid__block-text-{{ ai_gen_id }}">
+            {{ block.settings.block_1_text }}
+          </div>
+        {% endif %}
+      </div>
+    {% endif %}
+
+    {% if block.settings.block_2_headline != blank or block.settings.block_2_text != blank %}
+      <div class="ai-feature-grid__block-{{ ai_gen_id }}">
+        {% if block.settings.block_2_headline != blank %}
+          <h3 class="ai-feature-grid__block-headline-{{ ai_gen_id }}">
+            {{ block.settings.block_2_headline }}
+          </h3>
+        {% endif %}
+        {% if block.settings.block_2_text != blank %}
+          <div class="ai-feature-grid__block-text-{{ ai_gen_id }}">
+            {{ block.settings.block_2_text }}
+          </div>
+        {% endif %}
+      </div>
+    {% endif %}
+
+    {% if block.settings.block_3_headline != blank or block.settings.block_3_text != blank %}
+      <div class="ai-feature-grid__block-{{ ai_gen_id }}">
+        {% if block.settings.block_3_headline != blank %}
+          <h3 class="ai-feature-grid__block-headline-{{ ai_gen_id }}">
+            {{ block.settings.block_3_headline }}
+          </h3>
+        {% endif %}
+        {% if block.settings.block_3_text != blank %}
+          <div class="ai-feature-grid__block-text-{{ ai_gen_id }}">
+            {{ block.settings.block_3_text }}
+          </div>
+        {% endif %}
+      </div>
+    {% endif %}
+
+    {% if block.settings.block_4_headline != blank or block.settings.block_4_text != blank %}
+      <div class="ai-feature-grid__block-{{ ai_gen_id }}">
+        {% if block.settings.block_4_headline != blank %}
+          <h3 class="ai-feature-grid__block-headline-{{ ai_gen_id }}">
+            {{ block.settings.block_4_headline }}
+          </h3>
+        {% endif %}
+        {% if block.settings.block_4_text != blank %}
+          <div class="ai-feature-grid__block-text-{{ ai_gen_id }}">
+            {{ block.settings.block_4_text }}
+          </div>
+        {% endif %}
+      </div>
+    {% endif %}
+  </div>
+
+  {% if block.settings.highlight_number != blank or block.settings.highlight_text != blank %}
+    <div class="ai-feature-grid__highlight-{{ ai_gen_id }}">
+      {% if block.settings.highlight_number != blank %}
+        <div class="ai-feature-grid__highlight-number-{{ ai_gen_id }}">
+          {{ block.settings.highlight_number }}
+        </div>
+      {% endif %}
+      {% if block.settings.highlight_text != blank %}
+        <div class="ai-feature-grid__highlight-text-{{ ai_gen_id }}">
+          {{ block.settings.highlight_text }}
+        </div>
+      {% endif %}
+    </div>
+  {% endif %}
+</div>
+
+{% schema %}
+{
+  "name": "Feature grid highlight",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Main headline"
+    },
+    {
+      "type": "inline_richtext",
+      "id": "main_headline",
+      "label": "Headline",
+      "default": "Why choose us"
+    },
+    {
+      "type": "range",
+      "id": "headline_size",
+      "label": "Headline size",
+      "min": 20,
+      "max": 80,
+      "step": 2,
+      "unit": "px",
+      "default": 40
+    },
+    {
+      "type": "color",
+      "id": "headline_color",
+      "label": "Headline color",
+      "default": "#000000"
+    },
+    {
+      "type": "header",
+      "content": "Block 1"
+    },
+    {
+      "type": "inline_richtext",
+      "id": "block_1_headline",
+      "label": "Headline",
+      "default": "Quality materials"
+    },
+    {
+      "type": "richtext",
+      "id": "block_1_text",
+      "label": "Text",
+      "default": "<p>We use only the finest materials to ensure durability and comfort.</p>"
+    },
+    {
+      "type": "header",
+      "content": "Block 2"
+    },
+    {
+      "type": "inline_richtext",
+      "id": "block_2_headline",
+      "label": "Headline",
+      "default": "Fast shipping"
+    },
+    {
+      "type": "richtext",
+      "id": "block_2_text",
+      "label": "Text",
+      "default": "<p>Get your order delivered quickly with our express shipping options.</p>"
+    },
+    {
+      "type": "header",
+      "content": "Block 3"
+    },
+    {
+      "type": "inline_richtext",
+      "id": "block_3_headline",
+      "label": "Headline",
+      "default": "Easy returns"
+    },
+    {
+      "type": "richtext",
+      "id": "block_3_text",
+      "label": "Text",
+      "default": "<p>Not satisfied? Return your purchase within 30 days for a full refund.</p>"
+    },
+    {
+      "type": "header",
+      "content": "Block 4"
+    },
+    {
+      "type": "inline_richtext",
+      "id": "block_4_headline",
+      "label": "Headline",
+      "default": "Expert support"
+    },
+    {
+      "type": "richtext",
+      "id": "block_4_text",
+      "label": "Text",
+      "default": "<p>Our team is here to help you with any questions or concerns.</p>"
+    },
+    {
+      "type": "header",
+      "content": "Highlight element"
+    },
+    {
+      "type": "inline_richtext",
+      "id": "highlight_number",
+      "label": "Number",
+      "default": "10+"
+    },
+    {
+      "type": "inline_richtext",
+      "id": "highlight_text",
+      "label": "Text",
+      "default": "Years of experience delivering exceptional products and service"
+    },
+    {
+      "type": "range",
+      "id": "highlight_number_size",
+      "label": "Number size",
+      "min": 30,
+      "max": 120,
+      "step": 5,
+      "unit": "px",
+      "default": 70
+    },
+    {
+      "type": "range",
+      "id": "highlight_text_size",
+      "label": "Text size",
+      "min": 14,
+      "max": 32,
+      "step": 1,
+      "unit": "px",
+      "default": 18
+    },
+    {
+      "type": "color",
+      "id": "highlight_number_color",
+      "label": "Number color",
+      "default": "#000000"
+    },
+    {
+      "type": "color",
+      "id": "highlight_text_color",
+      "label": "Text color",
+      "default": "#000000"
+    },
+    {
+      "type": "color",
+      "id": "highlight_background",
+      "label": "Background color",
+      "default": "#f2f2f2"
+    },
+    {
+      "type": "range",
+      "id": "highlight_padding",
+      "label": "Padding",
+      "min": 20,
+      "max": 80,
+      "step": 5,
+      "unit": "px",
+      "default": 40
+    },
+    {
+      "type": "range",
+      "id": "highlight_border_radius",
+      "label": "Border radius",
+      "min": 0,
+      "max": 30,
+      "step": 2,
+      "unit": "px",
+      "default": 10
+    },
+    {
+      "type": "header",
+      "content": "Block style"
+    },
+    {
+      "type": "range",
+      "id": "block_headline_size",
+      "label": "Headline size",
+      "min": 16,
+      "max": 40,
+      "step": 1,
+      "unit": "px",
+      "default": 22
+    },
+    {
+      "type": "range",
+      "id": "block_text_size",
+      "label": "Text size",
+      "min": 12,
+      "max": 24,
+      "step": 1,
+      "unit": "px",
+      "default": 16
+    },
+    {
+      "type": "color",
+      "id": "block_headline_color",
+      "label": "Headline color",
+      "default": "#000000"
+    },
+    {
+      "type": "color",
+      "id": "block_text_color",
+      "label": "Text color",
+      "default": "#000000"
+    },
+    {
+      "type": "color",
+      "id": "block_background",
+      "label": "Background color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "select",
+      "id": "block_text_align",
+      "label": "Text alignment",
+      "options": [
+        {
+          "value": "left",
+          "label": "Left"
+        },
+        {
+          "value": "center",
+          "label": "Center"
+        }
+      ],
+      "default": "left"
+    },
+    {
+      "type": "range",
+      "id": "block_padding",
+      "label": "Padding",
+      "min": 15,
+      "max": 60,
+      "step": 5,
+      "unit": "px",
+      "default": 30
+    },
+    {
+      "type": "range",
+      "id": "block_border_radius",
+      "label": "Border radius",
+      "min": 0,
+      "max": 30,
+      "step": 2,
+      "unit": "px",
+      "default": 10
+    },
+    {
+      "type": "range",
+      "id": "block_text_spacing",
+      "label": "Space between headline and text",
+      "min": 5,
+      "max": 30,
+      "step": 1,
+      "unit": "px",
+      "default": 12
+    },
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "range",
+      "id": "desktop_width_percent",
+      "label": "Desktop width",
+      "min": 50,
+      "max": 100,
+      "step": 5,
+      "unit": "%",
+      "default": 100
+    },
+    {
+      "type": "range",
+      "id": "section_padding",
+      "label": "Section padding",
+      "min": 20,
+      "max": 100,
+      "step": 5,
+      "unit": "px",
+      "default": 50
+    },
+    {
+      "type": "range",
+      "id": "grid_gap",
+      "label": "Grid gap",
+      "min": 15,
+      "max": 60,
+      "step": 5,
+      "unit": "px",
+      "default": 30
+    },
+    {
+      "type": "range",
+      "id": "spacing_after_headline",
+      "label": "Space after headline",
+      "min": 20,
+      "max": 80,
+      "step": 5,
+      "unit": "px",
+      "default": 40
+    },
+    {
+      "type": "range",
+      "id": "spacing_before_highlight",
+      "label": "Space before highlight",
+      "min": 20,
+      "max": 80,
+      "step": 5,
+      "unit": "px",
+      "default": 50
+    }
+  ],
+  "presets": [
+    {
+      "name": "Feature grid highlight"
+    }
+  ]
+}
+{% endschema %}

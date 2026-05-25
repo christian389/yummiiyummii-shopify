@@ -1,0 +1,696 @@
+{% doc %}
+  @prompt
+    A hero section that shows text on the left and a video on the right. Add a review blow the button on the right side, Can you make the video into an image instead that can be pressed to play the video? And make the button green #4EA286 
+{% enddoc %}
+{% assign ai_gen_id = block.id | replace: '_', '' | downcase %}
+
+{% style %}
+  .ai-hero-section-{{ ai_gen_id }} {
+    padding: {{ block.settings.section_padding_top }}px 0 {{ block.settings.section_padding_bottom }}px;
+    background-color: {{ block.settings.background_color }};
+  }
+
+  .ai-hero-container-{{ ai_gen_id }} {
+    max-width: 1360px;
+    margin: 0 auto;
+    padding: 0 20px;
+  }
+
+  .ai-hero-content-{{ ai_gen_id }} {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 60px;
+    align-items: center;
+  }
+
+  .ai-hero-text-content-{{ ai_gen_id }} {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+  }
+
+  .ai-hero-heading-{{ ai_gen_id }} {
+    font-family: {{ settings.headings_font_primary.family }}, {{ settings.headings_font_primary.fallback_families }};
+    font-weight: {{ settings.headings_font_primary.weight }};
+    font-size: {{ block.settings.heading_size }}px;
+    line-height: {{ settings.headings_line }};
+    color: {{ block.settings.heading_color }};
+    margin: 0;
+  }
+
+  .ai-hero-subheading-{{ ai_gen_id }} {
+    font-family: {{ settings.body_font_primary.family }}, {{ settings.body_font_primary.fallback_families }};
+    font-weight: {{ settings.body_font_primary.weight }};
+    font-size: {{ block.settings.text_size }}px;
+    line-height: {{ settings.body_line }};
+    color: {{ block.settings.text_color }};
+    margin: 0;
+  }
+
+  .ai-hero-button-wrapper-{{ ai_gen_id }} {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    align-items: flex-start;
+  }
+
+  .ai-hero-button-{{ ai_gen_id }} {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 16px 32px;
+    background-color: {{ block.settings.button_color }};
+    color: {{ block.settings.button_text_color }};
+    text-decoration: none;
+    border-radius: {{ settings.border_radius_buttons }}px;
+    font-family: {{ settings.body_font_primary.family }}, {{ settings.body_font_primary.fallback_families }};
+    font-weight: 500;
+    font-size: 16px;
+    transition: background-color 0.3s ease;
+    border: none;
+    cursor: pointer;
+  }
+
+  .ai-hero-button-{{ ai_gen_id }}:hover {
+    background-color: {{ block.settings.button_hover_color }};
+    color: {{ block.settings.button_hover_text_color }};
+  }
+
+  .ai-hero-review-{{ ai_gen_id }} {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 16px 20px;
+    background-color: {{ block.settings.review_background_color }};
+    border-radius: {{ settings.widgets_border_radius }}px;
+    border: 1px solid {{ block.settings.review_border_color }};
+  }
+
+  .ai-hero-review-avatar-{{ ai_gen_id }} {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    overflow: hidden;
+    flex-shrink: 0;
+  }
+
+  .ai-hero-review-avatar-{{ ai_gen_id }} img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .ai-hero-review-avatar-placeholder-{{ ai_gen_id }} {
+    width: 100%;
+    height: 100%;
+    background-color: {{ block.settings.review_border_color }};
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: {{ block.settings.text_color }};
+    font-size: 20px;
+    font-weight: 600;
+  }
+
+  .ai-hero-review-content-{{ ai_gen_id }} {
+    flex-grow: 1;
+  }
+
+  .ai-hero-review-stars-{{ ai_gen_id }} {
+    display: flex;
+    gap: 2px;
+    margin-bottom: 4px;
+  }
+
+  .ai-hero-review-star-{{ ai_gen_id }} {
+    width: 16px;
+    height: 16px;
+    color: {{ block.settings.star_color }};
+  }
+
+  .ai-hero-review-text-{{ ai_gen_id }} {
+    font-family: {{ settings.body_font_primary.family }}, {{ settings.body_font_primary.fallback_families }};
+    font-size: 14px;
+    line-height: 1.4;
+    color: {{ block.settings.review_text_color }};
+    margin: 0 0 4px;
+  }
+
+  .ai-hero-review-author-{{ ai_gen_id }} {
+    font-family: {{ settings.body_font_primary.family }}, {{ settings.body_font_primary.fallback_families }};
+    font-size: 12px;
+    color: {{ block.settings.review_author_color }};
+    font-weight: 500;
+    margin: 0;
+  }
+
+  .ai-hero-video-wrapper-{{ ai_gen_id }} {
+    position: relative;
+    width: 100%;
+    border-radius: {{ settings.widgets_border_radius }}px;
+    overflow: hidden;
+    background-color: {{ block.settings.video_background_color }};
+    cursor: pointer;
+  }
+
+  .ai-hero-video-thumbnail-{{ ai_gen_id }} {
+    position: relative;
+    width: 100%;
+    height: auto;
+    display: block;
+  }
+
+  .ai-hero-video-thumbnail-{{ ai_gen_id }} img {
+    width: 100%;
+    height: auto;
+    display: block;
+  }
+
+  .ai-hero-video-play-button-{{ ai_gen_id }} {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 80px;
+    height: 80px;
+    background-color: rgba(0, 0, 0, 0.7);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    border: none;
+    cursor: pointer;
+  }
+
+  .ai-hero-video-play-button-{{ ai_gen_id }}:hover {
+    background-color: rgba(0, 0, 0, 0.9);
+    transform: translate(-50%, -50%) scale(1.1);
+  }
+
+  .ai-hero-video-play-icon-{{ ai_gen_id }} {
+    width: 32px;
+    height: 32px;
+    color: white;
+    margin-left: 4px;
+  }
+
+  .ai-hero-video-{{ ai_gen_id }} {
+    width: 100%;
+    height: auto;
+    display: none;
+  }
+
+  .ai-hero-video-{{ ai_gen_id }}.playing {
+    display: block;
+  }
+
+  .ai-hero-video-placeholder-{{ ai_gen_id }} {
+    width: 100%;
+    height: 400px;
+    background-color: #f4f4f4;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+  }
+
+  .ai-hero-video-placeholder-{{ ai_gen_id }} svg {
+    width: 100%;
+    height: 100%;
+    max-width: 300px;
+    max-height: 300px;
+  }
+
+  .ai-hero-empty-state-{{ ai_gen_id }} {
+    position: absolute;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 12px 20px;
+    background-color: rgba(255, 255, 255, 0.9);
+    border-radius: 6px;
+    font-size: 14px;
+    color: #666;
+    text-align: center;
+    pointer-events: none;
+  }
+
+  @media screen and (max-width: 768px) {
+    .ai-hero-content-{{ ai_gen_id }} {
+      grid-template-columns: 1fr;
+      gap: 40px;
+      text-align: center;
+    }
+
+    .ai-hero-button-wrapper-{{ ai_gen_id }} {
+      align-items: center;
+    }
+
+    .ai-hero-heading-{{ ai_gen_id }} {
+      font-size: {{ block.settings.heading_size | times: 0.8 }}px;
+    }
+
+    .ai-hero-text-content-{{ ai_gen_id }} {
+      order: {% if block.settings.mobile_layout == 'video_first' %}2{% else %}1{% endif %};
+    }
+
+    .ai-hero-video-wrapper-{{ ai_gen_id }} {
+      order: {% if block.settings.mobile_layout == 'video_first' %}1{% else %}2{% endif %};
+    }
+
+    .ai-hero-video-play-button-{{ ai_gen_id }} {
+      width: 60px;
+      height: 60px;
+    }
+
+    .ai-hero-video-play-icon-{{ ai_gen_id }} {
+      width: 24px;
+      height: 24px;
+    }
+  }
+{% endstyle %}
+
+<video-player-{{ ai_gen_id }}
+  class="ai-hero-section-{{ ai_gen_id }}"
+  {{ block.shopify_attributes }}
+>
+  <div class="ai-hero-container-{{ ai_gen_id }}">
+    <div class="ai-hero-content-{{ ai_gen_id }}">
+      <div class="ai-hero-text-content-{{ ai_gen_id }}">
+        {% if block.settings.heading != blank %}
+          <h1 class="ai-hero-heading-{{ ai_gen_id }}">{{ block.settings.heading }}</h1>
+        {% endif %}
+
+        {% if block.settings.subheading != blank %}
+          <div class="ai-hero-subheading-{{ ai_gen_id }}">{{ block.settings.subheading }}</div>
+        {% endif %}
+
+        <div class="ai-hero-button-wrapper-{{ ai_gen_id }}">
+          {% if block.settings.button_text != blank %}
+            <a
+              href="{{ block.settings.button_link | default: '#' }}"
+              class="ai-hero-button-{{ ai_gen_id }}"
+            >
+              {{ block.settings.button_text }}
+            </a>
+          {% endif %}
+
+          {% if block.settings.show_review %}
+            <div class="ai-hero-review-{{ ai_gen_id }}">
+              <div class="ai-hero-review-avatar-{{ ai_gen_id }}">
+                {% if block.settings.review_avatar %}
+                  <img
+                    src="{{ block.settings.review_avatar | image_url: width: 96 }}"
+                    alt="{{ block.settings.review_author | escape }}"
+                    width="48"
+                    height="48"
+                    loading="lazy"
+                  >
+                {% else %}
+                  <div class="ai-hero-review-avatar-placeholder-{{ ai_gen_id }}">
+                    {% if block.settings.review_author != blank %}
+                      {{ block.settings.review_author | slice: 0, 1 | upcase }}
+                    {% else %}
+                      ?
+                    {% endif %}
+                  </div>
+                {% endif %}
+              </div>
+              <div class="ai-hero-review-content-{{ ai_gen_id }}">
+                <div class="ai-hero-review-stars-{{ ai_gen_id }}">
+                  {% for i in (1..5) %}
+                    <svg
+                      class="ai-hero-review-star-{{ ai_gen_id }}"
+                      xmlns="http://www.w3.org/2000/svg"
+                      viewBox="0 0 24 24"
+                      fill="{% if i <= block.settings.review_rating %}currentColor{% else %}none{% endif %}"
+                      stroke="currentColor"
+                      stroke-width="2"
+                    >
+                      <polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26"></polygon>
+                    </svg>
+                  {% endfor %}
+                </div>
+                {% if block.settings.review_text != blank %}
+                  <p class="ai-hero-review-text-{{ ai_gen_id }}">{{ block.settings.review_text }}</p>
+                {% endif %}
+                {% if block.settings.review_author != blank %}
+                  <p class="ai-hero-review-author-{{ ai_gen_id }}">{{ block.settings.review_author }}</p>
+                {% endif %}
+              </div>
+            </div>
+          {% endif %}
+        </div>
+      </div>
+
+      <div class="ai-hero-video-wrapper-{{ ai_gen_id }}" data-video-wrapper>
+        {% if block.settings.video_thumbnail and block.settings.video %}
+          <div class="ai-hero-video-thumbnail-{{ ai_gen_id }}" data-video-thumbnail>
+            <img
+              src="{{ block.settings.video_thumbnail | image_url: width: 800 }}"
+              alt="Video thumbnail"
+              width="{{ block.settings.video_thumbnail.width }}"
+              height="{{ block.settings.video_thumbnail.height }}"
+              loading="lazy"
+            >
+            <button
+              class="ai-hero-video-play-button-{{ ai_gen_id }}"
+              data-play-button
+              aria-label="Play video"
+            >
+              <svg
+                class="ai-hero-video-play-icon-{{ ai_gen_id }}"
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+                fill="currentColor"
+              >
+                <polygon points="5,3 19,12 5,21"></polygon>
+              </svg>
+            </button>
+          </div>
+          <video
+            class="ai-hero-video-{{ ai_gen_id }}"
+            data-video
+            {% if block.settings.video_controls %}controls{% endif %}
+            playsinline
+          >
+            <source src="{{ block.settings.video }}" type="video/mp4">
+            Your browser does not support the video tag.
+          </video>
+        {% elsif block.settings.video_thumbnail %}
+          <div class="ai-hero-video-thumbnail-{{ ai_gen_id }}">
+            <img
+              src="{{ block.settings.video_thumbnail | image_url: width: 800 }}"
+              alt="Video thumbnail"
+              width="{{ block.settings.video_thumbnail.width }}"
+              height="{{ block.settings.video_thumbnail.height }}"
+              loading="lazy"
+            >
+            <div class="ai-hero-empty-state-{{ ai_gen_id }}">
+              Add a video URL to enable playback
+            </div>
+          </div>
+        {% else %}
+          <div class="ai-hero-video-placeholder-{{ ai_gen_id }}">
+            {{ 'image' | placeholder_svg_tag }}
+            <div class="ai-hero-empty-state-{{ ai_gen_id }}">
+              Add a video thumbnail and video URL
+            </div>
+          </div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</video-player-{{ ai_gen_id }}>
+
+<script>
+  (function() {
+    class VideoPlayer{{ ai_gen_id }} extends HTMLElement {
+      constructor() {
+        super();
+      }
+
+      connectedCallback() {
+        this.videoWrapper = this.querySelector('[data-video-wrapper]');
+        this.videoThumbnail = this.querySelector('[data-video-thumbnail]');
+        this.playButton = this.querySelector('[data-play-button]');
+        this.video = this.querySelector('[data-video]');
+
+        if (this.playButton && this.video) {
+          this.setupEventListeners();
+        }
+      }
+
+      setupEventListeners() {
+        this.playButton.addEventListener('click', () => {
+          this.playVideo();
+        });
+
+        this.video.addEventListener('ended', () => {
+          this.showThumbnail();
+        });
+      }
+
+      playVideo() {
+        if (this.videoThumbnail) {
+          this.videoThumbnail.style.display = 'none';
+        }
+        this.video.classList.add('playing');
+        this.video.play();
+      }
+
+      showThumbnail() {
+        if (this.videoThumbnail) {
+          this.videoThumbnail.style.display = 'block';
+        }
+        this.video.classList.remove('playing');
+      }
+    }
+
+    customElements.define('video-player-{{ ai_gen_id }}', VideoPlayer{{ ai_gen_id }});
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "Hero with video",
+  "tag": null,
+  "settings": [
+    {
+      "type": "header",
+      "content": "Content"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Welcome to our store"
+    },
+    {
+      "type": "textarea",
+      "id": "subheading",
+      "label": "Subheading",
+      "default": "Discover amazing products that will change your life"
+    },
+    {
+      "type": "text",
+      "id": "button_text",
+      "label": "Button text",
+      "default": "Shop now"
+    },
+    {
+      "type": "url",
+      "id": "button_link",
+      "label": "Button link"
+    },
+    {
+      "type": "header",
+      "content": "Video"
+    },
+    {
+      "type": "image_picker",
+      "id": "video_thumbnail",
+      "label": "Video thumbnail"
+    },
+    {
+      "type": "url",
+      "id": "video",
+      "label": "Video URL"
+    },
+    {
+      "type": "checkbox",
+      "id": "video_controls",
+      "label": "Show video controls",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "Review"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_review",
+      "label": "Show review",
+      "default": true
+    },
+    {
+      "type": "image_picker",
+      "id": "review_avatar",
+      "label": "Review avatar"
+    },
+    {
+      "type": "text",
+      "id": "review_author",
+      "label": "Review author",
+      "default": "Sarah Johnson"
+    },
+    {
+      "type": "range",
+      "id": "review_rating",
+      "label": "Review rating",
+      "min": 1,
+      "max": 5,
+      "step": 1,
+      "default": 5
+    },
+    {
+      "type": "textarea",
+      "id": "review_text",
+      "label": "Review text",
+      "default": "Amazing quality and fast shipping! Highly recommend this store."
+    },
+    {
+      "type": "header",
+      "content": "Colors"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "heading_color",
+      "label": "Heading color",
+      "default": "#000000"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text color",
+      "default": "#666666"
+    },
+    {
+      "type": "color",
+      "id": "button_color",
+      "label": "Button color",
+      "default": "#4EA286"
+    },
+    {
+      "type": "color",
+      "id": "button_text_color",
+      "label": "Button text color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "button_hover_color",
+      "label": "Button hover color",
+      "default": "#3d8a6f"
+    },
+    {
+      "type": "color",
+      "id": "button_hover_text_color",
+      "label": "Button hover text color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "review_background_color",
+      "label": "Review background color",
+      "default": "#f8f9fa"
+    },
+    {
+      "type": "color",
+      "id": "review_border_color",
+      "label": "Review border color",
+      "default": "#e9ecef"
+    },
+    {
+      "type": "color",
+      "id": "review_text_color",
+      "label": "Review text color",
+      "default": "#495057"
+    },
+    {
+      "type": "color",
+      "id": "review_author_color",
+      "label": "Review author color",
+      "default": "#6c757d"
+    },
+    {
+      "type": "color",
+      "id": "star_color",
+      "label": "Star color",
+      "default": "#ffc107"
+    },
+    {
+      "type": "color",
+      "id": "video_background_color",
+      "label": "Video background color",
+      "default": "#000000"
+    },
+    {
+      "type": "header",
+      "content": "Typography"
+    },
+    {
+      "type": "range",
+      "id": "heading_size",
+      "label": "Heading size",
+      "min": 24,
+      "max": 80,
+      "step": 2,
+      "unit": "px",
+      "default": 48
+    },
+    {
+      "type": "range",
+      "id": "text_size",
+      "label": "Text size",
+      "min": 14,
+      "max": 24,
+      "step": 1,
+      "unit": "px",
+      "default": 18
+    },
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "select",
+      "id": "mobile_layout",
+      "label": "Mobile layout",
+      "options": [
+        {
+          "value": "text_first",
+          "label": "Text first"
+        },
+        {
+          "value": "video_first",
+          "label": "Video first"
+        }
+      ],
+      "default": "text_first"
+    },
+    {
+      "type": "range",
+      "id": "section_padding_top",
+      "label": "Top padding",
+      "min": 0,
+      "max": 200,
+      "step": 10,
+      "unit": "px",
+      "default": 80
+    },
+    {
+      "type": "range",
+      "id": "section_padding_bottom",
+      "label": "Bottom padding",
+      "min": 0,
+      "max": 200,
+      "step": 10,
+      "unit": "px",
+      "default": 80
+    }
+  ],
+  "presets": [
+    {
+      "name": "Hero with video"
+    }
+  ]
+}
+{% endschema %}

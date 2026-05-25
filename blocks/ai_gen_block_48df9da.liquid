@@ -1,0 +1,880 @@
+{% doc %}
+  @prompt
+    Create a full page section with the password field in the middle and with header and subheader and logo above. And a countdown below the password field. , fix the password field. And make it possible to a an image to the background with overlay. Make an extra button below the password field. But the button should be an html input field, so i can create the button myself, Just simplify the password field. to an input field with a button besides, fix the liquid error 
+{% enddoc %}
+{% assign ai_gen_id = block.id | replace: '_', '' | downcase %}
+
+{% style %}
+  .ai-password-page-{{ ai_gen_id }} {
+    position: relative;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 20px;
+    background-color: {{ block.settings.background_color }};
+  }
+
+  .ai-password-page-{{ ai_gen_id }}::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: {{ block.settings.overlay_color }};
+    opacity: {{ block.settings.overlay_opacity }};
+    z-index: 1;
+  }
+
+  .ai-password-page__background-{{ ai_gen_id }} {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    z-index: 0;
+  }
+
+  .ai-password-page__content-{{ ai_gen_id }} {
+    position: relative;
+    z-index: 2;
+    width: 100%;
+    max-width: {{ block.settings.content_max_width }}px;
+    text-align: center;
+  }
+
+  .ai-password-page__logo-{{ ai_gen_id }} {
+    margin-bottom: {{ block.settings.logo_spacing }}px;
+  }
+
+  .ai-password-page__logo-{{ ai_gen_id }} img {
+    max-width: {{ block.settings.logo_width }}px;
+    height: auto;
+  }
+
+  .ai-password-page__heading-{{ ai_gen_id }} {
+    color: {{ block.settings.heading_color }};
+    font-size: {{ block.settings.heading_size }}px;
+    margin: 0 0 {{ block.settings.heading_spacing }}px;
+    font-family: {{ block.settings.heading_font.family }}, {{ block.settings.heading_font.fallback_families }};
+    font-weight: {{ block.settings.heading_font.weight }};
+    line-height: 1.2;
+  }
+
+  .ai-password-page__subheading-{{ ai_gen_id }} {
+    color: {{ block.settings.subheading_color }};
+    font-size: {{ block.settings.subheading_size }}px;
+    margin: 0 0 {{ block.settings.subheading_spacing }}px;
+    line-height: 1.5;
+  }
+
+  .ai-password-page__form-wrapper-{{ ai_gen_id }} {
+    margin-bottom: {{ block.settings.form_spacing }}px;
+  }
+
+  .ai-password-page__input-group-{{ ai_gen_id }} {
+    display: flex;
+    gap: {{ block.settings.input_button_gap }}px;
+    width: 100%;
+    max-width: {{ block.settings.input_width }}px;
+    margin: 0 auto;
+  }
+
+  .ai-password-page__input-{{ ai_gen_id }} {
+    flex: 1;
+    padding: {{ block.settings.input_padding }}px;
+    border: {{ block.settings.input_border_width }}px solid {{ block.settings.input_border_color }};
+    border-radius: {{ block.settings.input_border_radius }}px;
+    background-color: {{ block.settings.input_background }};
+    color: {{ block.settings.input_text_color }};
+    font-size: {{ block.settings.input_font_size }}px;
+  }
+
+  .ai-password-page__input-{{ ai_gen_id }}::placeholder {
+    color: {{ block.settings.input_placeholder_color }};
+  }
+
+  .ai-password-page__input-{{ ai_gen_id }}:focus {
+    outline: none;
+    border-color: {{ block.settings.input_focus_border_color }};
+  }
+
+  .ai-password-page__submit-{{ ai_gen_id }} {
+    padding: {{ block.settings.button_padding }}px {{ block.settings.button_padding_horizontal }}px;
+    background-color: {{ block.settings.button_background }};
+    color: {{ block.settings.button_text_color }};
+    border: {{ block.settings.button_border_width }}px solid {{ block.settings.button_border_color }};
+    border-radius: {{ block.settings.button_border_radius }}px;
+    font-size: {{ block.settings.button_font_size }}px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    white-space: nowrap;
+  }
+
+  .ai-password-page__submit-{{ ai_gen_id }}:hover {
+    background-color: {{ block.settings.button_hover_background }};
+    color: {{ block.settings.button_hover_text_color }};
+    border-color: {{ block.settings.button_hover_border_color }};
+  }
+
+  .ai-password-page__error-{{ ai_gen_id }} {
+    color: {{ block.settings.error_color }};
+    font-size: 14px;
+    margin-top: 8px;
+  }
+
+  .ai-password-page__custom-button-{{ ai_gen_id }} {
+    margin-bottom: {{ block.settings.countdown_spacing }}px;
+  }
+
+  .ai-password-page__countdown-{{ ai_gen_id }} {
+    display: flex;
+    justify-content: center;
+    gap: {{ block.settings.countdown_gap }}px;
+    flex-wrap: wrap;
+  }
+
+  .ai-password-page__countdown-item-{{ ai_gen_id }} {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-width: {{ block.settings.countdown_item_width }}px;
+  }
+
+  .ai-password-page__countdown-number-{{ ai_gen_id }} {
+    font-size: {{ block.settings.countdown_number_size }}px;
+    font-weight: 700;
+    color: {{ block.settings.countdown_number_color }};
+    background-color: {{ block.settings.countdown_box_background }};
+    padding: {{ block.settings.countdown_box_padding }}px;
+    border-radius: {{ block.settings.countdown_box_radius }}px;
+    min-width: {{ block.settings.countdown_box_width }}px;
+    line-height: 1;
+  }
+
+  .ai-password-page__countdown-label-{{ ai_gen_id }} {
+    font-size: {{ block.settings.countdown_label_size }}px;
+    color: {{ block.settings.countdown_label_color }};
+    margin-top: 8px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+
+  @media screen and (max-width: 749px) {
+    .ai-password-page__heading-{{ ai_gen_id }} {
+      font-size: calc({{ block.settings.heading_size }}px * 0.7);
+    }
+
+    .ai-password-page__subheading-{{ ai_gen_id }} {
+      font-size: calc({{ block.settings.subheading_size }}px * 0.9);
+    }
+
+    .ai-password-page__countdown-number-{{ ai_gen_id }} {
+      font-size: calc({{ block.settings.countdown_number_size }}px * 0.8);
+    }
+
+    .ai-password-page__countdown-item-{{ ai_gen_id }} {
+      min-width: calc({{ block.settings.countdown_item_width }}px * 0.8);
+    }
+
+    .ai-password-page__input-group-{{ ai_gen_id }} {
+      flex-direction: column;
+    }
+
+    .ai-password-page__submit-{{ ai_gen_id }} {
+      width: 100%;
+    }
+  }
+{% endstyle %}
+
+<password-page-{{ ai_gen_id }} class="ai-password-page-{{ ai_gen_id }}" {{ block.shopify_attributes }}>
+  {% if block.settings.background_image %}
+    <img
+      src="{{ block.settings.background_image | image_url: width: 2000 }}"
+      alt="{{ block.settings.background_image.alt | escape }}"
+      class="ai-password-page__background-{{ ai_gen_id }}"
+      loading="eager"
+    >
+  {% endif %}
+
+  <div class="ai-password-page__content-{{ ai_gen_id }}">
+    {% if block.settings.logo %}
+      <div class="ai-password-page__logo-{{ ai_gen_id }}">
+        <img
+          src="{{ block.settings.logo | image_url: width: 600 }}"
+          alt="{{ shop.name }}"
+          width="{{ block.settings.logo_width }}"
+          height="auto"
+          loading="eager"
+        >
+      </div>
+    {% endif %}
+
+    {% if block.settings.heading != blank %}
+      <h1 class="ai-password-page__heading-{{ ai_gen_id }}">
+        {{ block.settings.heading }}
+      </h1>
+    {% endif %}
+
+    {% if block.settings.subheading != blank %}
+      <div class="ai-password-page__subheading-{{ ai_gen_id }}">
+        {{ block.settings.subheading }}
+      </div>
+    {% endif %}
+
+    <div class="ai-password-page__form-wrapper-{{ ai_gen_id }}">
+      {%- form 'storefront_password' -%}
+        <div class="ai-password-page__input-group-{{ ai_gen_id }}">
+          <input
+            type="password"
+            name="password"
+            class="ai-password-page__input-{{ ai_gen_id }}"
+            placeholder="{{ block.settings.input_placeholder }}"
+            aria-label="Password"
+            {% if form.errors %}
+              aria-invalid="true"
+              aria-describedby="password-error-{{ ai_gen_id }}"
+            {% endif %}
+            required
+          >
+          
+          <button
+            type="submit"
+            class="ai-password-page__submit-{{ ai_gen_id }}"
+          >
+            {{ block.settings.button_text }}
+          </button>
+        </div>
+
+        {% if form.errors %}
+          <div id="password-error-{{ ai_gen_id }}" class="ai-password-page__error-{{ ai_gen_id }}">
+            {{ form.errors.messages.password }}
+          </div>
+        {% endif %}
+      {%- endform -%}
+    </div>
+
+    {% if block.settings.custom_button_html != blank %}
+      <div class="ai-password-page__custom-button-{{ ai_gen_id }}">
+        {{ block.settings.custom_button_html }}
+      </div>
+    {% endif %}
+
+    {% if block.settings.enable_countdown %}
+      <div
+        class="ai-password-page__countdown-{{ ai_gen_id }}"
+        data-countdown-date="{{ block.settings.countdown_date }}"
+        data-countdown-time="{{ block.settings.countdown_time }}"
+      >
+        <div class="ai-password-page__countdown-item-{{ ai_gen_id }}">
+          <div class="ai-password-page__countdown-number-{{ ai_gen_id }}" data-days>0</div>
+          <div class="ai-password-page__countdown-label-{{ ai_gen_id }}">{{ block.settings.countdown_days_label }}</div>
+        </div>
+        <div class="ai-password-page__countdown-item-{{ ai_gen_id }}">
+          <div class="ai-password-page__countdown-number-{{ ai_gen_id }}" data-hours>0</div>
+          <div class="ai-password-page__countdown-label-{{ ai_gen_id }}">{{ block.settings.countdown_hours_label }}</div>
+        </div>
+        <div class="ai-password-page__countdown-item-{{ ai_gen_id }}">
+          <div class="ai-password-page__countdown-number-{{ ai_gen_id }}" data-minutes>0</div>
+          <div class="ai-password-page__countdown-label-{{ ai_gen_id }}">{{ block.settings.countdown_minutes_label }}</div>
+        </div>
+        <div class="ai-password-page__countdown-item-{{ ai_gen_id }}">
+          <div class="ai-password-page__countdown-number-{{ ai_gen_id }}" data-seconds>0</div>
+          <div class="ai-password-page__countdown-label-{{ ai_gen_id }}">{{ block.settings.countdown_seconds_label }}</div>
+        </div>
+      </div>
+    {% endif %}
+  </div>
+</password-page-{{ ai_gen_id }}>
+
+<script>
+  (function() {
+    class PasswordPage{{ ai_gen_id }} extends HTMLElement {
+      constructor() {
+        super();
+        this.countdown = this.querySelector('.ai-password-page__countdown-{{ ai_gen_id }}');
+      }
+
+      connectedCallback() {
+        if (this.countdown) {
+          this.initCountdown();
+        }
+      }
+
+      initCountdown() {
+        const countdownDate = this.countdown.dataset.countdownDate;
+        const countdownTime = this.countdown.dataset.countdownTime;
+        
+        if (!countdownDate || !countdownTime) return;
+
+        const targetDate = new Date(countdownDate + 'T' + countdownTime).getTime();
+
+        const daysEl = this.countdown.querySelector('[data-days]');
+        const hoursEl = this.countdown.querySelector('[data-hours]');
+        const minutesEl = this.countdown.querySelector('[data-minutes]');
+        const secondsEl = this.countdown.querySelector('[data-seconds]');
+
+        const updateCountdown = () => {
+          const now = new Date().getTime();
+          const distance = targetDate - now;
+
+          if (distance < 0) {
+            daysEl.textContent = '0';
+            hoursEl.textContent = '0';
+            minutesEl.textContent = '0';
+            secondsEl.textContent = '0';
+            return;
+          }
+
+          const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+          const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+          const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+          const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+          daysEl.textContent = days;
+          hoursEl.textContent = hours;
+          minutesEl.textContent = minutes;
+          secondsEl.textContent = seconds;
+        };
+
+        updateCountdown();
+        setInterval(updateCountdown, 1000);
+      }
+    }
+
+    customElements.define('password-page-{{ ai_gen_id }}', PasswordPage{{ ai_gen_id }});
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "Password page",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Background"
+    },
+    {
+      "type": "image_picker",
+      "id": "background_image",
+      "label": "Background image"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "overlay_color",
+      "label": "Overlay color",
+      "default": "#000000"
+    },
+    {
+      "type": "range",
+      "id": "overlay_opacity",
+      "min": 0,
+      "max": 1,
+      "step": 0.1,
+      "label": "Overlay opacity",
+      "default": 0.5
+    },
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "range",
+      "id": "content_max_width",
+      "min": 400,
+      "max": 800,
+      "step": 20,
+      "unit": "px",
+      "label": "Content max width",
+      "default": 600
+    },
+    {
+      "type": "header",
+      "content": "Logo"
+    },
+    {
+      "type": "image_picker",
+      "id": "logo",
+      "label": "Logo image"
+    },
+    {
+      "type": "range",
+      "id": "logo_width",
+      "min": 100,
+      "max": 400,
+      "step": 10,
+      "unit": "px",
+      "label": "Logo width",
+      "default": 200
+    },
+    {
+      "type": "range",
+      "id": "logo_spacing",
+      "min": 10,
+      "max": 80,
+      "step": 5,
+      "unit": "px",
+      "label": "Logo spacing",
+      "default": 40
+    },
+    {
+      "type": "header",
+      "content": "Heading"
+    },
+    {
+      "type": "inline_richtext",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Opening Soon"
+    },
+    {
+      "type": "font_picker",
+      "id": "heading_font",
+      "label": "Heading font",
+      "default": "assistant_n4"
+    },
+    {
+      "type": "range",
+      "id": "heading_size",
+      "min": 24,
+      "max": 80,
+      "step": 2,
+      "unit": "px",
+      "label": "Heading size",
+      "default": 48
+    },
+    {
+      "type": "color",
+      "id": "heading_color",
+      "label": "Heading color",
+      "default": "#000000"
+    },
+    {
+      "type": "range",
+      "id": "heading_spacing",
+      "min": 10,
+      "max": 60,
+      "step": 5,
+      "unit": "px",
+      "label": "Heading spacing",
+      "default": 20
+    },
+    {
+      "type": "header",
+      "content": "Subheading"
+    },
+    {
+      "type": "richtext",
+      "id": "subheading",
+      "label": "Subheading",
+      "default": "<p>We're working on something amazing. Enter your password to get early access.</p>"
+    },
+    {
+      "type": "range",
+      "id": "subheading_size",
+      "min": 12,
+      "max": 32,
+      "step": 1,
+      "unit": "px",
+      "label": "Subheading size",
+      "default": 18
+    },
+    {
+      "type": "color",
+      "id": "subheading_color",
+      "label": "Subheading color",
+      "default": "#666666"
+    },
+    {
+      "type": "range",
+      "id": "subheading_spacing",
+      "min": 20,
+      "max": 80,
+      "step": 5,
+      "unit": "px",
+      "label": "Subheading spacing",
+      "default": 40
+    },
+    {
+      "type": "header",
+      "content": "Password field"
+    },
+    {
+      "type": "range",
+      "id": "input_width",
+      "min": 200,
+      "max": 600,
+      "step": 20,
+      "unit": "px",
+      "label": "Input width",
+      "default": 400
+    },
+    {
+      "type": "range",
+      "id": "input_button_gap",
+      "min": 4,
+      "max": 20,
+      "step": 2,
+      "unit": "px",
+      "label": "Gap between input and button",
+      "default": 8
+    },
+    {
+      "type": "inline_richtext",
+      "id": "input_placeholder",
+      "label": "Placeholder text",
+      "default": "Enter password"
+    },
+    {
+      "type": "range",
+      "id": "input_padding",
+      "min": 8,
+      "max": 24,
+      "step": 2,
+      "unit": "px",
+      "label": "Input padding",
+      "default": 16
+    },
+    {
+      "type": "range",
+      "id": "input_font_size",
+      "min": 12,
+      "max": 24,
+      "step": 1,
+      "unit": "px",
+      "label": "Input font size",
+      "default": 16
+    },
+    {
+      "type": "color",
+      "id": "input_background",
+      "label": "Input background",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "input_text_color",
+      "label": "Input text color",
+      "default": "#000000"
+    },
+    {
+      "type": "color",
+      "id": "input_placeholder_color",
+      "label": "Placeholder color",
+      "default": "#999999"
+    },
+    {
+      "type": "range",
+      "id": "input_border_width",
+      "min": 1,
+      "max": 4,
+      "step": 1,
+      "unit": "px",
+      "label": "Border width",
+      "default": 1
+    },
+    {
+      "type": "color",
+      "id": "input_border_color",
+      "label": "Border color",
+      "default": "#cccccc"
+    },
+    {
+      "type": "color",
+      "id": "input_focus_border_color",
+      "label": "Focus border color",
+      "default": "#000000"
+    },
+    {
+      "type": "range",
+      "id": "input_border_radius",
+      "min": 0,
+      "max": 30,
+      "step": 1,
+      "unit": "px",
+      "label": "Border radius",
+      "default": 6
+    },
+    {
+      "type": "range",
+      "id": "form_spacing",
+      "min": 20,
+      "max": 80,
+      "step": 5,
+      "unit": "px",
+      "label": "Form spacing",
+      "default": 40
+    },
+    {
+      "type": "header",
+      "content": "Submit button"
+    },
+    {
+      "type": "inline_richtext",
+      "id": "button_text",
+      "label": "Button text",
+      "default": "Enter"
+    },
+    {
+      "type": "range",
+      "id": "button_padding",
+      "min": 8,
+      "max": 24,
+      "step": 2,
+      "unit": "px",
+      "label": "Button padding vertical",
+      "default": 16
+    },
+    {
+      "type": "range",
+      "id": "button_padding_horizontal",
+      "min": 16,
+      "max": 48,
+      "step": 2,
+      "unit": "px",
+      "label": "Button padding horizontal",
+      "default": 32
+    },
+    {
+      "type": "range",
+      "id": "button_font_size",
+      "min": 12,
+      "max": 24,
+      "step": 1,
+      "unit": "px",
+      "label": "Button font size",
+      "default": 16
+    },
+    {
+      "type": "color",
+      "id": "button_background",
+      "label": "Button background",
+      "default": "#000000"
+    },
+    {
+      "type": "color",
+      "id": "button_text_color",
+      "label": "Button text color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "range",
+      "id": "button_border_width",
+      "min": 0,
+      "max": 4,
+      "step": 1,
+      "unit": "px",
+      "label": "Border width",
+      "default": 0
+    },
+    {
+      "type": "color",
+      "id": "button_border_color",
+      "label": "Border color",
+      "default": "#000000"
+    },
+    {
+      "type": "range",
+      "id": "button_border_radius",
+      "min": 0,
+      "max": 30,
+      "step": 1,
+      "unit": "px",
+      "label": "Border radius",
+      "default": 6
+    },
+    {
+      "type": "color",
+      "id": "button_hover_background",
+      "label": "Hover background",
+      "default": "#333333"
+    },
+    {
+      "type": "color",
+      "id": "button_hover_text_color",
+      "label": "Hover text color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "button_hover_border_color",
+      "label": "Hover border color",
+      "default": "#333333"
+    },
+    {
+      "type": "color",
+      "id": "error_color",
+      "label": "Error message color",
+      "default": "#D82C0D"
+    },
+    {
+      "type": "header",
+      "content": "Custom button"
+    },
+    {
+      "type": "html",
+      "id": "custom_button_html",
+      "label": "Custom button HTML"
+    },
+    {
+      "type": "header",
+      "content": "Countdown"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_countdown",
+      "label": "Enable countdown",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "countdown_date",
+      "label": "Countdown date",
+      "default": "2025-12-31"
+    },
+    {
+      "type": "text",
+      "id": "countdown_time",
+      "label": "Countdown time",
+      "default": "23:59:59"
+    },
+    {
+      "type": "range",
+      "id": "countdown_spacing",
+      "min": 0,
+      "max": 60,
+      "step": 5,
+      "unit": "px",
+      "label": "Countdown top spacing",
+      "default": 20
+    },
+    {
+      "type": "range",
+      "id": "countdown_gap",
+      "min": 10,
+      "max": 40,
+      "step": 5,
+      "unit": "px",
+      "label": "Gap between items",
+      "default": 20
+    },
+    {
+      "type": "range",
+      "id": "countdown_item_width",
+      "min": 60,
+      "max": 120,
+      "step": 5,
+      "unit": "px",
+      "label": "Item width",
+      "default": 80
+    },
+    {
+      "type": "range",
+      "id": "countdown_number_size",
+      "min": 24,
+      "max": 72,
+      "step": 2,
+      "unit": "px",
+      "label": "Number size",
+      "default": 48
+    },
+    {
+      "type": "color",
+      "id": "countdown_number_color",
+      "label": "Number color",
+      "default": "#000000"
+    },
+    {
+      "type": "range",
+      "id": "countdown_label_size",
+      "min": 10,
+      "max": 20,
+      "step": 1,
+      "unit": "px",
+      "label": "Label size",
+      "default": 12
+    },
+    {
+      "type": "color",
+      "id": "countdown_label_color",
+      "label": "Label color",
+      "default": "#666666"
+    },
+    {
+      "type": "color",
+      "id": "countdown_box_background",
+      "label": "Box background",
+      "default": "#f5f5f5"
+    },
+    {
+      "type": "range",
+      "id": "countdown_box_padding",
+      "min": 10,
+      "max": 30,
+      "step": 2,
+      "unit": "px",
+      "label": "Box padding",
+      "default": 20
+    },
+    {
+      "type": "range",
+      "id": "countdown_box_radius",
+      "min": 0,
+      "max": 20,
+      "step": 2,
+      "unit": "px",
+      "label": "Box border radius",
+      "default": 8
+    },
+    {
+      "type": "range",
+      "id": "countdown_box_width",
+      "min": 60,
+      "max": 120,
+      "step": 5,
+      "unit": "px",
+      "label": "Box width",
+      "default": 80
+    },
+    {
+      "type": "inline_richtext",
+      "id": "countdown_days_label",
+      "label": "Days label",
+      "default": "Days"
+    },
+    {
+      "type": "inline_richtext",
+      "id": "countdown_hours_label",
+      "label": "Hours label",
+      "default": "Hours"
+    },
+    {
+      "type": "inline_richtext",
+      "id": "countdown_minutes_label",
+      "label": "Minutes label",
+      "default": "Minutes"
+    },
+    {
+      "type": "inline_richtext",
+      "id": "countdown_seconds_label",
+      "label": "Seconds label",
+      "default": "Seconds"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Password page"
+    }
+  ],
+  "tag": null
+}
+{% endschema %}

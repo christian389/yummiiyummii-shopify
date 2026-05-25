@@ -1,0 +1,917 @@
+{% doc %}
+  @prompt
+    In this updated hero section, gather all of the content on the left: start with a headline and subheading, then insert a countdown timer directly below the subheading, followed by a set of Trustpilot‑style stars, a call‑to‑action button, and a review with an avatar. On the right, replace the old background image with two vertical columns of mobile‑sized images; each column contains three images that scroll slowly in a seamless loop, make the speed for the images adjustable. And the images should loop so that we dont get any whitespace, and the size of the countdown should also be adjustable, The size of the image section on mobile should be adjustable, image section on mobile should be decreased down to a maximum fit the size of 1,5 image in each collumn, the size of the full secrion needs to be adjustable, its way too long of a section on mobile. We are showing too many images. Please cut down on the amount of visible images by cutting down that specific area size to only 200-800, Please fix the mobile version of the image section. It way too long, the image section should be 4:5 ratio in total. and contain the scrolling images
+{% enddoc %}
+{% assign ai_gen_id = block.id | replace: '_', '' | downcase %}
+
+{% style %}
+  .ai-hero-section-{{ ai_gen_id }} {
+    display: flex;
+    align-items: center;
+    gap: 60px;
+    padding: 60px 40px;
+    background-color: {{ block.settings.background_color }};
+    min-height: {{ block.settings.section_height }}px;
+  }
+
+  .ai-hero-content-{{ ai_gen_id }} {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+  }
+
+  .ai-hero-heading-{{ ai_gen_id }} {
+    font-family: {{ block.settings.heading_font.family }}, {{ block.settings.heading_font.fallback_families }};
+    font-weight: {{ block.settings.heading_font.weight }};
+    font-size: {{ block.settings.heading_size }}px;
+    line-height: 1.1;
+    color: {{ block.settings.heading_color }};
+    margin: 0;
+  }
+
+  .ai-hero-subheading-{{ ai_gen_id }} {
+    font-size: {{ block.settings.subheading_size }}px;
+    line-height: 1.4;
+    color: {{ block.settings.subheading_color }};
+    margin: 0;
+  }
+
+  .ai-hero-countdown-{{ ai_gen_id }} {
+    display: flex;
+    gap: 16px;
+    margin: 8px 0;
+  }
+
+  .ai-hero-countdown-item-{{ ai_gen_id }} {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background-color: {{ block.settings.countdown_bg_color }};
+    padding: {{ block.settings.countdown_padding }}px;
+    border-radius: {{ block.settings.countdown_border_radius }}px;
+    min-width: {{ block.settings.countdown_width }}px;
+  }
+
+  .ai-hero-countdown-number-{{ ai_gen_id }} {
+    font-size: {{ block.settings.countdown_number_size }}px;
+    font-weight: 700;
+    color: {{ block.settings.countdown_number_color }};
+    line-height: 1;
+  }
+
+  .ai-hero-countdown-label-{{ ai_gen_id }} {
+    font-size: {{ block.settings.countdown_label_size }}px;
+    color: {{ block.settings.countdown_label_color }};
+    margin-top: 4px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .ai-hero-stars-{{ ai_gen_id }} {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .ai-hero-stars-icons-{{ ai_gen_id }} {
+    display: flex;
+    gap: 4px;
+  }
+
+  .ai-hero-star-{{ ai_gen_id }} {
+    width: 20px;
+    height: 20px;
+    color: {{ block.settings.star_color }};
+  }
+
+  .ai-hero-stars-text-{{ ai_gen_id }} {
+    font-size: 14px;
+    color: {{ block.settings.stars_text_color }};
+    font-weight: 600;
+  }
+
+  .ai-hero-button-{{ ai_gen_id }} {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 16px 40px;
+    background-color: {{ block.settings.button_bg_color }};
+    color: {{ block.settings.button_text_color }};
+    font-size: {{ block.settings.button_font_size }}px;
+    font-weight: 600;
+    text-decoration: none;
+    border-radius: {{ block.settings.button_border_radius }}px;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    align-self: flex-start;
+  }
+
+  .ai-hero-button-{{ ai_gen_id }}:hover {
+    background-color: {{ block.settings.button_hover_bg_color }};
+  }
+
+  .ai-hero-review-{{ ai_gen_id }} {
+    display: flex;
+    gap: 16px;
+    align-items: center;
+    padding: 20px;
+    background-color: {{ block.settings.review_bg_color }};
+    border-radius: {{ block.settings.review_border_radius }}px;
+    max-width: 500px;
+  }
+
+  .ai-hero-avatar-{{ ai_gen_id }} {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    overflow: hidden;
+  }
+
+  .ai-hero-avatar-{{ ai_gen_id }} img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .ai-hero-avatar-placeholder-{{ ai_gen_id }} {
+    width: 100%;
+    height: 100%;
+    background-color: {{ block.settings.avatar_placeholder_color }};
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #ffffff;
+    font-size: 20px;
+    font-weight: 600;
+  }
+
+  .ai-hero-review-content-{{ ai_gen_id }} {
+    flex: 1;
+  }
+
+  .ai-hero-review-text-{{ ai_gen_id }} {
+    font-size: 14px;
+    line-height: 1.5;
+    color: {{ block.settings.review_text_color }};
+    margin: 0 0 8px 0;
+  }
+
+  .ai-hero-review-author-{{ ai_gen_id }} {
+    font-size: 13px;
+    color: {{ block.settings.review_author_color }};
+    font-weight: 600;
+  }
+
+  .ai-hero-images-{{ ai_gen_id }} {
+    flex: 1;
+    aspect-ratio: 4 / 5;
+    display: flex;
+    gap: 20px;
+    overflow: hidden;
+  }
+
+  .ai-hero-image-column-{{ ai_gen_id }} {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .ai-hero-image-scroll-{{ ai_gen_id }} {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    animation: ai-hero-scroll-{{ ai_gen_id }} {{ block.settings.scroll_speed }}s linear infinite;
+  }
+
+  .ai-hero-image-column-{{ ai_gen_id }}:nth-child(2) .ai-hero-image-scroll-{{ ai_gen_id }} {
+    animation-direction: reverse;
+  }
+
+  .ai-hero-image-item-{{ ai_gen_id }} {
+    width: 100%;
+    aspect-ratio: 9 / 16;
+    border-radius: {{ block.settings.image_border_radius }}px;
+    overflow: hidden;
+    flex-shrink: 0;
+  }
+
+  .ai-hero-image-item-{{ ai_gen_id }} img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .ai-hero-image-placeholder-{{ ai_gen_id }} {
+    width: 100%;
+    height: 100%;
+    background-color: #f4f4f4;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .ai-hero-image-placeholder-{{ ai_gen_id }} svg {
+    width: 60%;
+    height: 60%;
+    opacity: 0.3;
+  }
+
+  @keyframes ai-hero-scroll-{{ ai_gen_id }} {
+    0% {
+      transform: translateY(0);
+    }
+    100% {
+      transform: translateY(-50%);
+    }
+  }
+
+  @media screen and (max-width: 989px) {
+    .ai-hero-section-{{ ai_gen_id }} {
+      flex-direction: column;
+      gap: 40px;
+      padding: 40px 20px;
+      min-height: auto;
+    }
+
+    .ai-hero-heading-{{ ai_gen_id }} {
+      font-size: calc({{ block.settings.heading_size }}px * 0.7);
+    }
+
+    .ai-hero-subheading-{{ ai_gen_id }} {
+      font-size: calc({{ block.settings.subheading_size }}px * 0.9);
+    }
+
+    .ai-hero-images-{{ ai_gen_id }} {
+      width: 100%;
+      max-width: 400px;
+      margin: 0 auto;
+    }
+
+    .ai-hero-countdown-{{ ai_gen_id }} {
+      flex-wrap: wrap;
+    }
+
+    .ai-hero-countdown-item-{{ ai_gen_id }} {
+      padding: calc({{ block.settings.countdown_padding }}px * 0.8);
+      min-width: calc({{ block.settings.countdown_width }}px * 0.8);
+    }
+
+    .ai-hero-countdown-number-{{ ai_gen_id }} {
+      font-size: calc({{ block.settings.countdown_number_size }}px * 0.8);
+    }
+
+    .ai-hero-countdown-label-{{ ai_gen_id }} {
+      font-size: calc({{ block.settings.countdown_label_size }}px * 0.9);
+    }
+
+    .ai-hero-review-{{ ai_gen_id }} {
+      max-width: 100%;
+    }
+  }
+{% endstyle %}
+
+<hero-section-{{ ai_gen_id }}
+  class="ai-hero-section-{{ ai_gen_id }}"
+  data-end-date="{{ block.settings.countdown_end_date }}"
+  data-end-time="{{ block.settings.countdown_end_time }}"
+  {{ block.shopify_attributes }}
+>
+  <div class="ai-hero-content-{{ ai_gen_id }}">
+    {% if block.settings.heading != blank %}
+      <h1 class="ai-hero-heading-{{ ai_gen_id }}">{{ block.settings.heading }}</h1>
+    {% endif %}
+
+    {% if block.settings.subheading != blank %}
+      <p class="ai-hero-subheading-{{ ai_gen_id }}">{{ block.settings.subheading }}</p>
+    {% endif %}
+
+    {% if block.settings.show_countdown %}
+      <div class="ai-hero-countdown-{{ ai_gen_id }}">
+        <div class="ai-hero-countdown-item-{{ ai_gen_id }}">
+          <span class="ai-hero-countdown-number-{{ ai_gen_id }}" data-countdown-days>00</span>
+          <span class="ai-hero-countdown-label-{{ ai_gen_id }}">{{ block.settings.days_label }}</span>
+        </div>
+        <div class="ai-hero-countdown-item-{{ ai_gen_id }}">
+          <span class="ai-hero-countdown-number-{{ ai_gen_id }}" data-countdown-hours>00</span>
+          <span class="ai-hero-countdown-label-{{ ai_gen_id }}">{{ block.settings.hours_label }}</span>
+        </div>
+        <div class="ai-hero-countdown-item-{{ ai_gen_id }}">
+          <span class="ai-hero-countdown-number-{{ ai_gen_id }}" data-countdown-minutes>00</span>
+          <span class="ai-hero-countdown-label-{{ ai_gen_id }}">{{ block.settings.minutes_label }}</span>
+        </div>
+        <div class="ai-hero-countdown-item-{{ ai_gen_id }}">
+          <span class="ai-hero-countdown-number-{{ ai_gen_id }}" data-countdown-seconds>00</span>
+          <span class="ai-hero-countdown-label-{{ ai_gen_id }}">{{ block.settings.seconds_label }}</span>
+        </div>
+      </div>
+    {% endif %}
+
+    {% if block.settings.show_stars %}
+      <div class="ai-hero-stars-{{ ai_gen_id }}">
+        <div class="ai-hero-stars-icons-{{ ai_gen_id }}">
+          {% for i in (1..5) %}
+            <svg class="ai-hero-star-{{ ai_gen_id }}" fill="currentColor" viewBox="0 0 20 20">
+              <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+            </svg>
+          {% endfor %}
+        </div>
+        <span class="ai-hero-stars-text-{{ ai_gen_id }}">{{ block.settings.stars_text }}</span>
+      </div>
+    {% endif %}
+
+    {% if block.settings.button_text != blank %}
+      <a href="{{ block.settings.button_link }}" class="ai-hero-button-{{ ai_gen_id }}">
+        {{ block.settings.button_text }}
+      </a>
+    {% endif %}
+
+    {% if block.settings.show_review %}
+      <div class="ai-hero-review-{{ ai_gen_id }}">
+        <div class="ai-hero-avatar-{{ ai_gen_id }}">
+          {% if block.settings.review_avatar %}
+            <img
+              src="{{ block.settings.review_avatar | image_url: width: 100 }}"
+              alt="{{ block.settings.review_author }}"
+              width="50"
+              height="50"
+              loading="lazy"
+            >
+          {% else %}
+            <div class="ai-hero-avatar-placeholder-{{ ai_gen_id }}">
+              {% if block.settings.review_author != blank %}
+                {{ block.settings.review_author | slice: 0 }}
+              {% else %}
+                ?
+              {% endif %}
+            </div>
+          {% endif %}
+        </div>
+        <div class="ai-hero-review-content-{{ ai_gen_id }}">
+          {% if block.settings.review_text != blank %}
+            <p class="ai-hero-review-text-{{ ai_gen_id }}">"{{ block.settings.review_text }}"</p>
+          {% endif %}
+          {% if block.settings.review_author != blank %}
+            <div class="ai-hero-review-author-{{ ai_gen_id }}">— {{ block.settings.review_author }}</div>
+          {% endif %}
+        </div>
+      </div>
+    {% endif %}
+  </div>
+
+  <div class="ai-hero-images-{{ ai_gen_id }}">
+    <div class="ai-hero-image-column-{{ ai_gen_id }}">
+      <div class="ai-hero-image-scroll-{{ ai_gen_id }}">
+        {% for i in (1..3) %}
+          {% assign image_key = 'image_col1_' | append: i %}
+          {% assign image = block.settings[image_key] %}
+          <div class="ai-hero-image-item-{{ ai_gen_id }}">
+            {% if image %}
+              <img
+                src="{{ image | image_url: width: 400 }}"
+                alt="{{ image.alt | escape }}"
+                width="400"
+                height="711"
+                loading="lazy"
+              >
+            {% else %}
+              <div class="ai-hero-image-placeholder-{{ ai_gen_id }}">
+                {{ 'product-1' | placeholder_svg_tag }}
+              </div>
+            {% endif %}
+          </div>
+        {% endfor %}
+        {% for i in (1..3) %}
+          {% assign image_key = 'image_col1_' | append: i %}
+          {% assign image = block.settings[image_key] %}
+          <div class="ai-hero-image-item-{{ ai_gen_id }}">
+            {% if image %}
+              <img
+                src="{{ image | image_url: width: 400 }}"
+                alt="{{ image.alt | escape }}"
+                width="400"
+                height="711"
+                loading="lazy"
+              >
+            {% else %}
+              <div class="ai-hero-image-placeholder-{{ ai_gen_id }}">
+                {{ 'product-1' | placeholder_svg_tag }}
+              </div>
+            {% endif %}
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+
+    <div class="ai-hero-image-column-{{ ai_gen_id }}">
+      <div class="ai-hero-image-scroll-{{ ai_gen_id }}">
+        {% for i in (1..3) %}
+          {% assign image_key = 'image_col2_' | append: i %}
+          {% assign image = block.settings[image_key] %}
+          <div class="ai-hero-image-item-{{ ai_gen_id }}">
+            {% if image %}
+              <img
+                src="{{ image | image_url: width: 400 }}"
+                alt="{{ image.alt | escape }}"
+                width="400"
+                height="711"
+                loading="lazy"
+              >
+            {% else %}
+              <div class="ai-hero-image-placeholder-{{ ai_gen_id }}">
+                {{ 'product-2' | placeholder_svg_tag }}
+              </div>
+            {% endif %}
+          </div>
+        {% endfor %}
+        {% for i in (1..3) %}
+          {% assign image_key = 'image_col2_' | append: i %}
+          {% assign image = block.settings[image_key] %}
+          <div class="ai-hero-image-item-{{ ai_gen_id }}">
+            {% if image %}
+              <img
+                src="{{ image | image_url: width: 400 }}"
+                alt="{{ image.alt | escape }}"
+                width="400"
+                height="711"
+                loading="lazy"
+              >
+            {% else %}
+              <div class="ai-hero-image-placeholder-{{ ai_gen_id }}">
+                {{ 'product-2' | placeholder_svg_tag }}
+              </div>
+            {% endif %}
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+</hero-section-{{ ai_gen_id }}>
+
+<script>
+  (function() {
+    class HeroSection{{ ai_gen_id }} extends HTMLElement {
+      constructor() {
+        super();
+        this.endDate = this.dataset.endDate;
+        this.endTime = this.dataset.endTime;
+      }
+
+      connectedCallback() {
+        if (this.endDate && this.endTime) {
+          this.startCountdown();
+        }
+      }
+
+      startCountdown() {
+        const targetDateTime = new Date(this.endDate + 'T' + this.endTime).getTime();
+
+        const updateCountdown = () => {
+          const now = new Date().getTime();
+          const distance = targetDateTime - now;
+
+          if (distance < 0) {
+            this.querySelector('[data-countdown-days]').textContent = '00';
+            this.querySelector('[data-countdown-hours]').textContent = '00';
+            this.querySelector('[data-countdown-minutes]').textContent = '00';
+            this.querySelector('[data-countdown-seconds]').textContent = '00';
+            return;
+          }
+
+          const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+          const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+          const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+          const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+          this.querySelector('[data-countdown-days]').textContent = String(days).padStart(2, '0');
+          this.querySelector('[data-countdown-hours]').textContent = String(hours).padStart(2, '0');
+          this.querySelector('[data-countdown-minutes]').textContent = String(minutes).padStart(2, '0');
+          this.querySelector('[data-countdown-seconds]').textContent = String(seconds).padStart(2, '0');
+        };
+
+        updateCountdown();
+        this.countdownInterval = setInterval(updateCountdown, 1000);
+      }
+
+      disconnectedCallback() {
+        if (this.countdownInterval) {
+          clearInterval(this.countdownInterval);
+        }
+      }
+    }
+
+    customElements.define('hero-section-{{ ai_gen_id }}', HeroSection{{ ai_gen_id }});
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "Hero with countdown",
+  "tag": null,
+  "settings": [
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background",
+      "default": "#ffffff"
+    },
+    {
+      "type": "range",
+      "id": "section_height",
+      "min": 400,
+      "max": 800,
+      "step": 20,
+      "unit": "px",
+      "label": "Desktop height",
+      "default": 600
+    },
+    {
+      "type": "header",
+      "content": "Heading"
+    },
+    {
+      "type": "inline_richtext",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Limited Time Offer"
+    },
+    {
+      "type": "font_picker",
+      "id": "heading_font",
+      "label": "Font",
+      "default": "instrument_sans_n7"
+    },
+    {
+      "type": "range",
+      "id": "heading_size",
+      "min": 24,
+      "max": 96,
+      "step": 2,
+      "unit": "px",
+      "label": "Size",
+      "default": 60
+    },
+    {
+      "type": "color",
+      "id": "heading_color",
+      "label": "Color",
+      "default": "#000000"
+    },
+    {
+      "type": "header",
+      "content": "Subheading"
+    },
+    {
+      "type": "inline_richtext",
+      "id": "subheading",
+      "label": "Subheading",
+      "default": "Get 30% off sustainable kitchenware. Offer ends soon!"
+    },
+    {
+      "type": "range",
+      "id": "subheading_size",
+      "min": 14,
+      "max": 32,
+      "step": 1,
+      "unit": "px",
+      "label": "Size",
+      "default": 18
+    },
+    {
+      "type": "color",
+      "id": "subheading_color",
+      "label": "Color",
+      "default": "#666666"
+    },
+    {
+      "type": "header",
+      "content": "Countdown timer"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_countdown",
+      "label": "Show countdown",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "countdown_end_date",
+      "label": "End date",
+      "default": "2025-12-31"
+    },
+    {
+      "type": "text",
+      "id": "countdown_end_time",
+      "label": "End time",
+      "default": "23:59:59"
+    },
+    {
+      "type": "text",
+      "id": "days_label",
+      "label": "Days label",
+      "default": "Days"
+    },
+    {
+      "type": "text",
+      "id": "hours_label",
+      "label": "Hours label",
+      "default": "Hours"
+    },
+    {
+      "type": "text",
+      "id": "minutes_label",
+      "label": "Minutes label",
+      "default": "Mins"
+    },
+    {
+      "type": "text",
+      "id": "seconds_label",
+      "label": "Seconds label",
+      "default": "Secs"
+    },
+    {
+      "type": "range",
+      "id": "countdown_number_size",
+      "min": 16,
+      "max": 64,
+      "step": 2,
+      "unit": "px",
+      "label": "Number size",
+      "default": 32
+    },
+    {
+      "type": "range",
+      "id": "countdown_label_size",
+      "min": 8,
+      "max": 20,
+      "step": 1,
+      "unit": "px",
+      "label": "Label size",
+      "default": 12
+    },
+    {
+      "type": "range",
+      "id": "countdown_width",
+      "min": 50,
+      "max": 120,
+      "step": 5,
+      "unit": "px",
+      "label": "Box width",
+      "default": 70
+    },
+    {
+      "type": "range",
+      "id": "countdown_padding",
+      "min": 8,
+      "max": 30,
+      "step": 2,
+      "unit": "px",
+      "label": "Box padding",
+      "default": 12
+    },
+    {
+      "type": "color",
+      "id": "countdown_bg_color",
+      "label": "Background",
+      "default": "#f2f2f2"
+    },
+    {
+      "type": "color",
+      "id": "countdown_number_color",
+      "label": "Number color",
+      "default": "#000000"
+    },
+    {
+      "type": "color",
+      "id": "countdown_label_color",
+      "label": "Label color",
+      "default": "#666666"
+    },
+    {
+      "type": "range",
+      "id": "countdown_border_radius",
+      "min": 0,
+      "max": 20,
+      "step": 1,
+      "unit": "px",
+      "label": "Border radius",
+      "default": 8
+    },
+    {
+      "type": "header",
+      "content": "Star rating"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_stars",
+      "label": "Show stars",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "stars_text",
+      "label": "Rating text",
+      "default": "4.8 out of 5 stars"
+    },
+    {
+      "type": "color",
+      "id": "star_color",
+      "label": "Star color",
+      "default": "#FFB800"
+    },
+    {
+      "type": "color",
+      "id": "stars_text_color",
+      "label": "Text color",
+      "default": "#000000"
+    },
+    {
+      "type": "header",
+      "content": "Button"
+    },
+    {
+      "type": "text",
+      "id": "button_text",
+      "label": "Text",
+      "default": "Shop Now"
+    },
+    {
+      "type": "url",
+      "id": "button_link",
+      "label": "Link"
+    },
+    {
+      "type": "range",
+      "id": "button_font_size",
+      "min": 12,
+      "max": 24,
+      "step": 1,
+      "unit": "px",
+      "label": "Font size",
+      "default": 16
+    },
+    {
+      "type": "color",
+      "id": "button_bg_color",
+      "label": "Background",
+      "default": "#000000"
+    },
+    {
+      "type": "color",
+      "id": "button_hover_bg_color",
+      "label": "Hover background",
+      "default": "#333333"
+    },
+    {
+      "type": "color",
+      "id": "button_text_color",
+      "label": "Text color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "range",
+      "id": "button_border_radius",
+      "min": 0,
+      "max": 40,
+      "step": 2,
+      "unit": "px",
+      "label": "Border radius",
+      "default": 30
+    },
+    {
+      "type": "header",
+      "content": "Customer review"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_review",
+      "label": "Show review",
+      "default": true
+    },
+    {
+      "type": "image_picker",
+      "id": "review_avatar",
+      "label": "Avatar"
+    },
+    {
+      "type": "textarea",
+      "id": "review_text",
+      "label": "Review text",
+      "default": "These products are amazing! High quality and eco-friendly. Highly recommend!"
+    },
+    {
+      "type": "text",
+      "id": "review_author",
+      "label": "Author name",
+      "default": "Sarah M."
+    },
+    {
+      "type": "color",
+      "id": "review_bg_color",
+      "label": "Background",
+      "default": "#f9f9f9"
+    },
+    {
+      "type": "color",
+      "id": "review_text_color",
+      "label": "Text color",
+      "default": "#333333"
+    },
+    {
+      "type": "color",
+      "id": "review_author_color",
+      "label": "Author color",
+      "default": "#000000"
+    },
+    {
+      "type": "color",
+      "id": "avatar_placeholder_color",
+      "label": "Avatar placeholder",
+      "default": "#cccccc"
+    },
+    {
+      "type": "range",
+      "id": "review_border_radius",
+      "min": 0,
+      "max": 30,
+      "step": 2,
+      "unit": "px",
+      "label": "Border radius",
+      "default": 10
+    },
+    {
+      "type": "header",
+      "content": "Scrolling images"
+    },
+    {
+      "type": "range",
+      "id": "scroll_speed",
+      "min": 10,
+      "max": 60,
+      "step": 5,
+      "unit": "s",
+      "label": "Scroll speed",
+      "default": 30
+    },
+    {
+      "type": "range",
+      "id": "image_border_radius",
+      "min": 0,
+      "max": 30,
+      "step": 2,
+      "unit": "px",
+      "label": "Border radius",
+      "default": 12
+    },
+    {
+      "type": "header",
+      "content": "Column 1 images"
+    },
+    {
+      "type": "image_picker",
+      "id": "image_col1_1",
+      "label": "Image 1"
+    },
+    {
+      "type": "image_picker",
+      "id": "image_col1_2",
+      "label": "Image 2"
+    },
+    {
+      "type": "image_picker",
+      "id": "image_col1_3",
+      "label": "Image 3"
+    },
+    {
+      "type": "header",
+      "content": "Column 2 images"
+    },
+    {
+      "type": "image_picker",
+      "id": "image_col2_1",
+      "label": "Image 1"
+    },
+    {
+      "type": "image_picker",
+      "id": "image_col2_2",
+      "label": "Image 2"
+    },
+    {
+      "type": "image_picker",
+      "id": "image_col2_3",
+      "label": "Image 3"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Hero with countdown"
+    }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,832 @@
+{% doc %}
+  @prompt
+    Make a testimonial/review section, Can you make it in to a swiping carousell on mobile? Make 1,5 review visible on defeault, Just make it a normal carsousell. , Please make asjustable margins for the review card. remove the navigation arrows , also adjustable margin for the sides of the card please, Please dont make every slide fill the full screen. make some air on the sides, make the padding for the card on the sides also adjustable , We also need margins for the full section. so theres some air to the sides of the screen
+{% enddoc %}
+{% assign ai_gen_id = block.id | replace: '_', '' | downcase %}
+
+{% style %}
+  .ai-testimonials-{{ ai_gen_id }} {
+    padding: {{ block.settings.section_padding }}px {{ block.settings.section_horizontal_margin }}px;
+    background-color: {{ block.settings.background_color }};
+  }
+
+  .ai-testimonials-container-{{ ai_gen_id }} {
+    max-width: {{ block.settings.max_width }}px;
+    margin: 0 auto;
+  }
+
+  .ai-testimonials-header-{{ ai_gen_id }} {
+    text-align: {{ block.settings.text_alignment }};
+    margin-bottom: 40px;
+  }
+
+  .ai-testimonials-heading-{{ ai_gen_id }} {
+    font-family: {{ block.settings.heading_font.family }}, {{ block.settings.heading_font.fallback_families }};
+    font-weight: {{ block.settings.heading_font.weight }};
+    font-size: {{ block.settings.heading_size }}px;
+    color: {{ block.settings.heading_color }};
+    margin: 0 0 12px;
+    line-height: 1.2;
+  }
+
+  .ai-testimonials-subheading-{{ ai_gen_id }} {
+    font-size: {{ block.settings.subheading_size }}px;
+    color: {{ block.settings.text_color }};
+    margin: 0;
+    opacity: 0.8;
+  }
+
+  .ai-carousel-wrapper-{{ ai_gen_id }} {
+    position: relative;
+    margin-top: 40px;
+  }
+
+  .ai-carousel-track-{{ ai_gen_id }} {
+    display: flex;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    gap: {{ block.settings.grid_gap }}px;
+    scroll-behavior: smooth;
+    padding: 0 {{ block.settings.carousel_side_padding }}px;
+  }
+
+  .ai-carousel-track-{{ ai_gen_id }}::-webkit-scrollbar {
+    display: none;
+  }
+
+  .ai-testimonial-card-{{ ai_gen_id }} {
+    background-color: {{ block.settings.card_background }};
+    border-radius: {{ block.settings.card_border_radius }}px;
+    padding-top: {{ block.settings.card_padding_top }}px;
+    padding-bottom: {{ block.settings.card_padding_bottom }}px;
+    padding-left: {{ block.settings.card_padding_left }}px;
+    padding-right: {{ block.settings.card_padding_right }}px;
+    margin-top: {{ block.settings.card_margin_top }}px;
+    margin-bottom: {{ block.settings.card_margin_bottom }}px;
+    margin-left: {{ block.settings.card_margin_left }}px;
+    margin-right: {{ block.settings.card_margin_right }}px;
+    box-shadow: {{ block.settings.card_shadow }};
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    scroll-snap-align: start;
+    flex-shrink: 0;
+  }
+
+  .ai-testimonial-stars-{{ ai_gen_id }} {
+    display: flex;
+    gap: 4px;
+    color: {{ block.settings.star_color }};
+  }
+
+  .ai-testimonial-stars-{{ ai_gen_id }} svg {
+    width: {{ block.settings.star_size }}px;
+    height: {{ block.settings.star_size }}px;
+    fill: currentColor;
+  }
+
+  .ai-testimonial-text-{{ ai_gen_id }} {
+    font-size: {{ block.settings.review_text_size }}px;
+    color: {{ block.settings.text_color }};
+    line-height: 1.6;
+    margin: 0;
+  }
+
+  .ai-testimonial-author-{{ ai_gen_id }} {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-top: auto;
+  }
+
+  .ai-testimonial-avatar-{{ ai_gen_id }} {
+    width: {{ block.settings.avatar_size }}px;
+    height: {{ block.settings.avatar_size }}px;
+    border-radius: 50%;
+    overflow: hidden;
+    flex-shrink: 0;
+    background-color: {{ block.settings.avatar_placeholder_bg }};
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .ai-testimonial-avatar-{{ ai_gen_id }} img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .ai-testimonial-avatar-placeholder-{{ ai_gen_id }} {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: {{ block.settings.avatar_size | divided_by: 2 }}px;
+    font-weight: 600;
+    color: {{ block.settings.avatar_placeholder_text }};
+  }
+
+  .ai-testimonial-author-info-{{ ai_gen_id }} {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .ai-testimonial-author-name-{{ ai_gen_id }} {
+    font-weight: 600;
+    font-size: {{ block.settings.author_name_size }}px;
+    color: {{ block.settings.text_color }};
+    margin: 0;
+  }
+
+  .ai-testimonial-author-title-{{ ai_gen_id }} {
+    font-size: {{ block.settings.author_title_size }}px;
+    color: {{ block.settings.text_color }};
+    opacity: 0.7;
+    margin: 0;
+  }
+
+  .ai-carousel-nav-{{ ai_gen_id }} {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    margin-top: 32px;
+  }
+
+  .ai-carousel-dots-{{ ai_gen_id }} {
+    display: flex;
+    gap: 8px;
+  }
+
+  .ai-carousel-dot-{{ ai_gen_id }} {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background-color: {{ block.settings.dot_color }};
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    transition: all 0.3s ease;
+    opacity: 0.3;
+  }
+
+  .ai-carousel-dot-{{ ai_gen_id }}.active {
+    opacity: 1;
+    width: 24px;
+    border-radius: 4px;
+  }
+
+  @media screen and (max-width: 749px) {
+    .ai-testimonial-card-{{ ai_gen_id }} {
+      width: calc(100% - {{ block.settings.carousel_side_padding | times: 2 }}px - {{ block.settings.card_margin_left }}px - {{ block.settings.card_margin_right }}px);
+      max-width: 400px;
+    }
+
+    .ai-testimonials-heading-{{ ai_gen_id }} {
+      font-size: {{ block.settings.heading_size | times: 0.7 }}px;
+    }
+  }
+
+  @media screen and (min-width: 750px) {
+    .ai-testimonial-card-{{ ai_gen_id }} {
+      width: calc((100% - {{ block.settings.grid_gap }}px * 2) / 3);
+    }
+  }
+{% endstyle %}
+
+<testimonial-carousel-{{ ai_gen_id }} class="ai-testimonials-{{ ai_gen_id }}" {{ block.shopify_attributes }}>
+  <div class="ai-testimonials-container-{{ ai_gen_id }}">
+    {% if block.settings.heading != blank or block.settings.subheading != blank %}
+      <div class="ai-testimonials-header-{{ ai_gen_id }}">
+        {% if block.settings.heading != blank %}
+          <h2 class="ai-testimonials-heading-{{ ai_gen_id }}">{{ block.settings.heading }}</h2>
+        {% endif %}
+        {% if block.settings.subheading != blank %}
+          <p class="ai-testimonials-subheading-{{ ai_gen_id }}">{{ block.settings.subheading }}</p>
+        {% endif %}
+      </div>
+    {% endif %}
+
+    <div class="ai-carousel-wrapper-{{ ai_gen_id }}">
+      <div class="ai-carousel-track-{{ ai_gen_id }}" data-carousel-track>
+        {% for i in (1..3) %}
+          {% liquid
+            assign review_text_key = 'review_' | append: i | append: '_text'
+            assign author_name_key = 'review_' | append: i | append: '_author_name'
+            assign author_title_key = 'review_' | append: i | append: '_author_title'
+            assign author_image_key = 'review_' | append: i | append: '_author_image'
+            assign rating_key = 'review_' | append: i | append: '_rating'
+
+            assign review_text = block.settings[review_text_key]
+            assign author_name = block.settings[author_name_key]
+            assign author_title = block.settings[author_title_key]
+            assign author_image = block.settings[author_image_key]
+            assign rating = block.settings[rating_key]
+          %}
+
+          {% if review_text != blank %}
+            <div class="ai-testimonial-card-{{ ai_gen_id }}" data-slide>
+              {% if rating > 0 %}
+                <div class="ai-testimonial-stars-{{ ai_gen_id }}">
+                  {% for star in (1..5) %}
+                    {% if star <= rating %}
+                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                        <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                      </svg>
+                    {% else %}
+                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                      </svg>
+                    {% endif %}
+                  {% endfor %}
+                </div>
+              {% endif %}
+
+              <p class="ai-testimonial-text-{{ ai_gen_id }}">{{ review_text }}</p>
+
+              {% if author_name != blank %}
+                <div class="ai-testimonial-author-{{ ai_gen_id }}">
+                  <div class="ai-testimonial-avatar-{{ ai_gen_id }}">
+                    {% if author_image %}
+                      <img
+                        src="{{ author_image | image_url: width: 100 }}"
+                        alt="{{ author_name | escape }}"
+                        width="100"
+                        height="100"
+                        loading="lazy"
+                      >
+                    {% else %}
+                      <div class="ai-testimonial-avatar-placeholder-{{ ai_gen_id }}">
+                        {{ author_name | slice: 0 | upcase }}
+                      </div>
+                    {% endif %}
+                  </div>
+                  <div class="ai-testimonial-author-info-{{ ai_gen_id }}">
+                    <p class="ai-testimonial-author-name-{{ ai_gen_id }}">{{ author_name }}</p>
+                    {% if author_title != blank %}
+                      <p class="ai-testimonial-author-title-{{ ai_gen_id }}">{{ author_title }}</p>
+                    {% endif %}
+                  </div>
+                </div>
+              {% endif %}
+            </div>
+          {% endif %}
+        {% endfor %}
+      </div>
+
+      <div class="ai-carousel-nav-{{ ai_gen_id }}">
+        <div class="ai-carousel-dots-{{ ai_gen_id }}" data-dots></div>
+      </div>
+    </div>
+  </div>
+</testimonial-carousel-{{ ai_gen_id }}>
+
+<script>
+  (function() {
+    class TestimonialCarousel{{ ai_gen_id }} extends HTMLElement {
+      constructor() {
+        super();
+        this.currentIndex = 0;
+      }
+
+      connectedCallback() {
+        this.track = this.querySelector('[data-carousel-track]');
+        this.slides = Array.from(this.querySelectorAll('[data-slide]'));
+        this.dotsContainer = this.querySelector('[data-dots]');
+
+        if (this.slides.length === 0) return;
+
+        this.createDots();
+        this.updateCarousel();
+        this.setupEventListeners();
+      }
+
+      createDots() {
+        this.slides.forEach((slide, index) => {
+          const dot = document.createElement('button');
+          dot.className = 'ai-carousel-dot-{{ ai_gen_id }}';
+          dot.setAttribute('aria-label', 'Go to slide ' + (index + 1));
+          dot.addEventListener('click', () => this.goToSlide(index));
+          this.dotsContainer.appendChild(dot);
+        });
+        this.dots = Array.from(this.dotsContainer.querySelectorAll('.ai-carousel-dot-{{ ai_gen_id }}'));
+      }
+
+      setupEventListeners() {
+        this.track.addEventListener('scroll', () => {
+          clearTimeout(this.scrollTimeout);
+          this.scrollTimeout = setTimeout(() => {
+            this.updateIndexFromScroll();
+          }, 100);
+        });
+      }
+
+      updateIndexFromScroll() {
+        const scrollLeft = this.track.scrollLeft;
+        const slideWidth = this.slides[0].offsetWidth;
+        const gap = parseInt(getComputedStyle(this.track).gap) || 0;
+        const marginLeft = {{ block.settings.card_margin_left }};
+        const marginRight = {{ block.settings.card_margin_right }};
+        const totalSlideWidth = slideWidth + gap + marginLeft + marginRight;
+        const newIndex = Math.round(scrollLeft / totalSlideWidth);
+        
+        if (newIndex !== this.currentIndex) {
+          this.currentIndex = newIndex;
+          this.updateDots();
+        }
+      }
+
+      goToSlide(index) {
+        this.currentIndex = index;
+        this.updateCarousel();
+      }
+
+      updateCarousel() {
+        const slideWidth = this.slides[0].offsetWidth;
+        const gap = parseInt(getComputedStyle(this.track).gap) || 0;
+        const marginLeft = {{ block.settings.card_margin_left }};
+        const marginRight = {{ block.settings.card_margin_right }};
+        const totalSlideWidth = slideWidth + gap + marginLeft + marginRight;
+        const scrollPosition = this.currentIndex * totalSlideWidth;
+        
+        this.track.scrollTo({
+          left: scrollPosition,
+          behavior: 'smooth'
+        });
+
+        this.updateDots();
+      }
+
+      updateDots() {
+        this.dots.forEach((dot, index) => {
+          if (index === this.currentIndex) {
+            dot.classList.add('active');
+          } else {
+            dot.classList.remove('active');
+          }
+        });
+      }
+    }
+
+    customElements.define('testimonial-carousel-{{ ai_gen_id }}', TestimonialCarousel{{ ai_gen_id }});
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "Testimonials",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Section"
+    },
+    {
+      "type": "inline_richtext",
+      "id": "heading",
+      "label": "Heading",
+      "default": "What our customers say"
+    },
+    {
+      "type": "inline_richtext",
+      "id": "subheading",
+      "label": "Subheading",
+      "default": "Don't just take our word for it"
+    },
+    {
+      "type": "select",
+      "id": "text_alignment",
+      "label": "Text alignment",
+      "options": [
+        {
+          "value": "left",
+          "label": "Left"
+        },
+        {
+          "value": "center",
+          "label": "Center"
+        },
+        {
+          "value": "right",
+          "label": "Right"
+        }
+      ],
+      "default": "center"
+    },
+    {
+      "type": "range",
+      "id": "max_width",
+      "label": "Maximum width",
+      "min": 800,
+      "max": 1600,
+      "step": 100,
+      "unit": "px",
+      "default": 1200
+    },
+    {
+      "type": "range",
+      "id": "section_padding",
+      "label": "Section padding",
+      "min": 20,
+      "max": 100,
+      "step": 10,
+      "unit": "px",
+      "default": 60
+    },
+    {
+      "type": "range",
+      "id": "section_horizontal_margin",
+      "label": "Section horizontal margin",
+      "min": 0,
+      "max": 60,
+      "step": 4,
+      "unit": "px",
+      "default": 20
+    },
+    {
+      "type": "range",
+      "id": "grid_gap",
+      "label": "Grid gap",
+      "min": 16,
+      "max": 48,
+      "step": 4,
+      "unit": "px",
+      "default": 32
+    },
+    {
+      "type": "range",
+      "id": "carousel_side_padding",
+      "label": "Carousel side padding",
+      "min": 0,
+      "max": 60,
+      "step": 4,
+      "unit": "px",
+      "default": 20
+    },
+    {
+      "type": "header",
+      "content": "Review 1"
+    },
+    {
+      "type": "range",
+      "id": "review_1_rating",
+      "label": "Rating",
+      "min": 0,
+      "max": 5,
+      "step": 1,
+      "default": 5
+    },
+    {
+      "type": "textarea",
+      "id": "review_1_text",
+      "label": "Review text",
+      "default": "Absolutely love these products! The quality is outstanding and they arrived quickly. Highly recommend to anyone looking for sustainable kitchenware."
+    },
+    {
+      "type": "text",
+      "id": "review_1_author_name",
+      "label": "Author name",
+      "default": "Sarah Jensen"
+    },
+    {
+      "type": "text",
+      "id": "review_1_author_title",
+      "label": "Author title"
+    },
+    {
+      "type": "image_picker",
+      "id": "review_1_author_image",
+      "label": "Author image"
+    },
+    {
+      "type": "header",
+      "content": "Review 2"
+    },
+    {
+      "type": "range",
+      "id": "review_2_rating",
+      "label": "Rating",
+      "min": 0,
+      "max": 5,
+      "step": 1,
+      "default": 5
+    },
+    {
+      "type": "textarea",
+      "id": "review_2_text",
+      "label": "Review text",
+      "default": "Great eco-friendly alternatives! I've replaced all my plastic containers with these and couldn't be happier. They're durable and look fantastic."
+    },
+    {
+      "type": "text",
+      "id": "review_2_author_name",
+      "label": "Author name",
+      "default": "Michael Andersen"
+    },
+    {
+      "type": "text",
+      "id": "review_2_author_title",
+      "label": "Author title"
+    },
+    {
+      "type": "image_picker",
+      "id": "review_2_author_image",
+      "label": "Author image"
+    },
+    {
+      "type": "header",
+      "content": "Review 3"
+    },
+    {
+      "type": "range",
+      "id": "review_3_rating",
+      "label": "Rating",
+      "min": 0,
+      "max": 5,
+      "step": 1,
+      "default": 5
+    },
+    {
+      "type": "textarea",
+      "id": "review_3_text",
+      "label": "Review text",
+      "default": "Perfect for my zero-waste lifestyle. The bento boxes are my favorite - they keep my lunch fresh and I feel good about reducing plastic waste."
+    },
+    {
+      "type": "text",
+      "id": "review_3_author_name",
+      "label": "Author name",
+      "default": "Emma Nielsen"
+    },
+    {
+      "type": "text",
+      "id": "review_3_author_title",
+      "label": "Author title"
+    },
+    {
+      "type": "image_picker",
+      "id": "review_3_author_image",
+      "label": "Author image"
+    },
+    {
+      "type": "header",
+      "content": "Typography"
+    },
+    {
+      "type": "font_picker",
+      "id": "heading_font",
+      "label": "Heading font",
+      "default": "instrument_sans_n7"
+    },
+    {
+      "type": "range",
+      "id": "heading_size",
+      "label": "Heading size",
+      "min": 24,
+      "max": 72,
+      "step": 2,
+      "unit": "px",
+      "default": 40
+    },
+    {
+      "type": "range",
+      "id": "subheading_size",
+      "label": "Subheading size",
+      "min": 14,
+      "max": 24,
+      "step": 1,
+      "unit": "px",
+      "default": 18
+    },
+    {
+      "type": "range",
+      "id": "review_text_size",
+      "label": "Review text size",
+      "min": 14,
+      "max": 20,
+      "step": 1,
+      "unit": "px",
+      "default": 16
+    },
+    {
+      "type": "range",
+      "id": "author_name_size",
+      "label": "Author name size",
+      "min": 14,
+      "max": 20,
+      "step": 1,
+      "unit": "px",
+      "default": 16
+    },
+    {
+      "type": "range",
+      "id": "author_title_size",
+      "label": "Author title size",
+      "min": 12,
+      "max": 16,
+      "step": 1,
+      "unit": "px",
+      "default": 14
+    },
+    {
+      "type": "header",
+      "content": "Colors"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "heading_color",
+      "label": "Heading",
+      "default": "#000000"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text",
+      "default": "#000000"
+    },
+    {
+      "type": "color",
+      "id": "card_background",
+      "label": "Card background",
+      "default": "#f2f2f2"
+    },
+    {
+      "type": "color",
+      "id": "star_color",
+      "label": "Star",
+      "default": "#f25a38"
+    },
+    {
+      "type": "color",
+      "id": "avatar_placeholder_bg",
+      "label": "Avatar placeholder background",
+      "default": "#e0e0e0"
+    },
+    {
+      "type": "color",
+      "id": "avatar_placeholder_text",
+      "label": "Avatar placeholder text",
+      "default": "#666666"
+    },
+    {
+      "type": "color",
+      "id": "dot_color",
+      "label": "Dot color",
+      "default": "#000000"
+    },
+    {
+      "type": "header",
+      "content": "Card style"
+    },
+    {
+      "type": "range",
+      "id": "card_padding_top",
+      "label": "Padding top",
+      "min": 16,
+      "max": 60,
+      "step": 4,
+      "unit": "px",
+      "default": 32
+    },
+    {
+      "type": "range",
+      "id": "card_padding_bottom",
+      "label": "Padding bottom",
+      "min": 16,
+      "max": 60,
+      "step": 4,
+      "unit": "px",
+      "default": 32
+    },
+    {
+      "type": "range",
+      "id": "card_padding_left",
+      "label": "Padding left",
+      "min": 16,
+      "max": 60,
+      "step": 4,
+      "unit": "px",
+      "default": 32
+    },
+    {
+      "type": "range",
+      "id": "card_padding_right",
+      "label": "Padding right",
+      "min": 16,
+      "max": 60,
+      "step": 4,
+      "unit": "px",
+      "default": 32
+    },
+    {
+      "type": "range",
+      "id": "card_margin_top",
+      "label": "Margin top",
+      "min": 0,
+      "max": 60,
+      "step": 4,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "card_margin_bottom",
+      "label": "Margin bottom",
+      "min": 0,
+      "max": 60,
+      "step": 4,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "card_margin_left",
+      "label": "Margin left",
+      "min": 0,
+      "max": 60,
+      "step": 4,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "card_margin_right",
+      "label": "Margin right",
+      "min": 0,
+      "max": 60,
+      "step": 4,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "card_border_radius",
+      "label": "Border radius",
+      "min": 0,
+      "max": 30,
+      "step": 2,
+      "unit": "px",
+      "default": 10
+    },
+    {
+      "type": "select",
+      "id": "card_shadow",
+      "label": "Shadow",
+      "options": [
+        {
+          "value": "none",
+          "label": "None"
+        },
+        {
+          "value": "0 2px 8px rgba(0,0,0,0.08)",
+          "label": "Light"
+        },
+        {
+          "value": "0 4px 12px rgba(0,0,0,0.12)",
+          "label": "Medium"
+        },
+        {
+          "value": "0 8px 24px rgba(0,0,0,0.16)",
+          "label": "Strong"
+        }
+      ],
+      "default": "0 2px 8px rgba(0,0,0,0.08)"
+    },
+    {
+      "type": "range",
+      "id": "star_size",
+      "label": "Star size",
+      "min": 16,
+      "max": 32,
+      "step": 2,
+      "unit": "px",
+      "default": 20
+    },
+    {
+      "type": "range",
+      "id": "avatar_size",
+      "label": "Avatar size",
+      "min": 40,
+      "max": 80,
+      "step": 4,
+      "unit": "px",
+      "default": 48
+    }
+  ],
+  "presets": [
+    {
+      "name": "Testimonials"
+    }
+  ]
+}
+{% endschema %}

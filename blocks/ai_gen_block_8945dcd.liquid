@@ -1,0 +1,295 @@
+{% doc %}
+  @prompt
+    make a scrolling announcement bar that loops, Make multiple text options
+{% enddoc %}
+{% assign ai_gen_id = block.id | replace: '_', '' | downcase %}
+
+{% style %}
+  .ai-scrolling-announcement-{{ ai_gen_id }} {
+    width: 100%;
+    background-color: {{ block.settings.background_color }};
+    color: {{ block.settings.text_color }};
+    overflow: hidden;
+    position: relative;
+    padding: {{ block.settings.vertical_padding }}px 0;
+  }
+
+  .ai-scrolling-announcement-track-{{ ai_gen_id }} {
+    display: flex;
+    width: max-content;
+    animation: ai-scroll-{{ ai_gen_id }} {{ block.settings.scroll_speed }}s linear infinite;
+  }
+
+  .ai-scrolling-announcement-content-{{ ai_gen_id }} {
+    display: flex;
+    align-items: center;
+    white-space: nowrap;
+    padding: 0 {{ block.settings.item_spacing }}px;
+  }
+
+  .ai-scrolling-announcement-text-{{ ai_gen_id }} {
+    font-size: {{ block.settings.font_size }}px;
+    font-weight: {{ block.settings.font_weight }};
+    margin: 0;
+  }
+
+  .ai-scrolling-announcement-separator-{{ ai_gen_id }} {
+    margin: 0 {{ block.settings.item_spacing }}px;
+    font-size: {{ block.settings.font_size }}px;
+  }
+
+  @keyframes ai-scroll-{{ ai_gen_id }} {
+    0% {
+      transform: translateX(0);
+    }
+    100% {
+      transform: translateX(-50%);
+    }
+  }
+
+  .ai-scrolling-announcement-track-{{ ai_gen_id }}:hover {
+    animation-play-state: {% if block.settings.pause_on_hover %}paused{% else %}running{% endif %};
+  }
+{% endstyle %}
+
+<div
+  class="ai-scrolling-announcement-{{ ai_gen_id }}"
+  {{ block.shopify_attributes }}
+>
+  <div class="ai-scrolling-announcement-track-{{ ai_gen_id }}">
+    <div class="ai-scrolling-announcement-content-{{ ai_gen_id }}">
+      {% liquid
+        assign messages = ''
+        if block.settings.text_1 != blank
+          assign messages = messages | append: block.settings.text_1 | append: '||'
+        endif
+        if block.settings.text_2 != blank
+          assign messages = messages | append: block.settings.text_2 | append: '||'
+        endif
+        if block.settings.text_3 != blank
+          assign messages = messages | append: block.settings.text_3 | append: '||'
+        endif
+        if block.settings.text_4 != blank
+          assign messages = messages | append: block.settings.text_4 | append: '||'
+        endif
+        if block.settings.text_5 != blank
+          assign messages = messages | append: block.settings.text_5 | append: '||'
+        endif
+        
+        assign message_array = messages | split: '||'
+        assign has_messages = false
+        for msg in message_array
+          if msg != blank
+            assign has_messages = true
+            break
+          endif
+        endfor
+      %}
+
+      {% if has_messages %}
+        {% for i in (1..block.settings.repeat_count) %}
+          {% for message in message_array %}
+            {% if message != blank %}
+              <p class="ai-scrolling-announcement-text-{{ ai_gen_id }}">
+                {{ message }}
+              </p>
+              <span class="ai-scrolling-announcement-separator-{{ ai_gen_id }}">
+                {{ block.settings.separator }}
+              </span>
+            {% endif %}
+          {% endfor %}
+        {% endfor %}
+      {% else %}
+        {% for i in (1..block.settings.repeat_count) %}
+          <p class="ai-scrolling-announcement-text-{{ ai_gen_id }}">
+            Add your announcement text in the block settings
+          </p>
+          {% if forloop.last == false %}
+            <span class="ai-scrolling-announcement-separator-{{ ai_gen_id }}">
+              {{ block.settings.separator }}
+            </span>
+          {% endif %}
+        {% endfor %}
+      {% endif %}
+    </div>
+    <div class="ai-scrolling-announcement-content-{{ ai_gen_id }}" aria-hidden="true">
+      {% if has_messages %}
+        {% for i in (1..block.settings.repeat_count) %}
+          {% for message in message_array %}
+            {% if message != blank %}
+              <p class="ai-scrolling-announcement-text-{{ ai_gen_id }}">
+                {{ message }}
+              </p>
+              <span class="ai-scrolling-announcement-separator-{{ ai_gen_id }}">
+                {{ block.settings.separator }}
+              </span>
+            {% endif %}
+          {% endfor %}
+        {% endfor %}
+      {% else %}
+        {% for i in (1..block.settings.repeat_count) %}
+          <p class="ai-scrolling-announcement-text-{{ ai_gen_id }}">
+            Add your announcement text in the block settings
+          </p>
+          {% if forloop.last == false %}
+            <span class="ai-scrolling-announcement-separator-{{ ai_gen_id }}">
+              {{ block.settings.separator }}
+            </span>
+          {% endif %}
+        {% endfor %}
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Scrolling announcement",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Content"
+    },
+    {
+      "type": "textarea",
+      "id": "text_1",
+      "label": "Text 1",
+      "default": "Free shipping on orders over 400 DKK"
+    },
+    {
+      "type": "textarea",
+      "id": "text_2",
+      "label": "Text 2",
+      "default": "Sustainable kitchenware for eco-friendly living"
+    },
+    {
+      "type": "textarea",
+      "id": "text_3",
+      "label": "Text 3"
+    },
+    {
+      "type": "textarea",
+      "id": "text_4",
+      "label": "Text 4"
+    },
+    {
+      "type": "textarea",
+      "id": "text_5",
+      "label": "Text 5"
+    },
+    {
+      "type": "text",
+      "id": "separator",
+      "label": "Separator",
+      "default": "★"
+    },
+    {
+      "type": "range",
+      "id": "repeat_count",
+      "min": 2,
+      "max": 10,
+      "step": 1,
+      "label": "Repeat count",
+      "default": 5
+    },
+    {
+      "type": "header",
+      "content": "Style"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background",
+      "default": "#000000"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text",
+      "default": "#ffffff"
+    },
+    {
+      "type": "range",
+      "id": "font_size",
+      "min": 12,
+      "max": 24,
+      "step": 1,
+      "unit": "px",
+      "label": "Font size",
+      "default": 14
+    },
+    {
+      "type": "select",
+      "id": "font_weight",
+      "label": "Font weight",
+      "options": [
+        {
+          "value": "300",
+          "label": "Light"
+        },
+        {
+          "value": "400",
+          "label": "Normal"
+        },
+        {
+          "value": "500",
+          "label": "Medium"
+        },
+        {
+          "value": "600",
+          "label": "Semi bold"
+        },
+        {
+          "value": "700",
+          "label": "Bold"
+        }
+      ],
+      "default": "400"
+    },
+    {
+      "type": "range",
+      "id": "vertical_padding",
+      "min": 5,
+      "max": 30,
+      "step": 1,
+      "unit": "px",
+      "label": "Vertical padding",
+      "default": 12
+    },
+    {
+      "type": "range",
+      "id": "item_spacing",
+      "min": 10,
+      "max": 100,
+      "step": 5,
+      "unit": "px",
+      "label": "Item spacing",
+      "default": 40
+    },
+    {
+      "type": "header",
+      "content": "Animation"
+    },
+    {
+      "type": "range",
+      "id": "scroll_speed",
+      "min": 10,
+      "max": 100,
+      "step": 5,
+      "label": "Scroll speed",
+      "default": 30
+    },
+    {
+      "type": "checkbox",
+      "id": "pause_on_hover",
+      "label": "Pause on hover",
+      "default": false
+    }
+  ],
+  "presets": [
+    {
+      "name": "Scrolling announcement"
+    }
+  ]
+}
+{% endschema %}

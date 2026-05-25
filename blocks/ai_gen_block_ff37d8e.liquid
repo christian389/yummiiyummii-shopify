@@ -1,0 +1,528 @@
+{% doc %}
+  @prompt
+    Design a big hero with image in the background. Include a heading and subheading. Ratings above and 3 usps in the bottom seperated horisontially with a line, each of the Usps should be seperated with a vertical line, Remove the line between the subheading and usps
+{% enddoc %}
+{% assign ai_gen_id = block.id | replace: '_', '' | downcase %}
+
+{% style %}
+  .ai-hero-{{ ai_gen_id }} {
+    position: relative;
+    width: 100%;
+    min-height: {{ block.settings.hero_height }}px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+  }
+
+  .ai-hero-background-{{ ai_gen_id }} {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+  }
+
+  .ai-hero-background-{{ ai_gen_id }} img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .ai-hero-background-placeholder-{{ ai_gen_id }} {
+    width: 100%;
+    height: 100%;
+    background-color: #f4f4f4;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .ai-hero-background-placeholder-{{ ai_gen_id }} svg {
+    width: 100%;
+    height: 100%;
+    max-width: 500px;
+    max-height: 500px;
+  }
+
+  .ai-hero-overlay-{{ ai_gen_id }} {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: {{ block.settings.overlay_color }};
+    opacity: {{ block.settings.overlay_opacity }};
+    z-index: 2;
+  }
+
+  .ai-hero-content-{{ ai_gen_id }} {
+    position: relative;
+    z-index: 3;
+    max-width: {{ block.settings.content_max_width }}px;
+    width: 100%;
+    padding: 40px 20px;
+    text-align: {{ block.settings.text_alignment }};
+    display: flex;
+    flex-direction: column;
+    align-items: {{ block.settings.text_alignment }};
+  }
+
+  .ai-hero-ratings-{{ ai_gen_id }} {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 24px;
+    {% if block.settings.text_alignment == 'center' %}
+      justify-content: center;
+    {% elsif block.settings.text_alignment == 'right' %}
+      justify-content: flex-end;
+    {% else %}
+      justify-content: flex-start;
+    {% endif %}
+  }
+
+  .ai-hero-stars-{{ ai_gen_id }} {
+    display: flex;
+    gap: 4px;
+  }
+
+  .ai-hero-star-{{ ai_gen_id }} {
+    width: {{ block.settings.star_size }}px;
+    height: {{ block.settings.star_size }}px;
+    fill: {{ block.settings.star_color }};
+  }
+
+  .ai-hero-rating-text-{{ ai_gen_id }} {
+    font-size: {{ block.settings.rating_text_size }}px;
+    color: {{ block.settings.text_color }};
+    font-weight: 500;
+  }
+
+  .ai-hero-heading-{{ ai_gen_id }} {
+    font-size: {{ block.settings.heading_size }}px;
+    color: {{ block.settings.text_color }};
+    margin: 0 0 16px;
+    line-height: 1.2;
+    font-weight: 700;
+  }
+
+  .ai-hero-subheading-{{ ai_gen_id }} {
+    font-size: {{ block.settings.subheading_size }}px;
+    color: {{ block.settings.text_color }};
+    margin: 0 0 40px;
+    line-height: 1.5;
+  }
+
+  .ai-hero-usps-{{ ai_gen_id }} {
+    display: flex;
+    gap: 32px;
+    margin-top: auto;
+    width: 100%;
+    {% if block.settings.text_alignment == 'center' %}
+      justify-content: center;
+    {% elsif block.settings.text_alignment == 'right' %}
+      justify-content: flex-end;
+    {% else %}
+      justify-content: flex-start;
+    {% endif %}
+  }
+
+  .ai-hero-usp-{{ ai_gen_id }} {
+    display: flex;
+    flex-direction: column;
+    align-items: {{ block.settings.text_alignment }};
+    gap: 8px;
+    padding: 0 32px;
+    position: relative;
+  }
+
+  .ai-hero-usp-{{ ai_gen_id }}:not(:last-child)::after {
+    content: '';
+    position: absolute;
+    right: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: {{ block.settings.separator_width }}px;
+    height: {{ block.settings.usp_separator_height }}px;
+    background-color: {{ block.settings.separator_color }};
+  }
+
+  .ai-hero-usp-{{ ai_gen_id }}:first-child {
+    padding-left: 0;
+  }
+
+  .ai-hero-usp-{{ ai_gen_id }}:last-child {
+    padding-right: 0;
+  }
+
+  .ai-hero-usp-icon-{{ ai_gen_id }} {
+    width: {{ block.settings.usp_icon_size }}px;
+    height: {{ block.settings.usp_icon_size }}px;
+    fill: {{ block.settings.text_color }};
+  }
+
+  .ai-hero-usp-text-{{ ai_gen_id }} {
+    font-size: {{ block.settings.usp_text_size }}px;
+    color: {{ block.settings.text_color }};
+    font-weight: 500;
+  }
+
+  @media screen and (max-width: 749px) {
+    .ai-hero-{{ ai_gen_id }} {
+      min-height: {{ block.settings.hero_height | times: 0.6 }}px;
+    }
+
+    .ai-hero-heading-{{ ai_gen_id }} {
+      font-size: {{ block.settings.heading_size | times: 0.6 }}px;
+    }
+
+    .ai-hero-subheading-{{ ai_gen_id }} {
+      font-size: {{ block.settings.subheading_size | times: 0.8 }}px;
+    }
+
+    .ai-hero-usps-{{ ai_gen_id }} {
+      flex-direction: column;
+      gap: 16px;
+      align-items: {{ block.settings.text_alignment }};
+    }
+
+    .ai-hero-usp-{{ ai_gen_id }} {
+      align-items: center;
+      text-align: center;
+      padding: 16px 0;
+      border-bottom: {{ block.settings.separator_width }}px solid {{ block.settings.separator_color }};
+    }
+
+    .ai-hero-usp-{{ ai_gen_id }}:not(:last-child)::after {
+      display: none;
+    }
+
+    .ai-hero-usp-{{ ai_gen_id }}:last-child {
+      border-bottom: none;
+    }
+  }
+{% endstyle %}
+
+<div class="ai-hero-{{ ai_gen_id }}" {{ block.shopify_attributes }}>
+  <div class="ai-hero-background-{{ ai_gen_id }}">
+    {% if block.settings.background_image %}
+      <img
+        src="{{ block.settings.background_image | image_url: width: 2000 }}"
+        alt="{{ block.settings.background_image.alt | escape }}"
+        loading="lazy"
+        width="{{ block.settings.background_image.width }}"
+        height="{{ block.settings.background_image.height }}"
+      >
+    {% else %}
+      <div class="ai-hero-background-placeholder-{{ ai_gen_id }}">
+        {{ 'hero-apparel-1' | placeholder_svg_tag }}
+      </div>
+    {% endif %}
+  </div>
+
+  <div class="ai-hero-overlay-{{ ai_gen_id }}"></div>
+
+  <div class="ai-hero-content-{{ ai_gen_id }}">
+    {% if block.settings.show_ratings %}
+      <div class="ai-hero-ratings-{{ ai_gen_id }}">
+        <div class="ai-hero-stars-{{ ai_gen_id }}">
+          {% for i in (1..5) %}
+            <svg class="ai-hero-star-{{ ai_gen_id }}" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+              <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+            </svg>
+          {% endfor %}
+        </div>
+        {% if block.settings.rating_text != blank %}
+          <span class="ai-hero-rating-text-{{ ai_gen_id }}">{{ block.settings.rating_text }}</span>
+        {% endif %}
+      </div>
+    {% endif %}
+
+    {% if block.settings.heading != blank %}
+      <h1 class="ai-hero-heading-{{ ai_gen_id }}">{{ block.settings.heading }}</h1>
+    {% endif %}
+
+    {% if block.settings.subheading != blank %}
+      <div class="ai-hero-subheading-{{ ai_gen_id }}">{{ block.settings.subheading }}</div>
+    {% endif %}
+
+    <div class="ai-hero-usps-{{ ai_gen_id }}">
+      {% if block.settings.usp_1_text != blank %}
+        <div class="ai-hero-usp-{{ ai_gen_id }}">
+          <svg class="ai-hero-usp-icon-{{ ai_gen_id }}" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="20 6 9 17 4 12"></polyline>
+          </svg>
+          <span class="ai-hero-usp-text-{{ ai_gen_id }}">{{ block.settings.usp_1_text }}</span>
+        </div>
+      {% endif %}
+
+      {% if block.settings.usp_2_text != blank %}
+        <div class="ai-hero-usp-{{ ai_gen_id }}">
+          <svg class="ai-hero-usp-icon-{{ ai_gen_id }}" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="20 6 9 17 4 12"></polyline>
+          </svg>
+          <span class="ai-hero-usp-text-{{ ai_gen_id }}">{{ block.settings.usp_2_text }}</span>
+        </div>
+      {% endif %}
+
+      {% if block.settings.usp_3_text != blank %}
+        <div class="ai-hero-usp-{{ ai_gen_id }}">
+          <svg class="ai-hero-usp-icon-{{ ai_gen_id }}" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="20 6 9 17 4 12"></polyline>
+          </svg>
+          <span class="ai-hero-usp-text-{{ ai_gen_id }}">{{ block.settings.usp_3_text }}</span>
+        </div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Hero with ratings",
+  "tag": null,
+  "settings": [
+    {
+      "type": "header",
+      "content": "Background"
+    },
+    {
+      "type": "image_picker",
+      "id": "background_image",
+      "label": "Background image"
+    },
+    {
+      "type": "range",
+      "id": "hero_height",
+      "label": "Height",
+      "min": 400,
+      "max": 900,
+      "step": 50,
+      "unit": "px",
+      "default": 700
+    },
+    {
+      "type": "color",
+      "id": "overlay_color",
+      "label": "Overlay color",
+      "default": "#000000"
+    },
+    {
+      "type": "range",
+      "id": "overlay_opacity",
+      "label": "Overlay opacity",
+      "min": 0,
+      "max": 1,
+      "step": 0.1,
+      "default": 0.3
+    },
+    {
+      "type": "header",
+      "content": "Content"
+    },
+    {
+      "type": "range",
+      "id": "content_max_width",
+      "label": "Content width",
+      "min": 600,
+      "max": 1200,
+      "step": 50,
+      "unit": "px",
+      "default": 900
+    },
+    {
+      "type": "select",
+      "id": "text_alignment",
+      "label": "Text alignment",
+      "options": [
+        {
+          "value": "left",
+          "label": "Left"
+        },
+        {
+          "value": "center",
+          "label": "Center"
+        },
+        {
+          "value": "right",
+          "label": "Right"
+        }
+      ],
+      "default": "center"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "header",
+      "content": "Ratings"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_ratings",
+      "label": "Show ratings",
+      "default": true
+    },
+    {
+      "type": "range",
+      "id": "star_size",
+      "label": "Star size",
+      "min": 16,
+      "max": 40,
+      "step": 2,
+      "unit": "px",
+      "default": 24
+    },
+    {
+      "type": "color",
+      "id": "star_color",
+      "label": "Star color",
+      "default": "#FFD700"
+    },
+    {
+      "type": "text",
+      "id": "rating_text",
+      "label": "Rating text",
+      "default": "4.9/5 based on 1,200 reviews"
+    },
+    {
+      "type": "range",
+      "id": "rating_text_size",
+      "label": "Rating text size",
+      "min": 12,
+      "max": 24,
+      "step": 1,
+      "unit": "px",
+      "default": 16
+    },
+    {
+      "type": "header",
+      "content": "Heading"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Sustainable Solutions for Everyday Living"
+    },
+    {
+      "type": "range",
+      "id": "heading_size",
+      "label": "Heading size",
+      "min": 32,
+      "max": 96,
+      "step": 4,
+      "unit": "px",
+      "default": 64
+    },
+    {
+      "type": "header",
+      "content": "Subheading"
+    },
+    {
+      "type": "textarea",
+      "id": "subheading",
+      "label": "Subheading",
+      "default": "Discover our eco-friendly food storage and drinking solutions designed for modern life"
+    },
+    {
+      "type": "range",
+      "id": "subheading_size",
+      "label": "Subheading size",
+      "min": 14,
+      "max": 32,
+      "step": 2,
+      "unit": "px",
+      "default": 20
+    },
+    {
+      "type": "header",
+      "content": "USPs"
+    },
+    {
+      "type": "range",
+      "id": "separator_width",
+      "label": "Separator width",
+      "min": 1,
+      "max": 5,
+      "step": 1,
+      "unit": "px",
+      "default": 2
+    },
+    {
+      "type": "color",
+      "id": "separator_color",
+      "label": "Separator color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "range",
+      "id": "usp_separator_height",
+      "label": "Vertical separator height",
+      "min": 30,
+      "max": 80,
+      "step": 5,
+      "unit": "px",
+      "default": 50
+    },
+    {
+      "type": "range",
+      "id": "usp_icon_size",
+      "label": "Icon size",
+      "min": 20,
+      "max": 48,
+      "step": 2,
+      "unit": "px",
+      "default": 32
+    },
+    {
+      "type": "range",
+      "id": "usp_text_size",
+      "label": "Text size",
+      "min": 12,
+      "max": 24,
+      "step": 1,
+      "unit": "px",
+      "default": 16
+    },
+    {
+      "type": "text",
+      "id": "usp_1_text",
+      "label": "USP 1",
+      "default": "Free Shipping"
+    },
+    {
+      "type": "text",
+      "id": "usp_2_text",
+      "label": "USP 2",
+      "default": "Eco-Friendly"
+    },
+    {
+      "type": "text",
+      "id": "usp_3_text",
+      "label": "USP 3",
+      "default": "30-Day Returns"
+    },
+    {
+      "type": "range",
+      "id": "desktop_width_percent",
+      "label": "Desktop width",
+      "min": 50,
+      "max": 100,
+      "step": 5,
+      "unit": "%",
+      "default": 100
+    }
+  ],
+  "presets": [
+    {
+      "name": "Hero with ratings"
+    }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,385 @@
+{% doc %}
+  @prompt
+    Make a section with text pramarily. I need a centered headline and subheading. and then i need 3 collumns below that with a headline with a subheading for each of the 3 collumns
+{% enddoc %}
+{% assign ai_gen_id = block.id | replace: '_', '' | downcase %}
+
+{% style %}
+  .ai-text-columns-{{ ai_gen_id }} {
+    display: block;
+    width: {{ block.settings.desktop_width_percent }}%;
+    max-width: 100%;
+    padding: {{ block.settings.section_padding }}px 20px;
+  }
+
+  .ai-text-columns__header-{{ ai_gen_id }} {
+    text-align: center;
+    margin-bottom: {{ block.settings.header_spacing }}px;
+  }
+
+  .ai-text-columns__main-heading-{{ ai_gen_id }} {
+    font-family: {{ block.settings.heading_font.family }}, {{ block.settings.heading_font.fallback_families }};
+    font-weight: {{ block.settings.heading_font.weight }};
+    font-size: {{ block.settings.main_heading_size }}px;
+    color: {{ block.settings.heading_color }};
+    margin: 0 0 {{ block.settings.heading_spacing }}px 0;
+    line-height: 1.2;
+  }
+
+  .ai-text-columns__main-subheading-{{ ai_gen_id }} {
+    font-family: {{ block.settings.body_font.family }}, {{ block.settings.body_font.fallback_families }};
+    font-weight: {{ block.settings.body_font.weight }};
+    font-size: {{ block.settings.main_subheading_size }}px;
+    color: {{ block.settings.subheading_color }};
+    margin: 0;
+    line-height: 1.5;
+  }
+
+  .ai-text-columns__columns-{{ ai_gen_id }} {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: {{ block.settings.column_gap }}px;
+    margin-top: {{ block.settings.columns_top_spacing }}px;
+  }
+
+  .ai-text-columns__column-{{ ai_gen_id }} {
+    text-align: {{ block.settings.column_alignment }};
+  }
+
+  .ai-text-columns__column-heading-{{ ai_gen_id }} {
+    font-family: {{ block.settings.heading_font.family }}, {{ block.settings.heading_font.fallback_families }};
+    font-weight: {{ block.settings.heading_font.weight }};
+    font-size: {{ block.settings.column_heading_size }}px;
+    color: {{ block.settings.heading_color }};
+    margin: 0 0 {{ block.settings.column_heading_spacing }}px 0;
+    line-height: 1.3;
+  }
+
+  .ai-text-columns__column-subheading-{{ ai_gen_id }} {
+    font-family: {{ block.settings.body_font.family }}, {{ block.settings.body_font.fallback_families }};
+    font-weight: {{ block.settings.body_font.weight }};
+    font-size: {{ block.settings.column_subheading_size }}px;
+    color: {{ block.settings.subheading_color }};
+    margin: 0;
+    line-height: 1.6;
+  }
+
+  @media screen and (max-width: 768px) {
+    .ai-text-columns__columns-{{ ai_gen_id }} {
+      grid-template-columns: 1fr;
+      gap: {{ block.settings.column_gap | times: 1.5 }}px;
+    }
+
+    .ai-text-columns__main-heading-{{ ai_gen_id }} {
+      font-size: {{ block.settings.main_heading_size | times: 0.7 }}px;
+    }
+
+    .ai-text-columns__main-subheading-{{ ai_gen_id }} {
+      font-size: {{ block.settings.main_subheading_size | times: 0.9 }}px;
+    }
+
+    .ai-text-columns__column-heading-{{ ai_gen_id }} {
+      font-size: {{ block.settings.column_heading_size | times: 0.85 }}px;
+    }
+  }
+{% endstyle %}
+
+<div class="ai-text-columns-{{ ai_gen_id }}" {{ block.shopify_attributes }}>
+  <div class="ai-text-columns__header-{{ ai_gen_id }}">
+    {% if block.settings.main_heading != blank %}
+      <h2 class="ai-text-columns__main-heading-{{ ai_gen_id }}">
+        {{ block.settings.main_heading }}
+      </h2>
+    {% endif %}
+    
+    {% if block.settings.main_subheading != blank %}
+      <div class="ai-text-columns__main-subheading-{{ ai_gen_id }}">
+        {{ block.settings.main_subheading }}
+      </div>
+    {% endif %}
+  </div>
+
+  <div class="ai-text-columns__columns-{{ ai_gen_id }}">
+    <div class="ai-text-columns__column-{{ ai_gen_id }}">
+      {% if block.settings.column_1_heading != blank %}
+        <h3 class="ai-text-columns__column-heading-{{ ai_gen_id }}">
+          {{ block.settings.column_1_heading }}
+        </h3>
+      {% endif %}
+      
+      {% if block.settings.column_1_subheading != blank %}
+        <div class="ai-text-columns__column-subheading-{{ ai_gen_id }}">
+          {{ block.settings.column_1_subheading }}
+        </div>
+      {% endif %}
+    </div>
+
+    <div class="ai-text-columns__column-{{ ai_gen_id }}">
+      {% if block.settings.column_2_heading != blank %}
+        <h3 class="ai-text-columns__column-heading-{{ ai_gen_id }}">
+          {{ block.settings.column_2_heading }}
+        </h3>
+      {% endif %}
+      
+      {% if block.settings.column_2_subheading != blank %}
+        <div class="ai-text-columns__column-subheading-{{ ai_gen_id }}">
+          {{ block.settings.column_2_subheading }}
+        </div>
+      {% endif %}
+    </div>
+
+    <div class="ai-text-columns__column-{{ ai_gen_id }}">
+      {% if block.settings.column_3_heading != blank %}
+        <h3 class="ai-text-columns__column-heading-{{ ai_gen_id }}">
+          {{ block.settings.column_3_heading }}
+        </h3>
+      {% endif %}
+      
+      {% if block.settings.column_3_subheading != blank %}
+        <div class="ai-text-columns__column-subheading-{{ ai_gen_id }}">
+          {{ block.settings.column_3_subheading }}
+        </div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Text columns",
+  "tag": null,
+  "settings": [
+    {
+      "type": "header",
+      "content": "Main heading"
+    },
+    {
+      "type": "text",
+      "id": "main_heading",
+      "label": "Heading",
+      "default": "Our Features"
+    },
+    {
+      "type": "textarea",
+      "id": "main_subheading",
+      "label": "Subheading",
+      "default": "Discover what makes us different"
+    },
+    {
+      "type": "range",
+      "id": "main_heading_size",
+      "label": "Heading size",
+      "min": 20,
+      "max": 80,
+      "step": 2,
+      "unit": "px",
+      "default": 48
+    },
+    {
+      "type": "range",
+      "id": "main_subheading_size",
+      "label": "Subheading size",
+      "min": 12,
+      "max": 32,
+      "step": 2,
+      "unit": "px",
+      "default": 18
+    },
+    {
+      "type": "header",
+      "content": "Column 1"
+    },
+    {
+      "type": "text",
+      "id": "column_1_heading",
+      "label": "Heading",
+      "default": "Quality"
+    },
+    {
+      "type": "textarea",
+      "id": "column_1_subheading",
+      "label": "Subheading",
+      "default": "We use only the finest materials to ensure lasting quality"
+    },
+    {
+      "type": "header",
+      "content": "Column 2"
+    },
+    {
+      "type": "text",
+      "id": "column_2_heading",
+      "label": "Heading",
+      "default": "Service"
+    },
+    {
+      "type": "textarea",
+      "id": "column_2_subheading",
+      "label": "Subheading",
+      "default": "Our dedicated team is here to help you every step of the way"
+    },
+    {
+      "type": "header",
+      "content": "Column 3"
+    },
+    {
+      "type": "text",
+      "id": "column_3_heading",
+      "label": "Heading",
+      "default": "Value"
+    },
+    {
+      "type": "textarea",
+      "id": "column_3_subheading",
+      "label": "Subheading",
+      "default": "Get the best products at competitive prices"
+    },
+    {
+      "type": "header",
+      "content": "Style"
+    },
+    {
+      "type": "range",
+      "id": "column_heading_size",
+      "label": "Column heading size",
+      "min": 16,
+      "max": 48,
+      "step": 2,
+      "unit": "px",
+      "default": 24
+    },
+    {
+      "type": "range",
+      "id": "column_subheading_size",
+      "label": "Column subheading size",
+      "min": 12,
+      "max": 24,
+      "step": 1,
+      "unit": "px",
+      "default": 16
+    },
+    {
+      "type": "select",
+      "id": "column_alignment",
+      "label": "Column alignment",
+      "options": [
+        {
+          "value": "left",
+          "label": "Left"
+        },
+        {
+          "value": "center",
+          "label": "Center"
+        },
+        {
+          "value": "right",
+          "label": "Right"
+        }
+      ],
+      "default": "center"
+    },
+    {
+      "type": "font_picker",
+      "id": "heading_font",
+      "label": "Heading font",
+      "default": "instrument_sans_n7"
+    },
+    {
+      "type": "font_picker",
+      "id": "body_font",
+      "label": "Body font",
+      "default": "inter_n3"
+    },
+    {
+      "type": "color",
+      "id": "heading_color",
+      "label": "Heading color",
+      "default": "#000000"
+    },
+    {
+      "type": "color",
+      "id": "subheading_color",
+      "label": "Subheading color",
+      "default": "#000000"
+    },
+    {
+      "type": "header",
+      "content": "Spacing"
+    },
+    {
+      "type": "range",
+      "id": "section_padding",
+      "label": "Section padding",
+      "min": 0,
+      "max": 100,
+      "step": 5,
+      "unit": "px",
+      "default": 40
+    },
+    {
+      "type": "range",
+      "id": "header_spacing",
+      "label": "Header bottom spacing",
+      "min": 10,
+      "max": 80,
+      "step": 5,
+      "unit": "px",
+      "default": 20
+    },
+    {
+      "type": "range",
+      "id": "heading_spacing",
+      "label": "Heading bottom spacing",
+      "min": 5,
+      "max": 40,
+      "step": 5,
+      "unit": "px",
+      "default": 15
+    },
+    {
+      "type": "range",
+      "id": "column_heading_spacing",
+      "label": "Column heading spacing",
+      "min": 5,
+      "max": 30,
+      "step": 5,
+      "unit": "px",
+      "default": 10
+    },
+    {
+      "type": "range",
+      "id": "columns_top_spacing",
+      "label": "Columns top spacing",
+      "min": 20,
+      "max": 100,
+      "step": 5,
+      "unit": "px",
+      "default": 50
+    },
+    {
+      "type": "range",
+      "id": "column_gap",
+      "label": "Column gap",
+      "min": 10,
+      "max": 80,
+      "step": 5,
+      "unit": "px",
+      "default": 40
+    },
+    {
+      "type": "range",
+      "id": "desktop_width_percent",
+      "label": "Desktop width",
+      "min": 50,
+      "max": 100,
+      "step": 5,
+      "unit": "%",
+      "default": 100
+    }
+  ],
+  "presets": [
+    {
+      "name": "Text columns"
+    }
+  ]
+}
+{% endschema %}

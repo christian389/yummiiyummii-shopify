@@ -1,0 +1,885 @@
+{% doc %}
+  @prompt
+    Product page section with product images to the left and all the important product info to the right. Would like to show payment options below the add to cart buttion. and below that i would like to show 3 videos in vertical mobile format. , We also need to show link breadcrums and the review rating from judge.me above the product title. Can you make the payment options so that i can edit and change the images. Is it possible to show our delivery adress somewhere 
+{% enddoc %}
+{% assign ai_gen_id = block.id | replace: '_', '' | downcase %}
+
+{% style %}
+  .ai-product-page-{{ ai_gen_id }} {
+    max-width: {{ settings.theme_max_width }}px;
+    margin: 0 auto;
+    padding: 0 20px;
+  }
+
+  .ai-breadcrumbs-{{ ai_gen_id }} {
+    margin-bottom: 24px;
+    font-size: 14px;
+    color: #666;
+  }
+
+  .ai-breadcrumbs-{{ ai_gen_id }} a {
+    color: #666;
+    text-decoration: none;
+  }
+
+  .ai-breadcrumbs-{{ ai_gen_id }} a:hover {
+    color: {{ settings.color_accent_main }};
+  }
+
+  .ai-breadcrumb-separator-{{ ai_gen_id }} {
+    margin: 0 8px;
+    color: #999;
+  }
+
+  .ai-product-layout-{{ ai_gen_id }} {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: {{ settings.grid_gap }}px;
+    align-items: start;
+  }
+
+  .ai-product-images-{{ ai_gen_id }} {
+    position: sticky;
+    top: 20px;
+  }
+
+  .ai-product-main-image-{{ ai_gen_id }} {
+    width: 100%;
+    margin-bottom: 16px;
+    border-radius: {{ settings.widgets_border_radius }}px;
+    overflow: hidden;
+    background-color: {{ block.settings.image_background_color }};
+  }
+
+  .ai-product-main-image-{{ ai_gen_id }} img {
+    width: 100%;
+    height: auto;
+    display: block;
+  }
+
+  .ai-product-thumbnails-{{ ai_gen_id }} {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+    gap: 12px;
+  }
+
+  .ai-product-thumbnail-{{ ai_gen_id }} {
+    border-radius: {{ settings.widgets_border_radius }}px;
+    overflow: hidden;
+    cursor: pointer;
+    border: 2px solid transparent;
+    transition: border-color 0.3s ease;
+    background-color: {{ block.settings.image_background_color }};
+  }
+
+  .ai-product-thumbnail-{{ ai_gen_id }}.active {
+    border-color: {{ settings.color_accent_main }};
+  }
+
+  .ai-product-thumbnail-{{ ai_gen_id }} img {
+    width: 100%;
+    height: 80px;
+    object-fit: cover;
+    display: block;
+  }
+
+  .ai-product-info-{{ ai_gen_id }} {
+    padding-left: 20px;
+  }
+
+  .ai-product-reviews-{{ ai_gen_id }} {
+    margin-bottom: 16px;
+  }
+
+  .ai-product-title-{{ ai_gen_id }} {
+    font-family: {{ settings.headings_font_primary.family }}, {{ settings.headings_font_primary.fallback_families }};
+    font-weight: {{ settings.headings_font_primary.weight }};
+    font-size: {{ block.settings.title_size }}px;
+    line-height: {{ settings.headings_line }};
+    color: {{ settings.color_text_main }};
+    margin: 0 0 16px 0;
+  }
+
+  .ai-product-price-{{ ai_gen_id }} {
+    font-size: {{ block.settings.price_size }}px;
+    font-weight: 600;
+    color: {{ settings.color_text_main }};
+    margin-bottom: 20px;
+  }
+
+  .ai-product-price-compare-{{ ai_gen_id }} {
+    text-decoration: line-through;
+    color: #999;
+    margin-left: 8px;
+  }
+
+  .ai-product-description-{{ ai_gen_id }} {
+    font-family: {{ settings.body_font_primary.family }}, {{ settings.body_font_primary.fallback_families }};
+    font-size: {{ settings.body_primary_size }}px;
+    line-height: {{ settings.body_line }};
+    color: {{ settings.color_text_main }};
+    margin-bottom: 24px;
+  }
+
+  .ai-product-variants-{{ ai_gen_id }} {
+    margin-bottom: 24px;
+  }
+
+  .ai-variant-group-{{ ai_gen_id }} {
+    margin-bottom: 20px;
+  }
+
+  .ai-variant-label-{{ ai_gen_id }} {
+    font-weight: 600;
+    margin-bottom: 8px;
+    display: block;
+    font-size: 14px;
+    color: {{ settings.color_text_main }};
+  }
+
+  .ai-variant-options-{{ ai_gen_id }} {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .ai-variant-option-{{ ai_gen_id }} {
+    padding: 8px 16px;
+    border: {{ settings.border_width_buttons }}px solid #ddd;
+    border-radius: {{ settings.border_radius_buttons }}px;
+    background: white;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 14px;
+  }
+
+  .ai-variant-option-{{ ai_gen_id }}:hover,
+  .ai-variant-option-{{ ai_gen_id }}.selected {
+    border-color: {{ settings.color_accent_main }};
+    background-color: {{ settings.color_accent_main }};
+    color: white;
+  }
+
+  .ai-quantity-selector-{{ ai_gen_id }} {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 24px;
+  }
+
+  .ai-quantity-label-{{ ai_gen_id }} {
+    font-weight: 600;
+    font-size: 14px;
+    color: {{ settings.color_text_main }};
+  }
+
+  .ai-quantity-controls-{{ ai_gen_id }} {
+    display: flex;
+    align-items: center;
+    border: {{ settings.border_width_forms }}px solid #ddd;
+    border-radius: {{ settings.border_radius_forms }}px;
+    overflow: hidden;
+  }
+
+  .ai-quantity-btn-{{ ai_gen_id }} {
+    background: #f8f8f8;
+    border: none;
+    padding: 8px 12px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s ease;
+  }
+
+  .ai-quantity-btn-{{ ai_gen_id }}:hover {
+    background: #e8e8e8;
+  }
+
+  .ai-quantity-input-{{ ai_gen_id }} {
+    border: none;
+    padding: 8px 12px;
+    text-align: center;
+    width: 60px;
+    font-size: 14px;
+  }
+
+  .ai-add-to-cart-{{ ai_gen_id }} {
+    width: 100%;
+    padding: 16px 24px;
+    background-color: {{ block.settings.button_color }};
+    color: {{ block.settings.button_text_color }};
+    border: none;
+    border-radius: {{ settings.border_radius_buttons }}px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    margin-bottom: 24px;
+  }
+
+  .ai-add-to-cart-{{ ai_gen_id }}:hover {
+    background-color: {{ block.settings.button_hover_color }};
+  }
+
+  .ai-payment-options-{{ ai_gen_id }} {
+    margin-bottom: 24px;
+  }
+
+  .ai-payment-title-{{ ai_gen_id }} {
+    font-weight: 600;
+    margin-bottom: 12px;
+    font-size: 16px;
+    color: {{ settings.color_text_main }};
+  }
+
+  .ai-payment-icons-{{ ai_gen_id }} {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .ai-payment-icon-{{ ai_gen_id }} {
+    height: 32px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    overflow: hidden;
+    background: white;
+  }
+
+  .ai-payment-icon-{{ ai_gen_id }} img {
+    height: 100%;
+    width: auto;
+    object-fit: contain;
+    padding: 4px;
+  }
+
+  .ai-delivery-info-{{ ai_gen_id }} {
+    background-color: {{ block.settings.delivery_bg_color }};
+    padding: 16px;
+    border-radius: {{ settings.widgets_border_radius }}px;
+    margin-bottom: 24px;
+    border: 1px solid #e8e8e8;
+  }
+
+  .ai-delivery-title-{{ ai_gen_id }} {
+    font-weight: 600;
+    margin-bottom: 8px;
+    font-size: 14px;
+    color: {{ settings.color_text_main }};
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .ai-delivery-address-{{ ai_gen_id }} {
+    font-size: 13px;
+    color: #666;
+    line-height: 1.4;
+  }
+
+  .ai-videos-section-{{ ai_gen_id }} {
+    margin-top: 32px;
+  }
+
+  .ai-videos-title-{{ ai_gen_id }} {
+    font-weight: 600;
+    margin-bottom: 16px;
+    font-size: 18px;
+    color: {{ settings.color_text_main }};
+  }
+
+  .ai-videos-grid-{{ ai_gen_id }} {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+  }
+
+  .ai-video-item-{{ ai_gen_id }} {
+    position: relative;
+    aspect-ratio: 9/16;
+    border-radius: {{ settings.widgets_border_radius }}px;
+    overflow: hidden;
+    background: #f8f8f8;
+  }
+
+  .ai-video-item-{{ ai_gen_id }} video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .ai-video-placeholder-{{ ai_gen_id }} {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #f4f4f4;
+    color: #999;
+    font-size: 14px;
+    text-align: center;
+  }
+
+  @media screen and (max-width: 768px) {
+    .ai-product-layout-{{ ai_gen_id }} {
+      grid-template-columns: 1fr;
+      gap: 24px;
+    }
+
+    .ai-product-images-{{ ai_gen_id }} {
+      position: static;
+    }
+
+    .ai-product-info-{{ ai_gen_id }} {
+      padding-left: 0;
+    }
+
+    .ai-videos-grid-{{ ai_gen_id }} {
+      grid-template-columns: 1fr;
+      gap: 12px;
+    }
+
+    .ai-video-item-{{ ai_gen_id }} {
+      max-width: 300px;
+      margin: 0 auto;
+    }
+  }
+
+  @media screen and (max-width: 480px) {
+    .ai-product-thumbnails-{{ ai_gen_id }} {
+      grid-template-columns: repeat(4, 1fr);
+    }
+
+    .ai-variant-options-{{ ai_gen_id }} {
+      flex-direction: column;
+    }
+
+    .ai-variant-option-{{ ai_gen_id }} {
+      text-align: center;
+    }
+
+    .ai-breadcrumbs-{{ ai_gen_id }} {
+      font-size: 12px;
+    }
+  }
+{% endstyle %}
+
+<product-page-{{ ai_gen_id }} class="ai-product-page-{{ ai_gen_id }}" {{ block.shopify_attributes }}>
+  {% if block.settings.show_breadcrumbs %}
+    <nav class="ai-breadcrumbs-{{ ai_gen_id }}">
+      <a href="/">Home</a>
+      <span class="ai-breadcrumb-separator-{{ ai_gen_id }}">›</span>
+      {% if collection %}
+        <a href="{{ collection.url }}">{{ collection.title }}</a>
+        <span class="ai-breadcrumb-separator-{{ ai_gen_id }}">›</span>
+      {% endif %}
+      <span>{{ product.title }}</span>
+    </nav>
+  {% endif %}
+
+  <div class="ai-product-layout-{{ ai_gen_id }}">
+    <div class="ai-product-images-{{ ai_gen_id }}">
+      <div class="ai-product-main-image-{{ ai_gen_id }}">
+        {% if product.featured_image %}
+          <img
+            id="ai-main-image-{{ ai_gen_id }}"
+            src="{{ product.featured_image | image_url: width: 800 }}"
+            alt="{{ product.featured_image.alt | escape }}"
+            width="{{ product.featured_image.width }}"
+            height="{{ product.featured_image.height }}"
+            loading="lazy"
+          >
+        {% else %}
+          <div class="ai-video-placeholder-{{ ai_gen_id }}">
+            {{ 'product-1' | placeholder_svg_tag }}
+          </div>
+        {% endif %}
+      </div>
+
+      {% if product.images.size > 1 %}
+        <div class="ai-product-thumbnails-{{ ai_gen_id }}">
+          {% for image in product.images limit: 6 %}
+            <div
+              class="ai-product-thumbnail-{{ ai_gen_id }} {% if forloop.first %}active{% endif %}"
+              data-image-url="{{ image | image_url: width: 800 }}"
+              data-image-alt="{{ image.alt | escape }}"
+            >
+              <img
+                src="{{ image | image_url: width: 100 }}"
+                alt="{{ image.alt | escape }}"
+                width="100"
+                height="100"
+                loading="lazy"
+              >
+            </div>
+          {% endfor %}
+        </div>
+      {% endif %}
+    </div>
+
+    <div class="ai-product-info-{{ ai_gen_id }}">
+      {% if block.settings.show_reviews %}
+        <div class="ai-product-reviews-{{ ai_gen_id }}">
+          <div class="jdgm-widget jdgm-preview-badge" data-id="{{ product.id }}">
+            {{ product.metafields.judgeme.badge }}
+          </div>
+        </div>
+      {% endif %}
+
+      <h1 class="ai-product-title-{{ ai_gen_id }}">{{ product.title }}</h1>
+
+      <div class="ai-product-price-{{ ai_gen_id }}">
+        <span id="ai-current-price-{{ ai_gen_id }}">{{ product.selected_or_first_available_variant.price | money }}</span>
+        {% if product.selected_or_first_available_variant.compare_at_price > product.selected_or_first_available_variant.price %}
+          <span class="ai-product-price-compare-{{ ai_gen_id }}">{{ product.selected_or_first_available_variant.compare_at_price | money }}</span>
+        {% endif %}
+      </div>
+
+      {% if product.description != blank %}
+        <div class="ai-product-description-{{ ai_gen_id }}">
+          {{ product.description | truncate: 200 }}
+        </div>
+      {% endif %}
+
+      {% form 'product', product %}
+        <input type="hidden" name="id" value="{{ product.selected_or_first_available_variant.id }}">
+
+        {% unless product.has_only_default_variant %}
+          <div class="ai-product-variants-{{ ai_gen_id }}">
+            {% for option in product.options_with_values %}
+              <div class="ai-variant-group-{{ ai_gen_id }}">
+                <label class="ai-variant-label-{{ ai_gen_id }}">{{ option.name }}</label>
+                <div class="ai-variant-options-{{ ai_gen_id }}" data-option-index="{{ forloop.index0 }}">
+                  {% for value in option.values %}
+                    <div
+                      class="ai-variant-option-{{ ai_gen_id }} {% if option.selected_value == value %}selected{% endif %}"
+                      data-value="{{ value | escape }}"
+                    >
+                      {{ value }}
+                    </div>
+                  {% endfor %}
+                </div>
+              </div>
+            {% endfor %}
+          </div>
+        {% endunless %}
+
+        <div class="ai-quantity-selector-{{ ai_gen_id }}">
+          <label class="ai-quantity-label-{{ ai_gen_id }}">Quantity</label>
+          <div class="ai-quantity-controls-{{ ai_gen_id }}">
+            <button type="button" class="ai-quantity-btn-{{ ai_gen_id }}" data-action="decrease">−</button>
+            <input
+              type="number"
+              name="quantity"
+              value="1"
+              min="1"
+              class="ai-quantity-input-{{ ai_gen_id }}"
+            >
+            <button type="button" class="ai-quantity-btn-{{ ai_gen_id }}" data-action="increase">+</button>
+          </div>
+        </div>
+
+        <button
+          type="submit"
+          class="ai-add-to-cart-{{ ai_gen_id }}"
+          {% unless product.selected_or_first_available_variant.available %}disabled{% endunless %}
+        >
+          {% if product.selected_or_first_available_variant.available %}
+            {{ block.settings.add_to_cart_text }}
+          {% else %}
+            Sold out
+          {% endif %}
+        </button>
+      {% endform %}
+
+      {% if block.settings.show_delivery_info %}
+        <div class="ai-delivery-info-{{ ai_gen_id }}">
+          <div class="ai-delivery-title-{{ ai_gen_id }}">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="1" y="3" width="15" height="13"></rect>
+              <polygon points="16,6 22,6 22,18 16,18"></polygon>
+              <circle cx="6.5" cy="18.5" r="2.5"></circle>
+              <circle cx="17.5" cy="18.5" r="2.5"></circle>
+            </svg>
+            {{ block.settings.delivery_title }}
+          </div>
+          <div class="ai-delivery-address-{{ ai_gen_id }}">
+            {{ block.settings.delivery_address | newline_to_br }}
+          </div>
+        </div>
+      {% endif %}
+
+      {% if block.settings.show_payment_options %}
+        <div class="ai-payment-options-{{ ai_gen_id }}">
+          <div class="ai-payment-title-{{ ai_gen_id }}">{{ block.settings.payment_title }}</div>
+          <div class="ai-payment-icons-{{ ai_gen_id }}">
+            {% for i in (1..6) %}
+              {% assign payment_image_key = 'payment_image_' | append: i %}
+              {% assign payment_image = block.settings[payment_image_key] %}
+              {% if payment_image %}
+                <div class="ai-payment-icon-{{ ai_gen_id }}">
+                  <img
+                    src="{{ payment_image | image_url: width: 80 }}"
+                    alt="Payment option {{ i }}"
+                    loading="lazy"
+                  >
+                </div>
+              {% endif %}
+            {% endfor %}
+          </div>
+        </div>
+      {% endif %}
+
+      {% if block.settings.show_videos %}
+        <div class="ai-videos-section-{{ ai_gen_id }}">
+          <div class="ai-videos-title-{{ ai_gen_id }}">{{ block.settings.videos_title }}</div>
+          <div class="ai-videos-grid-{{ ai_gen_id }}">
+            {% for i in (1..3) %}
+              {% assign video_key = 'video_' | append: i %}
+              {% assign video = block.settings[video_key] %}
+              <div class="ai-video-item-{{ ai_gen_id }}">
+                {% if video %}
+                  <video
+                    controls
+                    preload="metadata"
+                    playsinline
+                    muted
+                  >
+                    <source src="{{ video }}" type="video/mp4">
+                    Your browser does not support the video tag.
+                  </video>
+                {% else %}
+                  <div class="ai-video-placeholder-{{ ai_gen_id }}">
+                    <div>
+                      <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polygon points="5,3 19,12 5,21"></polygon>
+                      </svg>
+                      <br>Add video {{ i }}
+                    </div>
+                  </div>
+                {% endif %}
+              </div>
+            {% endfor %}
+          </div>
+        </div>
+      {% endif %}
+    </div>
+  </div>
+</product-page-{{ ai_gen_id }}>
+
+<script>
+  (function() {
+    class ProductPage{{ ai_gen_id }} extends HTMLElement {
+      constructor() {
+        super();
+        this.variants = {{ product.variants | json }};
+        this.currentVariant = {{ product.selected_or_first_available_variant | json }};
+      }
+
+      connectedCallback() {
+        this.setupImageGallery();
+        this.setupVariantSelection();
+        this.setupQuantityControls();
+      }
+
+      setupImageGallery() {
+        const thumbnails = this.querySelectorAll('.ai-product-thumbnail-{{ ai_gen_id }}');
+        const mainImage = this.querySelector('#ai-main-image-{{ ai_gen_id }}');
+
+        thumbnails.forEach(thumbnail => {
+          thumbnail.addEventListener('click', () => {
+            thumbnails.forEach(t => t.classList.remove('active'));
+            thumbnail.classList.add('active');
+            
+            if (mainImage) {
+              mainImage.src = thumbnail.dataset.imageUrl;
+              mainImage.alt = thumbnail.dataset.imageAlt;
+            }
+          });
+        });
+      }
+
+      setupVariantSelection() {
+        const variantOptions = this.querySelectorAll('.ai-variant-options-{{ ai_gen_id }}');
+        const hiddenInput = this.querySelector('input[name="id"]');
+        const priceElement = this.querySelector('#ai-current-price-{{ ai_gen_id }}');
+        const addToCartBtn = this.querySelector('.ai-add-to-cart-{{ ai_gen_id }}');
+
+        variantOptions.forEach(optionGroup => {
+          const options = optionGroup.querySelectorAll('.ai-variant-option-{{ ai_gen_id }}');
+          
+          options.forEach(option => {
+            option.addEventListener('click', () => {
+              options.forEach(o => o.classList.remove('selected'));
+              option.classList.add('selected');
+              
+              this.updateVariant();
+            });
+          });
+        });
+      }
+
+      updateVariant() {
+        const selectedOptions = [];
+        const optionGroups = this.querySelectorAll('.ai-variant-options-{{ ai_gen_id }}');
+        
+        optionGroups.forEach(group => {
+          const selected = group.querySelector('.ai-variant-option-{{ ai_gen_id }}.selected');
+          if (selected) {
+            selectedOptions.push(selected.dataset.value);
+          }
+        });
+
+        const matchingVariant = this.variants.find(variant => {
+          return variant.options.every((option, index) => option === selectedOptions[index]);
+        });
+
+        if (matchingVariant) {
+          this.currentVariant = matchingVariant;
+          
+          const hiddenInput = this.querySelector('input[name="id"]');
+          const priceElement = this.querySelector('#ai-current-price-{{ ai_gen_id }}');
+          const addToCartBtn = this.querySelector('.ai-add-to-cart-{{ ai_gen_id }}');
+
+          if (hiddenInput) hiddenInput.value = matchingVariant.id;
+          if (priceElement) priceElement.textContent = this.formatMoney(matchingVariant.price);
+          
+          if (addToCartBtn) {
+            if (matchingVariant.available) {
+              addToCartBtn.disabled = false;
+              addToCartBtn.textContent = '{{ block.settings.add_to_cart_text }}';
+            } else {
+              addToCartBtn.disabled = true;
+              addToCartBtn.textContent = 'Sold out';
+            }
+          }
+        }
+      }
+
+      setupQuantityControls() {
+        const decreaseBtn = this.querySelector('.ai-quantity-btn-{{ ai_gen_id }}[data-action="decrease"]');
+        const increaseBtn = this.querySelector('.ai-quantity-btn-{{ ai_gen_id }}[data-action="increase"]');
+        const quantityInput = this.querySelector('.ai-quantity-input-{{ ai_gen_id }}');
+
+        if (decreaseBtn && increaseBtn && quantityInput) {
+          decreaseBtn.addEventListener('click', () => {
+            const currentValue = parseInt(quantityInput.value);
+            if (currentValue > 1) {
+              quantityInput.value = currentValue - 1;
+            }
+          });
+
+          increaseBtn.addEventListener('click', () => {
+            const currentValue = parseInt(quantityInput.value);
+            quantityInput.value = currentValue + 1;
+          });
+        }
+      }
+
+      formatMoney(cents) {
+        return (cents / 100).toLocaleString('da-DK', {
+          style: 'currency',
+          currency: 'DKK'
+        });
+      }
+    }
+
+    customElements.define('product-page-{{ ai_gen_id }}', ProductPage{{ ai_gen_id }});
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "Product page section",
+  "tag": null,
+  "settings": [
+    {
+      "type": "header",
+      "content": "Navigation"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_breadcrumbs",
+      "label": "Show breadcrumbs",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "Reviews"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_reviews",
+      "label": "Show Judge.me reviews",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "Product display"
+    },
+    {
+      "type": "range",
+      "id": "title_size",
+      "min": 24,
+      "max": 48,
+      "step": 2,
+      "unit": "px",
+      "label": "Title size",
+      "default": 32
+    },
+    {
+      "type": "range",
+      "id": "price_size",
+      "min": 16,
+      "max": 32,
+      "step": 2,
+      "unit": "px",
+      "label": "Price size",
+      "default": 24
+    },
+    {
+      "type": "color",
+      "id": "image_background_color",
+      "label": "Image background color",
+      "default": "#f8f8f8"
+    },
+    {
+      "type": "header",
+      "content": "Add to cart button"
+    },
+    {
+      "type": "text",
+      "id": "add_to_cart_text",
+      "label": "Button text",
+      "default": "Add to cart"
+    },
+    {
+      "type": "color",
+      "id": "button_color",
+      "label": "Button color",
+      "default": "#000000"
+    },
+    {
+      "type": "color",
+      "id": "button_text_color",
+      "label": "Button text color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "button_hover_color",
+      "label": "Button hover color",
+      "default": "#333333"
+    },
+    {
+      "type": "header",
+      "content": "Delivery information"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_delivery_info",
+      "label": "Show delivery information",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "delivery_title",
+      "label": "Delivery title",
+      "default": "Delivery information"
+    },
+    {
+      "type": "textarea",
+      "id": "delivery_address",
+      "label": "Delivery address",
+      "default": "We deliver from our warehouse in Copenhagen\nDelivery time: 1-3 business days\nFree shipping on orders over 400 DKK"
+    },
+    {
+      "type": "color",
+      "id": "delivery_bg_color",
+      "label": "Delivery info background",
+      "default": "#f8f9fa"
+    },
+    {
+      "type": "header",
+      "content": "Payment options"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_payment_options",
+      "label": "Show payment options",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "payment_title",
+      "label": "Payment options title",
+      "default": "We accept"
+    },
+    {
+      "type": "image_picker",
+      "id": "payment_image_1",
+      "label": "Payment option 1"
+    },
+    {
+      "type": "image_picker",
+      "id": "payment_image_2",
+      "label": "Payment option 2"
+    },
+    {
+      "type": "image_picker",
+      "id": "payment_image_3",
+      "label": "Payment option 3"
+    },
+    {
+      "type": "image_picker",
+      "id": "payment_image_4",
+      "label": "Payment option 4"
+    },
+    {
+      "type": "image_picker",
+      "id": "payment_image_5",
+      "label": "Payment option 5"
+    },
+    {
+      "type": "image_picker",
+      "id": "payment_image_6",
+      "label": "Payment option 6"
+    },
+    {
+      "type": "header",
+      "content": "Videos"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_videos",
+      "label": "Show videos section",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "videos_title",
+      "label": "Videos section title",
+      "default": "Product videos"
+    },
+    {
+      "type": "video",
+      "id": "video_1",
+      "label": "Video 1"
+    },
+    {
+      "type": "video",
+      "id": "video_2",
+      "label": "Video 2"
+    },
+    {
+      "type": "video",
+      "id": "video_3",
+      "label": "Video 3"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Product page section"
+    }
+  ]
+}
+{% endschema %}

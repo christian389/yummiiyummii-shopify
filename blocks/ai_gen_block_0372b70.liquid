@@ -1,0 +1,638 @@
+{% doc %}
+  @prompt
+    create a section to describe the company, Can you make 3 small usp boxes below the decription. needs to be colored. also make a cta with option to show or not, Make the usp boxes very small only containing one line of text
+{% enddoc %}
+{% assign ai_gen_id = block.id | replace: '_', '' | downcase %}
+
+{% style %}
+  .ai-company-description-{{ ai_gen_id }} {
+    padding: {{ block.settings.padding_top }}px 0 {{ block.settings.padding_bottom }}px;
+    background-color: {{ block.settings.background_color }};
+  }
+
+  .ai-company-description__container-{{ ai_gen_id }} {
+    max-width: {{ block.settings.container_width }}px;
+    margin: 0 auto;
+    padding: 0 20px;
+  }
+
+  .ai-company-description__content-{{ ai_gen_id }} {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 40px;
+    align-items: center;
+  }
+
+  @media screen and (min-width: 750px) {
+    .ai-company-description__content-{{ ai_gen_id }} {
+      grid-template-columns: {% if block.settings.layout == 'image-left' %}1fr 1fr{% else %}1fr 1fr{% endif %};
+      gap: {{ block.settings.column_gap }}px;
+    }
+
+    .ai-company-description__content-{{ ai_gen_id }}--image-right .ai-company-description__text-{{ ai_gen_id }} {
+      order: 1;
+    }
+
+    .ai-company-description__content-{{ ai_gen_id }}--image-right .ai-company-description__image-wrapper-{{ ai_gen_id }} {
+      order: 2;
+    }
+  }
+
+  .ai-company-description__text-{{ ai_gen_id }} {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .ai-company-description__heading-{{ ai_gen_id }} {
+    font-family: {{ block.settings.heading_font.family }}, {{ block.settings.heading_font.fallback_families }};
+    font-weight: {{ block.settings.heading_font.weight }};
+    font-size: {{ block.settings.heading_size }}px;
+    line-height: 1.2;
+    color: {{ block.settings.heading_color }};
+    margin: 0;
+  }
+
+  .ai-company-description__description-{{ ai_gen_id }} {
+    font-family: {{ block.settings.body_font.family }}, {{ block.settings.body_font.fallback_families }};
+    font-weight: {{ block.settings.body_font.weight }};
+    font-size: {{ block.settings.text_size }}px;
+    line-height: 1.6;
+    color: {{ block.settings.text_color }};
+  }
+
+  .ai-company-description__description-{{ ai_gen_id }} p {
+    margin: 0 0 16px;
+  }
+
+  .ai-company-description__description-{{ ai_gen_id }} p:last-child {
+    margin-bottom: 0;
+  }
+
+  .ai-company-description__usps-{{ ai_gen_id }} {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 12px;
+    margin-top: 8px;
+  }
+
+  @media screen and (min-width: 550px) {
+    .ai-company-description__usps-{{ ai_gen_id }} {
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+    }
+  }
+
+  .ai-company-description__usp-{{ ai_gen_id }} {
+    background-color: {{ block.settings.usp_background }};
+    border: 2px solid {{ block.settings.usp_border_color }};
+    border-radius: {{ block.settings.usp_border_radius }}px;
+    padding: 12px 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+
+  .ai-company-description__usp-{{ ai_gen_id }}:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  }
+
+  .ai-company-description__usp-icon-{{ ai_gen_id }} {
+    font-size: {{ block.settings.usp_icon_size }}px;
+    line-height: 1;
+    flex-shrink: 0;
+  }
+
+  .ai-company-description__usp-text-{{ ai_gen_id }} {
+    font-family: {{ block.settings.body_font.family }}, {{ block.settings.body_font.fallback_families }};
+    font-weight: {{ block.settings.body_font.weight }};
+    font-size: {{ block.settings.usp_text_size }}px;
+    color: {{ block.settings.usp_text_color }};
+    margin: 0;
+    line-height: 1.3;
+    white-space: nowrap;
+  }
+
+  .ai-company-description__cta-{{ ai_gen_id }} {
+    margin-top: 12px;
+  }
+
+  .ai-company-description__button-{{ ai_gen_id }} {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 14px 32px;
+    background-color: {{ block.settings.button_background }};
+    color: {{ block.settings.button_text_color }};
+    border: {{ block.settings.button_border_width }}px solid {{ block.settings.button_border_color }};
+    border-radius: {{ block.settings.button_border_radius }}px;
+    font-size: 16px;
+    font-weight: 500;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    cursor: pointer;
+  }
+
+  .ai-company-description__button-{{ ai_gen_id }}:hover {
+    background-color: {{ block.settings.button_hover_background }};
+    color: {{ block.settings.button_hover_text_color }};
+    border-color: {{ block.settings.button_hover_border_color }};
+  }
+
+  .ai-company-description__image-wrapper-{{ ai_gen_id }} {
+    position: relative;
+    width: 100%;
+    overflow: hidden;
+    border-radius: {{ block.settings.image_border_radius }}px;
+  }
+
+  .ai-company-description__image-{{ ai_gen_id }} {
+    width: 100%;
+    height: auto;
+    display: block;
+    border-radius: {{ block.settings.image_border_radius }}px;
+  }
+
+  .ai-company-description__image-placeholder-{{ ai_gen_id }} {
+    width: 100%;
+    aspect-ratio: 4 / 3;
+    background-color: #f4f4f4;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: {{ block.settings.image_border_radius }}px;
+    position: relative;
+  }
+
+  .ai-company-description__image-placeholder-{{ ai_gen_id }} svg {
+    width: 100%;
+    height: 100%;
+    max-width: 400px;
+    max-height: 400px;
+  }
+
+  .ai-company-description__empty-state-{{ ai_gen_id }} {
+    position: absolute;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 12px 20px;
+    font-size: 14px;
+    color: #666;
+    text-align: center;
+    pointer-events: none;
+  }
+
+  @media screen and (max-width: 749px) {
+    .ai-company-description__heading-{{ ai_gen_id }} {
+      font-size: {{ block.settings.heading_size | times: 0.7 }}px;
+    }
+
+    .ai-company-description__text-{{ ai_gen_id }} {
+      gap: 16px;
+    }
+
+    .ai-company-description__usp-text-{{ ai_gen_id }} {
+      white-space: normal;
+    }
+  }
+{% endstyle %}
+
+<div class="ai-company-description-{{ ai_gen_id }}" {{ block.shopify_attributes }}>
+  <div class="ai-company-description__container-{{ ai_gen_id }}">
+    <div class="ai-company-description__content-{{ ai_gen_id }} ai-company-description__content-{{ ai_gen_id }}--{{ block.settings.layout }}">
+      <div class="ai-company-description__text-{{ ai_gen_id }}">
+        {% if block.settings.heading != blank %}
+          <h2 class="ai-company-description__heading-{{ ai_gen_id }}">
+            {{ block.settings.heading }}
+          </h2>
+        {% endif %}
+
+        {% if block.settings.description != blank %}
+          <div class="ai-company-description__description-{{ ai_gen_id }}">
+            {{ block.settings.description }}
+          </div>
+        {% endif %}
+
+        <div class="ai-company-description__usps-{{ ai_gen_id }}">
+          {% if block.settings.usp_1_text != blank %}
+            <div class="ai-company-description__usp-{{ ai_gen_id }}">
+              {% if block.settings.usp_1_icon != blank %}
+                <span class="ai-company-description__usp-icon-{{ ai_gen_id }}">
+                  {{ block.settings.usp_1_icon }}
+                </span>
+              {% endif %}
+              <span class="ai-company-description__usp-text-{{ ai_gen_id }}">
+                {{ block.settings.usp_1_text }}
+              </span>
+            </div>
+          {% endif %}
+
+          {% if block.settings.usp_2_text != blank %}
+            <div class="ai-company-description__usp-{{ ai_gen_id }}">
+              {% if block.settings.usp_2_icon != blank %}
+                <span class="ai-company-description__usp-icon-{{ ai_gen_id }}">
+                  {{ block.settings.usp_2_icon }}
+                </span>
+              {% endif %}
+              <span class="ai-company-description__usp-text-{{ ai_gen_id }}">
+                {{ block.settings.usp_2_text }}
+              </span>
+            </div>
+          {% endif %}
+
+          {% if block.settings.usp_3_text != blank %}
+            <div class="ai-company-description__usp-{{ ai_gen_id }}">
+              {% if block.settings.usp_3_icon != blank %}
+                <span class="ai-company-description__usp-icon-{{ ai_gen_id }}">
+                  {{ block.settings.usp_3_icon }}
+                </span>
+              {% endif %}
+              <span class="ai-company-description__usp-text-{{ ai_gen_id }}">
+                {{ block.settings.usp_3_text }}
+              </span>
+            </div>
+          {% endif %}
+        </div>
+
+        {% if block.settings.show_cta and block.settings.button_text != blank and block.settings.button_link != blank %}
+          <div class="ai-company-description__cta-{{ ai_gen_id }}">
+            <a href="{{ block.settings.button_link }}" class="ai-company-description__button-{{ ai_gen_id }}">
+              {{ block.settings.button_text }}
+            </a>
+          </div>
+        {% endif %}
+      </div>
+
+      <div class="ai-company-description__image-wrapper-{{ ai_gen_id }}">
+        {% if block.settings.image %}
+          <img
+            src="{{ block.settings.image | image_url: width: 1200 }}"
+            alt="{{ block.settings.image.alt | escape }}"
+            loading="lazy"
+            width="{{ block.settings.image.width }}"
+            height="{{ block.settings.image.height }}"
+            class="ai-company-description__image-{{ ai_gen_id }}"
+          >
+        {% else %}
+          <div class="ai-company-description__image-placeholder-{{ ai_gen_id }}">
+            {{ 'image' | placeholder_svg_tag }}
+            <div class="ai-company-description__empty-state-{{ ai_gen_id }}">
+              Add an image to showcase your company
+            </div>
+          </div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Company description",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Content"
+    },
+    {
+      "type": "inline_richtext",
+      "id": "heading",
+      "label": "Heading",
+      "default": "About our company"
+    },
+    {
+      "type": "richtext",
+      "id": "description",
+      "label": "Description",
+      "default": "<p>We are passionate about creating sustainable products that make a difference. Our mission is to provide eco-friendly solutions that help you live a more sustainable lifestyle.</p>"
+    },
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "Image"
+    },
+    {
+      "type": "header",
+      "content": "USP 1"
+    },
+    {
+      "type": "text",
+      "id": "usp_1_icon",
+      "label": "Icon",
+      "default": "🌱"
+    },
+    {
+      "type": "text",
+      "id": "usp_1_text",
+      "label": "Text",
+      "default": "Sustainable materials"
+    },
+    {
+      "type": "header",
+      "content": "USP 2"
+    },
+    {
+      "type": "text",
+      "id": "usp_2_icon",
+      "label": "Icon",
+      "default": "💚"
+    },
+    {
+      "type": "text",
+      "id": "usp_2_text",
+      "label": "Text",
+      "default": "Quality products"
+    },
+    {
+      "type": "header",
+      "content": "USP 3"
+    },
+    {
+      "type": "text",
+      "id": "usp_3_icon",
+      "label": "Icon",
+      "default": "🚚"
+    },
+    {
+      "type": "text",
+      "id": "usp_3_text",
+      "label": "Text",
+      "default": "Fast shipping"
+    },
+    {
+      "type": "header",
+      "content": "Call to action"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_cta",
+      "label": "Show button",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "button_text",
+      "label": "Button text",
+      "default": "Learn more"
+    },
+    {
+      "type": "url",
+      "id": "button_link",
+      "label": "Button link"
+    },
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "select",
+      "id": "layout",
+      "label": "Image position",
+      "options": [
+        {
+          "value": "image-left",
+          "label": "Left"
+        },
+        {
+          "value": "image-right",
+          "label": "Right"
+        }
+      ],
+      "default": "image-right"
+    },
+    {
+      "type": "range",
+      "id": "container_width",
+      "min": 800,
+      "max": 1600,
+      "step": 50,
+      "unit": "px",
+      "label": "Container width",
+      "default": 1200
+    },
+    {
+      "type": "range",
+      "id": "column_gap",
+      "min": 20,
+      "max": 100,
+      "step": 10,
+      "unit": "px",
+      "label": "Column gap",
+      "default": 60
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 0,
+      "max": 150,
+      "step": 10,
+      "unit": "px",
+      "label": "Padding top",
+      "default": 60
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 0,
+      "max": 150,
+      "step": 10,
+      "unit": "px",
+      "label": "Padding bottom",
+      "default": 60
+    },
+    {
+      "type": "header",
+      "content": "Typography"
+    },
+    {
+      "type": "font_picker",
+      "id": "heading_font",
+      "label": "Heading font",
+      "default": "instrument_sans_n7"
+    },
+    {
+      "type": "range",
+      "id": "heading_size",
+      "min": 24,
+      "max": 72,
+      "step": 2,
+      "unit": "px",
+      "label": "Heading size",
+      "default": 42
+    },
+    {
+      "type": "font_picker",
+      "id": "body_font",
+      "label": "Body font",
+      "default": "inter_n3"
+    },
+    {
+      "type": "range",
+      "id": "text_size",
+      "min": 12,
+      "max": 24,
+      "step": 1,
+      "unit": "px",
+      "label": "Text size",
+      "default": 16
+    },
+    {
+      "type": "header",
+      "content": "Colors"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "heading_color",
+      "label": "Heading",
+      "default": "#000000"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text",
+      "default": "#000000"
+    },
+    {
+      "type": "header",
+      "content": "USP style"
+    },
+    {
+      "type": "color",
+      "id": "usp_background",
+      "label": "Background",
+      "default": "#f2f2f2"
+    },
+    {
+      "type": "color",
+      "id": "usp_border_color",
+      "label": "Border",
+      "default": "#f25a38"
+    },
+    {
+      "type": "color",
+      "id": "usp_text_color",
+      "label": "Text",
+      "default": "#000000"
+    },
+    {
+      "type": "range",
+      "id": "usp_border_radius",
+      "min": 0,
+      "max": 30,
+      "step": 2,
+      "unit": "px",
+      "label": "Border radius",
+      "default": 10
+    },
+    {
+      "type": "range",
+      "id": "usp_icon_size",
+      "min": 16,
+      "max": 40,
+      "step": 2,
+      "unit": "px",
+      "label": "Icon size",
+      "default": 20
+    },
+    {
+      "type": "range",
+      "id": "usp_text_size",
+      "min": 10,
+      "max": 18,
+      "step": 1,
+      "unit": "px",
+      "label": "Text size",
+      "default": 13
+    },
+    {
+      "type": "header",
+      "content": "Button style"
+    },
+    {
+      "type": "color",
+      "id": "button_background",
+      "label": "Background",
+      "default": "#f25a38"
+    },
+    {
+      "type": "color",
+      "id": "button_text_color",
+      "label": "Text",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "button_border_color",
+      "label": "Border",
+      "default": "#f25a38"
+    },
+    {
+      "type": "color",
+      "id": "button_hover_background",
+      "label": "Hover background",
+      "default": "#000000"
+    },
+    {
+      "type": "color",
+      "id": "button_hover_text_color",
+      "label": "Hover text",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "button_hover_border_color",
+      "label": "Hover border",
+      "default": "#000000"
+    },
+    {
+      "type": "range",
+      "id": "button_border_width",
+      "min": 0,
+      "max": 4,
+      "step": 1,
+      "unit": "px",
+      "label": "Border width",
+      "default": 1
+    },
+    {
+      "type": "range",
+      "id": "button_border_radius",
+      "min": 0,
+      "max": 40,
+      "step": 2,
+      "unit": "px",
+      "label": "Border radius",
+      "default": 30
+    },
+    {
+      "type": "header",
+      "content": "Image style"
+    },
+    {
+      "type": "range",
+      "id": "image_border_radius",
+      "min": 0,
+      "max": 40,
+      "step": 2,
+      "unit": "px",
+      "label": "Border radius",
+      "default": 10
+    }
+  ],
+  "presets": [
+    {
+      "name": "Company description"
+    }
+  ]
+}
+{% endschema %}

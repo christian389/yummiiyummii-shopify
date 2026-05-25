@@ -1,0 +1,576 @@
+{% doc %}
+  @prompt
+    Generate an announcement bar that is static on desktop. To the left have icons and text insertion options. to the right have just an info icon and customerservice textlink, Have more options to the left side., Can you make an option to attach your own icon ? Make it automatic scroll on mobile, Remove the customersupport on mobile , Make the scrolling loop with no blank spaces, and remove duplicates on desktop
+{% enddoc %}
+{% assign ai_gen_id = block.id | replace: '_', '' | downcase %}
+
+{% style %}
+  .ai-announcement-bar-{{ ai_gen_id }} {
+    background-color: {{ block.settings.background_color }};
+    color: {{ block.settings.text_color }};
+    padding: {{ block.settings.padding }}px 0;
+    width: 100%;
+    overflow: hidden;
+  }
+
+  .ai-announcement-bar-container-{{ ai_gen_id }} {
+    max-width: {{ block.settings.max_width }}px;
+    margin: 0 auto;
+    padding: 0 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+  }
+
+  .ai-announcement-bar-left-{{ ai_gen_id }} {
+    display: flex;
+    align-items: center;
+    gap: {{ block.settings.left_gap }}px;
+    flex-wrap: wrap;
+  }
+
+  .ai-announcement-bar-icon-{{ ai_gen_id }} {
+    width: {{ block.settings.icon_size }}px;
+    height: {{ block.settings.icon_size }}px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .ai-announcement-bar-icon-{{ ai_gen_id }} img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+  }
+
+  .ai-announcement-bar-icon-{{ ai_gen_id }} svg {
+    width: 100%;
+    height: 100%;
+    fill: {{ block.settings.icon_color }};
+  }
+
+  .ai-announcement-bar-text-{{ ai_gen_id }} {
+    font-size: {{ block.settings.text_size }}px;
+    line-height: 1.4;
+  }
+
+  .ai-announcement-bar-right-{{ ai_gen_id }} {
+    display: flex;
+    align-items: center;
+    gap: {{ block.settings.right_gap }}px;
+    flex-shrink: 0;
+  }
+
+  .ai-announcement-bar-info-icon-{{ ai_gen_id }} {
+    width: {{ block.settings.info_icon_size }}px;
+    height: {{ block.settings.info_icon_size }}px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .ai-announcement-bar-info-icon-{{ ai_gen_id }} svg {
+    width: 100%;
+    height: 100%;
+    fill: {{ block.settings.icon_color }};
+  }
+
+  .ai-announcement-bar-link-{{ ai_gen_id }} {
+    color: {{ block.settings.link_color }};
+    text-decoration: {{ block.settings.link_underline }};
+    font-size: {{ block.settings.link_size }}px;
+    white-space: nowrap;
+  }
+
+  .ai-announcement-bar-link-{{ ai_gen_id }}:hover {
+    color: {{ block.settings.link_hover_color }};
+  }
+
+  .ai-announcement-bar-duplicate-{{ ai_gen_id }} {
+    display: none;
+  }
+
+  @media screen and (max-width: 749px) {
+    .ai-announcement-bar-container-{{ ai_gen_id }} {
+      padding: 0;
+      max-width: none;
+    }
+
+    .ai-announcement-bar-scroll-wrapper-{{ ai_gen_id }} {
+      display: flex;
+      width: 100%;
+      overflow: hidden;
+    }
+
+    .ai-announcement-bar-scroll-track-{{ ai_gen_id }} {
+      display: flex;
+      animation: ai-announcement-scroll-{{ ai_gen_id }} {{ block.settings.scroll_speed }}s linear infinite;
+    }
+
+    .ai-announcement-bar-left-{{ ai_gen_id }} {
+      display: flex;
+      flex-wrap: nowrap;
+      white-space: nowrap;
+      padding: 0 20px;
+    }
+
+    .ai-announcement-bar-duplicate-{{ ai_gen_id }} {
+      display: flex;
+    }
+
+    .ai-announcement-bar-right-{{ ai_gen_id }} {
+      display: none;
+    }
+
+    @keyframes ai-announcement-scroll-{{ ai_gen_id }} {
+      0% {
+        transform: translateX(0);
+      }
+      100% {
+        transform: translateX(-50%);
+      }
+    }
+  }
+{% endstyle %}
+
+<div class="ai-announcement-bar-{{ ai_gen_id }}" {{ block.shopify_attributes }}>
+  <div class="ai-announcement-bar-container-{{ ai_gen_id }}">
+    <div class="ai-announcement-bar-scroll-wrapper-{{ ai_gen_id }}">
+      <div class="ai-announcement-bar-scroll-track-{{ ai_gen_id }}">
+        <div class="ai-announcement-bar-left-{{ ai_gen_id }}">
+          {% if block.settings.icon_1_enabled %}
+            <div class="ai-announcement-bar-icon-{{ ai_gen_id }}">
+              {% if block.settings.icon_1_custom != blank %}
+                <img src="{{ block.settings.icon_1_custom | image_url: width: 100 }}" alt="" loading="lazy">
+              {% else %}
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                  <circle cx="12" cy="7" r="4"></circle>
+                </svg>
+              {% endif %}
+            </div>
+          {% endif %}
+
+          {% if block.settings.text_1 != blank %}
+            <div class="ai-announcement-bar-text-{{ ai_gen_id }}">{{ block.settings.text_1 }}</div>
+          {% endif %}
+
+          {% if block.settings.icon_2_enabled %}
+            <div class="ai-announcement-bar-icon-{{ ai_gen_id }}">
+              {% if block.settings.icon_2_custom != blank %}
+                <img src="{{ block.settings.icon_2_custom | image_url: width: 100 }}" alt="" loading="lazy">
+              {% else %}
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                  <circle cx="12" cy="10" r="3"></circle>
+                </svg>
+              {% endif %}
+            </div>
+          {% endif %}
+
+          {% if block.settings.text_2 != blank %}
+            <div class="ai-announcement-bar-text-{{ ai_gen_id }}">{{ block.settings.text_2 }}</div>
+          {% endif %}
+
+          {% if block.settings.icon_3_enabled %}
+            <div class="ai-announcement-bar-icon-{{ ai_gen_id }}">
+              {% if block.settings.icon_3_custom != blank %}
+                <img src="{{ block.settings.icon_3_custom | image_url: width: 100 }}" alt="" loading="lazy">
+              {% else %}
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="1" y="3" width="15" height="13"></rect>
+                  <polygon points="16 8 20 8 23 11 23 16 16 16 16 8"></polygon>
+                  <circle cx="5.5" cy="18.5" r="2.5"></circle>
+                  <circle cx="18.5" cy="18.5" r="2.5"></circle>
+                </svg>
+              {% endif %}
+            </div>
+          {% endif %}
+
+          {% if block.settings.text_3 != blank %}
+            <div class="ai-announcement-bar-text-{{ ai_gen_id }}">{{ block.settings.text_3 }}</div>
+          {% endif %}
+
+          {% if block.settings.icon_4_enabled %}
+            <div class="ai-announcement-bar-icon-{{ ai_gen_id }}">
+              {% if block.settings.icon_4_custom != blank %}
+                <img src="{{ block.settings.icon_4_custom | image_url: width: 100 }}" alt="" loading="lazy">
+              {% else %}
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <polyline points="20 6 9 17 4 12"></polyline>
+                </svg>
+              {% endif %}
+            </div>
+          {% endif %}
+
+          {% if block.settings.text_4 != blank %}
+            <div class="ai-announcement-bar-text-{{ ai_gen_id }}">{{ block.settings.text_4 }}</div>
+          {% endif %}
+        </div>
+
+        <div class="ai-announcement-bar-left-{{ ai_gen_id }} ai-announcement-bar-duplicate-{{ ai_gen_id }}" aria-hidden="true">
+          {% if block.settings.icon_1_enabled %}
+            <div class="ai-announcement-bar-icon-{{ ai_gen_id }}">
+              {% if block.settings.icon_1_custom != blank %}
+                <img src="{{ block.settings.icon_1_custom | image_url: width: 100 }}" alt="" loading="lazy">
+              {% else %}
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                  <circle cx="12" cy="7" r="4"></circle>
+                </svg>
+              {% endif %}
+            </div>
+          {% endif %}
+
+          {% if block.settings.text_1 != blank %}
+            <div class="ai-announcement-bar-text-{{ ai_gen_id }}">{{ block.settings.text_1 }}</div>
+          {% endif %}
+
+          {% if block.settings.icon_2_enabled %}
+            <div class="ai-announcement-bar-icon-{{ ai_gen_id }}">
+              {% if block.settings.icon_2_custom != blank %}
+                <img src="{{ block.settings.icon_2_custom | image_url: width: 100 }}" alt="" loading="lazy">
+              {% else %}
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                  <circle cx="12" cy="10" r="3"></circle>
+                </svg>
+              {% endif %}
+            </div>
+          {% endif %}
+
+          {% if block.settings.text_2 != blank %}
+            <div class="ai-announcement-bar-text-{{ ai_gen_id }}">{{ block.settings.text_2 }}</div>
+          {% endif %}
+
+          {% if block.settings.icon_3_enabled %}
+            <div class="ai-announcement-bar-icon-{{ ai_gen_id }}">
+              {% if block.settings.icon_3_custom != blank %}
+                <img src="{{ block.settings.icon_3_custom | image_url: width: 100 }}" alt="" loading="lazy">
+              {% else %}
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="1" y="3" width="15" height="13"></rect>
+                  <polygon points="16 8 20 8 23 11 23 16 16 16 16 8"></polygon>
+                  <circle cx="5.5" cy="18.5" r="2.5"></circle>
+                  <circle cx="18.5" cy="18.5" r="2.5"></circle>
+                </svg>
+              {% endif %}
+            </div>
+          {% endif %}
+
+          {% if block.settings.text_3 != blank %}
+            <div class="ai-announcement-bar-text-{{ ai_gen_id }}">{{ block.settings.text_3 }}</div>
+          {% endif %}
+
+          {% if block.settings.icon_4_enabled %}
+            <div class="ai-announcement-bar-icon-{{ ai_gen_id }}">
+              {% if block.settings.icon_4_custom != blank %}
+                <img src="{{ block.settings.icon_4_custom | image_url: width: 100 }}" alt="" loading="lazy">
+              {% else %}
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <polyline points="20 6 9 17 4 12"></polyline>
+                </svg>
+              {% endif %}
+            </div>
+          {% endif %}
+
+          {% if block.settings.text_4 != blank %}
+            <div class="ai-announcement-bar-text-{{ ai_gen_id }}">{{ block.settings.text_4 }}</div>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+
+    <div class="ai-announcement-bar-right-{{ ai_gen_id }}">
+      {% if block.settings.info_icon_enabled %}
+        <div class="ai-announcement-bar-info-icon-{{ ai_gen_id }}">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"></circle>
+            <line x1="12" y1="16" x2="12" y2="12"></line>
+            <line x1="12" y1="8" x2="12.01" y2="8"></line>
+          </svg>
+        </div>
+      {% endif %}
+
+      {% if block.settings.customer_service_link != blank %}
+        <a href="{{ block.settings.customer_service_link }}" class="ai-announcement-bar-link-{{ ai_gen_id }}">
+          {{ block.settings.customer_service_text }}
+        </a>
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Announcement bar",
+  "tag": null,
+  "settings": [
+    {
+      "type": "header",
+      "content": "Farver"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Baggrund",
+      "default": "#4b4b4b"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Tekst",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "icon_color",
+      "label": "Ikoner",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "link_color",
+      "label": "Link",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "link_hover_color",
+      "label": "Link hover",
+      "default": "#f2f2f2"
+    },
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "range",
+      "id": "max_width",
+      "min": 1000,
+      "max": 2000,
+      "step": 100,
+      "unit": "px",
+      "label": "Maksimal bredde",
+      "default": 1400
+    },
+    {
+      "type": "range",
+      "id": "padding",
+      "min": 5,
+      "max": 30,
+      "step": 1,
+      "unit": "px",
+      "label": "Polstring",
+      "default": 12
+    },
+    {
+      "type": "range",
+      "id": "left_gap",
+      "min": 5,
+      "max": 30,
+      "step": 1,
+      "unit": "px",
+      "label": "Afstand mellem elementer (venstre)",
+      "default": 12
+    },
+    {
+      "type": "range",
+      "id": "right_gap",
+      "min": 5,
+      "max": 20,
+      "step": 1,
+      "unit": "px",
+      "label": "Afstand mellem elementer (højre)",
+      "default": 10
+    },
+    {
+      "type": "header",
+      "content": "Typografi"
+    },
+    {
+      "type": "range",
+      "id": "text_size",
+      "min": 12,
+      "max": 20,
+      "step": 1,
+      "unit": "px",
+      "label": "Tekststørrelse",
+      "default": 14
+    },
+    {
+      "type": "range",
+      "id": "icon_size",
+      "min": 12,
+      "max": 32,
+      "step": 2,
+      "unit": "px",
+      "label": "Ikonstørrelse (venstre)",
+      "default": 20
+    },
+    {
+      "type": "range",
+      "id": "info_icon_size",
+      "min": 12,
+      "max": 32,
+      "step": 2,
+      "unit": "px",
+      "label": "Info ikonstørrelse",
+      "default": 18
+    },
+    {
+      "type": "range",
+      "id": "link_size",
+      "min": 12,
+      "max": 20,
+      "step": 1,
+      "unit": "px",
+      "label": "Link størrelse",
+      "default": 14
+    },
+    {
+      "type": "select",
+      "id": "link_underline",
+      "label": "Link understregning",
+      "options": [
+        {
+          "value": "none",
+          "label": "Ingen"
+        },
+        {
+          "value": "underline",
+          "label": "Understreget"
+        }
+      ],
+      "default": "none"
+    },
+    {
+      "type": "header",
+      "content": "Mobil scroll"
+    },
+    {
+      "type": "range",
+      "id": "scroll_speed",
+      "min": 5,
+      "max": 30,
+      "step": 1,
+      "unit": "s",
+      "label": "Scroll hastighed",
+      "default": 15
+    },
+    {
+      "type": "header",
+      "content": "Venstre side - Ikon 1"
+    },
+    {
+      "type": "checkbox",
+      "id": "icon_1_enabled",
+      "label": "Vis ikon 1",
+      "default": true
+    },
+    {
+      "type": "image_picker",
+      "id": "icon_1_custom",
+      "label": "Brugerdefineret ikon 1"
+    },
+    {
+      "type": "text",
+      "id": "text_1",
+      "label": "Tekst 1",
+      "default": "Gratis fragt over 400 kr"
+    },
+    {
+      "type": "header",
+      "content": "Venstre side - Ikon 2"
+    },
+    {
+      "type": "checkbox",
+      "id": "icon_2_enabled",
+      "label": "Vis ikon 2",
+      "default": true
+    },
+    {
+      "type": "image_picker",
+      "id": "icon_2_custom",
+      "label": "Brugerdefineret ikon 2"
+    },
+    {
+      "type": "text",
+      "id": "text_2",
+      "label": "Tekst 2",
+      "default": "Levering 1-3 hverdage"
+    },
+    {
+      "type": "header",
+      "content": "Venstre side - Ikon 3"
+    },
+    {
+      "type": "checkbox",
+      "id": "icon_3_enabled",
+      "label": "Vis ikon 3",
+      "default": true
+    },
+    {
+      "type": "image_picker",
+      "id": "icon_3_custom",
+      "label": "Brugerdefineret ikon 3"
+    },
+    {
+      "type": "text",
+      "id": "text_3",
+      "label": "Tekst 3",
+      "default": "Hurtig levering"
+    },
+    {
+      "type": "header",
+      "content": "Venstre side - Ikon 4"
+    },
+    {
+      "type": "checkbox",
+      "id": "icon_4_enabled",
+      "label": "Vis ikon 4",
+      "default": true
+    },
+    {
+      "type": "image_picker",
+      "id": "icon_4_custom",
+      "label": "Brugerdefineret ikon 4"
+    },
+    {
+      "type": "text",
+      "id": "text_4",
+      "label": "Tekst 4",
+      "default": "Bæredygtige produkter"
+    },
+    {
+      "type": "header",
+      "content": "Højre side"
+    },
+    {
+      "type": "checkbox",
+      "id": "info_icon_enabled",
+      "label": "Vis info ikon",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "customer_service_text",
+      "label": "Kundeservice tekst",
+      "default": "Kundeservice"
+    },
+    {
+      "type": "url",
+      "id": "customer_service_link",
+      "label": "Kundeservice link"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Announcement bar"
+    }
+  ]
+}
+{% endschema %}

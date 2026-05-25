@@ -1,0 +1,793 @@
+{% doc %}
+  @prompt
+    Create a full page section with the password field in the middle and with header and subheader and logo above. And a countdown below the password field. , fix the password field. And make it possible to a an image to the background with overlay, Make an extra button for signing up with email to get the code, remove the email field. Only have a button
+{% enddoc %}
+{% assign ai_gen_id = block.id | replace: '_', '' | downcase %}
+
+{% style %}
+  .ai-password-page-{{ ai_gen_id }} {
+    position: relative;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 20px;
+    background-color: {{ block.settings.background_color }};
+    text-align: center;
+  }
+
+  .ai-password-background-{{ ai_gen_id }} {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+  }
+
+  .ai-password-background-{{ ai_gen_id }} img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .ai-password-overlay-{{ ai_gen_id }} {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: {{ block.settings.overlay_color }};
+    opacity: {{ block.settings.overlay_opacity }};
+    z-index: 1;
+  }
+
+  .ai-password-content-{{ ai_gen_id }} {
+    position: relative;
+    z-index: 2;
+    max-width: 600px;
+    width: 100%;
+  }
+
+  .ai-password-logo-{{ ai_gen_id }} {
+    margin-bottom: 40px;
+  }
+
+  .ai-password-logo-{{ ai_gen_id }} img {
+    max-width: {{ block.settings.logo_width }}px;
+    height: auto;
+  }
+
+  .ai-password-logo-placeholder-{{ ai_gen_id }} {
+    display: inline-block;
+    max-width: {{ block.settings.logo_width }}px;
+    width: 100%;
+  }
+
+  .ai-password-logo-placeholder-{{ ai_gen_id }} svg {
+    width: 100%;
+    height: auto;
+  }
+
+  .ai-password-header-{{ ai_gen_id }} {
+    margin-bottom: 16px;
+  }
+
+  .ai-password-heading-{{ ai_gen_id }} {
+    font-family: {{ block.settings.heading_font.family }}, {{ block.settings.heading_font.fallback_families }};
+    font-weight: {{ block.settings.heading_font.weight }};
+    font-size: {{ block.settings.heading_size }}px;
+    line-height: 1.2;
+    color: {{ block.settings.heading_color }};
+    margin: 0;
+  }
+
+  .ai-password-subheader-{{ ai_gen_id }} {
+    font-family: {{ block.settings.body_font.family }}, {{ block.settings.body_font.fallback_families }};
+    font-weight: {{ block.settings.body_font.weight }};
+    font-size: {{ block.settings.subheader_size }}px;
+    line-height: 1.5;
+    color: {{ block.settings.subheader_color }};
+    margin: 0 0 40px;
+  }
+
+  .ai-password-form-wrapper-{{ ai_gen_id }} {
+    margin-bottom: 24px;
+  }
+
+  .ai-password-field-wrapper-{{ ai_gen_id }} {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 16px;
+  }
+
+  .ai-password-input-{{ ai_gen_id }} {
+    flex: 1;
+    padding: 14px 20px;
+    font-size: 16px;
+    border: {{ block.settings.input_border_width }}px solid {{ block.settings.input_border_color }};
+    border-radius: {{ block.settings.input_border_radius }}px;
+    background-color: {{ block.settings.input_background }};
+    color: {{ block.settings.input_text_color }};
+  }
+
+  .ai-password-input-{{ ai_gen_id }}::placeholder {
+    color: {{ block.settings.input_text_color }};
+    opacity: 0.6;
+  }
+
+  .ai-password-input-{{ ai_gen_id }}:focus {
+    outline: none;
+    border-color: {{ block.settings.input_focus_border_color }};
+  }
+
+  .ai-password-button-{{ ai_gen_id }} {
+    padding: 14px 32px;
+    font-size: 16px;
+    font-weight: 600;
+    background-color: {{ block.settings.button_background }};
+    color: {{ block.settings.button_text_color }};
+    border: none;
+    border-radius: {{ block.settings.button_border_radius }}px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    white-space: nowrap;
+  }
+
+  .ai-password-button-{{ ai_gen_id }}:hover {
+    background-color: {{ block.settings.button_hover_background }};
+  }
+
+  .ai-password-error-{{ ai_gen_id }} {
+    color: {{ block.settings.error_color }};
+    font-size: 14px;
+    margin-top: 8px;
+  }
+
+  .ai-password-divider-{{ ai_gen_id }} {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin: 32px 0;
+  }
+
+  .ai-password-divider-line-{{ ai_gen_id }} {
+    flex: 1;
+    height: 1px;
+    background-color: {{ block.settings.divider_color }};
+  }
+
+  .ai-password-divider-text-{{ ai_gen_id }} {
+    font-size: 14px;
+    color: {{ block.settings.subheader_color }};
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+
+  .ai-password-email-wrapper-{{ ai_gen_id }} {
+    margin-bottom: 40px;
+  }
+
+  .ai-password-email-heading-{{ ai_gen_id }} {
+    font-size: {{ block.settings.email_heading_size }}px;
+    color: {{ block.settings.heading_color }};
+    margin: 0 0 16px;
+    font-weight: 600;
+  }
+
+  .ai-password-email-button-{{ ai_gen_id }} {
+    padding: 14px 32px;
+    font-size: 16px;
+    font-weight: 600;
+    background-color: {{ block.settings.email_button_background }};
+    color: {{ block.settings.email_button_text_color }};
+    border: none;
+    border-radius: {{ block.settings.button_border_radius }}px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    text-decoration: none;
+    display: inline-block;
+  }
+
+  .ai-password-email-button-{{ ai_gen_id }}:hover {
+    background-color: {{ block.settings.email_button_hover_background }};
+  }
+
+  .ai-password-countdown-{{ ai_gen_id }} {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    flex-wrap: wrap;
+  }
+
+  .ai-password-countdown-item-{{ ai_gen_id }} {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-width: 80px;
+  }
+
+  .ai-password-countdown-number-{{ ai_gen_id }} {
+    font-family: {{ block.settings.heading_font.family }}, {{ block.settings.heading_font.fallback_families }};
+    font-weight: {{ block.settings.heading_font.weight }};
+    font-size: {{ block.settings.countdown_number_size }}px;
+    line-height: 1;
+    color: {{ block.settings.countdown_color }};
+    margin-bottom: 8px;
+  }
+
+  .ai-password-countdown-label-{{ ai_gen_id }} {
+    font-size: {{ block.settings.countdown_label_size }}px;
+    color: {{ block.settings.countdown_label_color }};
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+
+  @media screen and (max-width: 749px) {
+    .ai-password-heading-{{ ai_gen_id }} {
+      font-size: {{ block.settings.heading_size | times: 0.7 }}px;
+    }
+
+    .ai-password-subheader-{{ ai_gen_id }} {
+      font-size: {{ block.settings.subheader_size | times: 0.9 }}px;
+    }
+
+    .ai-password-field-wrapper-{{ ai_gen_id }} {
+      flex-direction: column;
+    }
+
+    .ai-password-countdown-number-{{ ai_gen_id }} {
+      font-size: {{ block.settings.countdown_number_size | times: 0.8 }}px;
+    }
+
+    .ai-password-countdown-item-{{ ai_gen_id }} {
+      min-width: 60px;
+    }
+  }
+{% endstyle %}
+
+<password-page-{{ ai_gen_id }} class="ai-password-page-{{ ai_gen_id }}" {{ block.shopify_attributes }}>
+  {% if block.settings.background_image %}
+    <div class="ai-password-background-{{ ai_gen_id }}">
+      <img
+        src="{{ block.settings.background_image | image_url: width: 2000 }}"
+        alt=""
+        loading="eager"
+        width="{{ block.settings.background_image.width }}"
+        height="{{ block.settings.background_image.height }}"
+      >
+    </div>
+    <div class="ai-password-overlay-{{ ai_gen_id }}"></div>
+  {% endif %}
+
+  <div class="ai-password-content-{{ ai_gen_id }}">
+    {% if block.settings.logo %}
+      <div class="ai-password-logo-{{ ai_gen_id }}">
+        <img
+          src="{{ block.settings.logo | image_url: width: 800 }}"
+          alt="{{ shop.name }}"
+          width="{{ block.settings.logo.width }}"
+          height="{{ block.settings.logo.height }}"
+          loading="eager"
+        >
+      </div>
+    {% else %}
+      <div class="ai-password-logo-{{ ai_gen_id }}">
+        <div class="ai-password-logo-placeholder-{{ ai_gen_id }}">
+          {{ 'image' | placeholder_svg_tag }}
+        </div>
+      </div>
+    {% endif %}
+
+    <div class="ai-password-header-{{ ai_gen_id }}">
+      {% if block.settings.heading != blank %}
+        <h1 class="ai-password-heading-{{ ai_gen_id }}">{{ block.settings.heading }}</h1>
+      {% endif %}
+    </div>
+
+    {% if block.settings.subheader != blank %}
+      <div class="ai-password-subheader-{{ ai_gen_id }}">
+        {{ block.settings.subheader }}
+      </div>
+    {% endif %}
+
+    <div class="ai-password-form-wrapper-{{ ai_gen_id }}">
+      {%- form 'storefront_password' -%}
+        <div class="ai-password-field-wrapper-{{ ai_gen_id }}">
+          <input
+            type="password"
+            name="password"
+            class="ai-password-input-{{ ai_gen_id }}"
+            placeholder="{{ block.settings.input_placeholder }}"
+            aria-label="Password"
+            autocomplete="current-password"
+            {% if form.errors %}
+              aria-invalid="true"
+              aria-describedby="ai-password-error-{{ ai_gen_id }}"
+            {% endif %}
+            required
+          >
+          <button type="submit" class="ai-password-button-{{ ai_gen_id }}">
+            {{ block.settings.button_text }}
+          </button>
+        </div>
+        {%- if form.errors -%}
+          <div id="ai-password-error-{{ ai_gen_id }}" class="ai-password-error-{{ ai_gen_id }}">
+            {{ form.errors.messages.password }}
+          </div>
+        {%- endif -%}
+      {%- endform -%}
+    </div>
+
+    {% if block.settings.show_email_button %}
+      <div class="ai-password-divider-{{ ai_gen_id }}">
+        <div class="ai-password-divider-line-{{ ai_gen_id }}"></div>
+        <div class="ai-password-divider-text-{{ ai_gen_id }}">{{ block.settings.divider_text }}</div>
+        <div class="ai-password-divider-line-{{ ai_gen_id }}"></div>
+      </div>
+
+      <div class="ai-password-email-wrapper-{{ ai_gen_id }}">
+        {% if block.settings.email_heading != blank %}
+          <div class="ai-password-email-heading-{{ ai_gen_id }}">{{ block.settings.email_heading }}</div>
+        {% endif %}
+
+        <a 
+          href="mailto:{{ block.settings.contact_email }}?subject={{ block.settings.email_subject | url_encode }}" 
+          class="ai-password-email-button-{{ ai_gen_id }}"
+        >
+          {{ block.settings.email_button_text }}
+        </a>
+      </div>
+    {% endif %}
+
+    {% if block.settings.show_countdown %}
+      <div class="ai-password-countdown-{{ ai_gen_id }}" data-countdown-date="{{ block.settings.countdown_date }}">
+        <div class="ai-password-countdown-item-{{ ai_gen_id }}">
+          <div class="ai-password-countdown-number-{{ ai_gen_id }}" data-days>0</div>
+          <div class="ai-password-countdown-label-{{ ai_gen_id }}">{{ block.settings.days_label }}</div>
+        </div>
+        <div class="ai-password-countdown-item-{{ ai_gen_id }}">
+          <div class="ai-password-countdown-number-{{ ai_gen_id }}" data-hours>0</div>
+          <div class="ai-password-countdown-label-{{ ai_gen_id }}">{{ block.settings.hours_label }}</div>
+        </div>
+        <div class="ai-password-countdown-item-{{ ai_gen_id }}">
+          <div class="ai-password-countdown-number-{{ ai_gen_id }}" data-minutes>0</div>
+          <div class="ai-password-countdown-label-{{ ai_gen_id }}">{{ block.settings.minutes_label }}</div>
+        </div>
+        <div class="ai-password-countdown-item-{{ ai_gen_id }}">
+          <div class="ai-password-countdown-number-{{ ai_gen_id }}" data-seconds>0</div>
+          <div class="ai-password-countdown-label-{{ ai_gen_id }}">{{ block.settings.seconds_label }}</div>
+        </div>
+      </div>
+    {% endif %}
+  </div>
+</password-page-{{ ai_gen_id }}>
+
+<script>
+  (function() {
+    class PasswordPage{{ ai_gen_id }} extends HTMLElement {
+      constructor() {
+        super();
+        this.countdown = this.querySelector('.ai-password-countdown-{{ ai_gen_id }}');
+        if (this.countdown) {
+          this.countdownDate = this.countdown.dataset.countdownDate;
+          this.daysEl = this.countdown.querySelector('[data-days]');
+          this.hoursEl = this.countdown.querySelector('[data-hours]');
+          this.minutesEl = this.countdown.querySelector('[data-minutes]');
+          this.secondsEl = this.countdown.querySelector('[data-seconds]');
+        }
+      }
+
+      connectedCallback() {
+        if (this.countdown && this.countdownDate) {
+          this.updateCountdown();
+          this.interval = setInterval(() => this.updateCountdown(), 1000);
+        }
+      }
+
+      disconnectedCallback() {
+        if (this.interval) {
+          clearInterval(this.interval);
+        }
+      }
+
+      updateCountdown() {
+        const targetDate = new Date(this.countdownDate).getTime();
+        const now = new Date().getTime();
+        const distance = targetDate - now;
+
+        if (distance < 0) {
+          this.daysEl.textContent = '0';
+          this.hoursEl.textContent = '0';
+          this.minutesEl.textContent = '0';
+          this.secondsEl.textContent = '0';
+          clearInterval(this.interval);
+          return;
+        }
+
+        const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+        const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+        const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+        this.daysEl.textContent = days;
+        this.hoursEl.textContent = hours;
+        this.minutesEl.textContent = minutes;
+        this.secondsEl.textContent = seconds;
+      }
+    }
+
+    customElements.define('password-page-{{ ai_gen_id }}', PasswordPage{{ ai_gen_id }});
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "Password page",
+  "tag": null,
+  "settings": [
+    {
+      "type": "header",
+      "content": "Background"
+    },
+    {
+      "type": "image_picker",
+      "id": "background_image",
+      "label": "Background image"
+    },
+    {
+      "type": "color",
+      "id": "overlay_color",
+      "label": "Overlay color",
+      "default": "#000000"
+    },
+    {
+      "type": "range",
+      "id": "overlay_opacity",
+      "min": 0,
+      "max": 1,
+      "step": 0.1,
+      "label": "Overlay opacity",
+      "default": 0.5
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "header",
+      "content": "Logo"
+    },
+    {
+      "type": "image_picker",
+      "id": "logo",
+      "label": "Logo image"
+    },
+    {
+      "type": "range",
+      "id": "logo_width",
+      "min": 100,
+      "max": 400,
+      "step": 10,
+      "unit": "px",
+      "label": "Logo width",
+      "default": 200
+    },
+    {
+      "type": "header",
+      "content": "Content"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Opening Soon"
+    },
+    {
+      "type": "font_picker",
+      "id": "heading_font",
+      "label": "Heading font",
+      "default": "instrument_sans_n7"
+    },
+    {
+      "type": "range",
+      "id": "heading_size",
+      "min": 24,
+      "max": 80,
+      "step": 2,
+      "unit": "px",
+      "label": "Heading size",
+      "default": 48
+    },
+    {
+      "type": "color",
+      "id": "heading_color",
+      "label": "Heading color",
+      "default": "#000000"
+    },
+    {
+      "type": "richtext",
+      "id": "subheader",
+      "label": "Subheader",
+      "default": "<p>We're working on something special. Enter your password to get early access.</p>"
+    },
+    {
+      "type": "font_picker",
+      "id": "body_font",
+      "label": "Body font",
+      "default": "inter_n3"
+    },
+    {
+      "type": "range",
+      "id": "subheader_size",
+      "min": 12,
+      "max": 24,
+      "step": 1,
+      "unit": "px",
+      "label": "Subheader size",
+      "default": 16
+    },
+    {
+      "type": "color",
+      "id": "subheader_color",
+      "label": "Subheader color",
+      "default": "#666666"
+    },
+    {
+      "type": "header",
+      "content": "Password field"
+    },
+    {
+      "type": "text",
+      "id": "input_placeholder",
+      "label": "Input placeholder",
+      "default": "Enter password"
+    },
+    {
+      "type": "color",
+      "id": "input_background",
+      "label": "Input background",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "input_text_color",
+      "label": "Input text color",
+      "default": "#000000"
+    },
+    {
+      "type": "color",
+      "id": "input_border_color",
+      "label": "Input border color",
+      "default": "#cccccc"
+    },
+    {
+      "type": "color",
+      "id": "input_focus_border_color",
+      "label": "Input focus border color",
+      "default": "#000000"
+    },
+    {
+      "type": "range",
+      "id": "input_border_width",
+      "min": 1,
+      "max": 4,
+      "step": 1,
+      "unit": "px",
+      "label": "Input border width",
+      "default": 1
+    },
+    {
+      "type": "range",
+      "id": "input_border_radius",
+      "min": 0,
+      "max": 30,
+      "step": 2,
+      "unit": "px",
+      "label": "Input border radius",
+      "default": 6
+    },
+    {
+      "type": "header",
+      "content": "Password button"
+    },
+    {
+      "type": "text",
+      "id": "button_text",
+      "label": "Button text",
+      "default": "Enter"
+    },
+    {
+      "type": "color",
+      "id": "button_background",
+      "label": "Button background",
+      "default": "#000000"
+    },
+    {
+      "type": "color",
+      "id": "button_hover_background",
+      "label": "Button hover background",
+      "default": "#333333"
+    },
+    {
+      "type": "color",
+      "id": "button_text_color",
+      "label": "Button text color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "range",
+      "id": "button_border_radius",
+      "min": 0,
+      "max": 40,
+      "step": 2,
+      "unit": "px",
+      "label": "Button border radius",
+      "default": 30
+    },
+    {
+      "type": "header",
+      "content": "Email button"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_email_button",
+      "label": "Show email button",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "divider_text",
+      "label": "Divider text",
+      "default": "or"
+    },
+    {
+      "type": "color",
+      "id": "divider_color",
+      "label": "Divider color",
+      "default": "#cccccc"
+    },
+    {
+      "type": "text",
+      "id": "email_heading",
+      "label": "Email heading",
+      "default": "Get the password via email"
+    },
+    {
+      "type": "range",
+      "id": "email_heading_size",
+      "min": 14,
+      "max": 32,
+      "step": 2,
+      "unit": "px",
+      "label": "Email heading size",
+      "default": 20
+    },
+    {
+      "type": "text",
+      "id": "email_button_text",
+      "label": "Email button text",
+      "default": "Request access code"
+    },
+    {
+      "type": "text",
+      "id": "contact_email",
+      "label": "Contact email"
+    },
+    {
+      "type": "text",
+      "id": "email_subject",
+      "label": "Email subject",
+      "default": "Password Request"
+    },
+    {
+      "type": "color",
+      "id": "email_button_background",
+      "label": "Email button background",
+      "default": "#f25a38"
+    },
+    {
+      "type": "color",
+      "id": "email_button_hover_background",
+      "label": "Email button hover background",
+      "default": "#d94d2f"
+    },
+    {
+      "type": "color",
+      "id": "email_button_text_color",
+      "label": "Email button text color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "header",
+      "content": "Countdown timer"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_countdown",
+      "label": "Show countdown",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "countdown_date",
+      "label": "Countdown date",
+      "info": "Format: YYYY-MM-DD HH:MM:SS (e.g., 2025-12-31 23:59:59)"
+    },
+    {
+      "type": "range",
+      "id": "countdown_number_size",
+      "min": 24,
+      "max": 80,
+      "step": 2,
+      "unit": "px",
+      "label": "Number size",
+      "default": 48
+    },
+    {
+      "type": "range",
+      "id": "countdown_label_size",
+      "min": 10,
+      "max": 20,
+      "step": 1,
+      "unit": "px",
+      "label": "Label size",
+      "default": 12
+    },
+    {
+      "type": "color",
+      "id": "countdown_color",
+      "label": "Number color",
+      "default": "#000000"
+    },
+    {
+      "type": "color",
+      "id": "countdown_label_color",
+      "label": "Label color",
+      "default": "#666666"
+    },
+    {
+      "type": "text",
+      "id": "days_label",
+      "label": "Days label",
+      "default": "Days"
+    },
+    {
+      "type": "text",
+      "id": "hours_label",
+      "label": "Hours label",
+      "default": "Hours"
+    },
+    {
+      "type": "text",
+      "id": "minutes_label",
+      "label": "Minutes label",
+      "default": "Minutes"
+    },
+    {
+      "type": "text",
+      "id": "seconds_label",
+      "label": "Seconds label",
+      "default": "Seconds"
+    },
+    {
+      "type": "header",
+      "content": "Style"
+    },
+    {
+      "type": "color",
+      "id": "error_color",
+      "label": "Error message color",
+      "default": "#D82C0D"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Password page"
+    }
+  ]
+}
+{% endschema %}

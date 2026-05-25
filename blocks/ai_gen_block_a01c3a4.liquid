@@ -1,0 +1,52 @@
+{% doc %}
+  @prompt
+    create a spacing block
+{% enddoc %}
+{% assign ai_gen_id = block.id | replace: '_', '' | downcase %}
+
+{% style %}
+  .ai-spacing-block-{{ ai_gen_id }} {
+    height: {{ block.settings.spacing_desktop }}px;
+  }
+
+  @media screen and (max-width: 749px) {
+    .ai-spacing-block-{{ ai_gen_id }} {
+      height: {{ block.settings.spacing_mobile }}px;
+    }
+  }
+{% endstyle %}
+
+<div class="ai-spacing-block-{{ ai_gen_id }}" {{ block.shopify_attributes }}></div>
+
+{% schema %}
+{
+  "name": "Spacing",
+  "settings": [
+    {
+      "type": "range",
+      "id": "spacing_desktop",
+      "min": 0,
+      "max": 200,
+      "step": 10,
+      "unit": "px",
+      "label": "Desktop spacing",
+      "default": 60
+    },
+    {
+      "type": "range",
+      "id": "spacing_mobile",
+      "min": 0,
+      "max": 150,
+      "step": 10,
+      "unit": "px",
+      "label": "Mobile spacing",
+      "default": 40
+    }
+  ],
+  "presets": [
+    {
+      "name": "Spacing"
+    }
+  ]
+}
+{% endschema %}
