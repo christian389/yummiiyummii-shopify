@@ -50,20 +50,22 @@ toggle-tab.toggle--collection-faq + toggle-tab.toggle--collection-faq {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 50px;
-  height: 50px;
+  width: 12px;
+  height: 7px;
   color: #434343;
   transition: color 200ms ease, transform 200ms ease;
 }
 
 .toggle--collection-faq .collection-faq__icon svg {
-  width: 50px;
-  height: 50px;
+  width: 12px;
+  height: 7px;
   display: block;
 }
 
-.toggle--collection-faq .collection-faq__icon {
-  transform: rotate(180deg);
+.toggle--collection-faq .collection-faq__icon svg,
+.toggle--collection-faq .collection-faq__icon svg * {
+  fill: currentColor !important;
+  transition: fill 200ms ease;
 }
 
 .toggle--collection-faq.opened .collection-faq__question,
@@ -72,7 +74,7 @@ toggle-tab.toggle--collection-faq + toggle-tab.toggle--collection-faq {
 }
 
 .toggle--collection-faq.opened .collection-faq__icon {
-  transform: rotate(0deg);
+  transform: rotate(180deg);
 }
 
 .toggle--collection-faq .collection-faq__answer {
@@ -101,7 +103,7 @@ toggle-tab.toggle--collection-faq + toggle-tab.toggle--collection-faq {
 @media screen and (max-width: 767px) {
   .toggle--collection-faq .collection-faq__icon,
   .toggle--collection-faq .collection-faq__icon svg {
-    width: 40px;
-    height: 40px;
+    width: 12px;
+    height: 7px;
   }
 }

@@ -35,9 +35,7 @@
             >
               <span class="collection-faq__question">{{ faq.question }}</span>
               <span class="collection-faq__icon" aria-hidden="true">
-                <svg width="50" height="50" viewBox="0 0 50 50" fill="none" xmlns="http://www.w3.org/2000/svg" focusable="false">
-                  <path d="M25 16L35 30H15L25 16Z" fill="currentColor"/>
-                </svg>
+                {%- render 'theme-symbols', icon: 'chevron' -%}
               </span>
             </div>
 
