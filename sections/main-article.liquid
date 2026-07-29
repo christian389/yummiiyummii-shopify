@@ -1,5 +1,16 @@
 {{ 'section-main-article.css' | asset_url | stylesheet_tag }}
 
+{% style %}
+  .guide-hero-eyebrow {
+    margin: 0 0 12px;
+    font-size: 12px;
+    font-weight: var(--font-weight-body-primary-bold);
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: #3d7a4f;
+  }
+{% endstyle %}
+
 {%- render 'breadcrumb',
   container: 'compact',
   vertical_space: 'vertical-space-xsmall',
@@ -16,14 +27,17 @@
       >
         <header>
           <div class="rte article">
+            {%- liquid
+              assign guide_last_updated = article.metafields.guide.last_updated.value
+            -%}
+            {%- if guide_last_updated != blank -%}
+              <p class="guide-hero-eyebrow">GUIDE</p>
+            {%- endif -%}
             <h1 class="heading-size--page-title">{{ article.title | escape }}</h1>
 
             <div class="grid grid--layout grid-2 grid-lap-1 gutter-top--regular remove-empty-space">
               <div class="blog-item__meta">
                 {%- if block.settings.blog_show_date -%}
-                  {%- liquid
-                    assign guide_last_updated = article.metafields.guide.last_updated.value
-                  -%}
                   <span class="blog-item__date text-size--small">
                     {%- if guide_last_updated != blank -%}
                       {{ guide_last_updated | date: date_format }}
