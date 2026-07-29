@@ -1,0 +1,104 @@
+{% comment %}
+  Yummii Yummii — Produktside: udløs 2-trins upsell ved "Tilføj til kurv"
+  Bruges på skole-sæt-produktskabelonen SAMMEN med sektionen "LP — 2-trins upsell"
+  (yy-lp-upsell2), som selv viser popuppen og lægger sæt + tilvalg i kurven.
+
+  Denne sektion:
+   - rendrer en skjult [data-yy2-trigger] med sættets variant + de to add-ons
+     (fra produktets metafelt custom.crosssell_products: [ekstra boks, låg/sugerør]),
+     hvor add-on 1 (ekstra boks) vises med -{{ rabat }}%;
+   - opsnapper temaets "Tilføj til kurv" på DENNE produktside (kun hovedproduktets
+     variant — så "Kombiner med"-quick-adds ikke kapres) og fyrer popuppen.
+{% endcomment %}
+
+{%- assign setvar   = product.selected_or_first_available_variant -%}
+{%- assign cs       = product.metafields.custom.crosssell_products.value -%}
+{%- assign disc     = section.settings.u1_discount | default: 10 -%}
+{%- assign keep     = 100 | minus: disc -%}
+
+{%- assign u1 = nil -%}{%- assign u2 = nil -%}
+{%- if cs != blank -%}
+  {%- for p in cs -%}
+    {%- if forloop.index == 1 -%}{%- assign u1 = p -%}{%- elsif forloop.index == 2 -%}{%- assign u2 = p -%}{%- endif -%}
+  {%- endfor -%}
+{%- endif -%}
+{%- if u1 != blank -%}{%- assign u1v = u1.selected_or_first_available_variant -%}{%- assign u1disc = u1v.price | times: keep | divided_by: 100 -%}{%- endif -%}
+{%- if u2 != blank -%}{%- assign u2v = u2.selected_or_first_available_variant -%}{%- endif -%}
+
+<button type="button" hidden aria-hidden="true" tabindex="-1"
+  data-yy2-trigger data-pdp
+  data-main-variants="{% for v in product.variants %}{{ v.id }}{% unless forloop.last %},{% endunless %}{% endfor %}"
+  data-set-variant="{{ setvar.id }}"
+  data-set-name="{{ product.title | escape }}"
+  {%- if u1 and u1v -%}
+  data-u1-variant="{{ u1v.id }}"
+  data-u1-title="{{ u1.title | escape }}"
+  data-u1-price="{{ u1disc | money_without_trailing_zeros }}"
+  data-u1-compare="{{ u1v.price | money_without_trailing_zeros }}"
+  data-u1-img="{{ u1 | image_url: width: 160 }}"
+  data-u1-note="{{ section.settings.u1_note | escape }}"
+  {%- endif -%}
+  {%- if u2 and u2v -%}
+  data-u2-variant="{{ u2v.id }}"
+  data-u2-title="{{ u2.title | escape }}"
+  data-u2-price="{{ u2v.price | money_without_trailing_zeros }}"
+  data-u2-img="{{ u2 | image_url: width: 160 }}"
+  data-u2-note="{{ section.settings.u2_note | escape }}"
+  {%- endif -%}
+></button>
+
+<script>
+(function(){
+  function init(){
+    var root = document.getElementById('shopify-section-{{ section.id }}');
+    var trig = (root && root.querySelector('[data-yy2-trigger][data-pdp]')) || document.querySelector('[data-yy2-trigger][data-pdp]');
+    if(!trig || !trig.getAttribute('data-set-variant')) return;
+    // Ingen upsell-produkter (metafelt tomt) → lad temaets normale "Tilføj til kurv" køre uændret.
+    if(!trig.getAttribute('data-u1-variant') && !trig.getAttribute('data-u2-variant')) return;
+    var mainVariants = (trig.getAttribute('data-main-variants') || '').split(',').filter(Boolean);
+
+    function isMain(form){
+      if(!form) return true; // ingen form (fx sticky ATC) → antag hovedproduktet
+      var idv = form.querySelector('[name="id"]');
+      var vid = idv && idv.value;
+      if(!vid) return true;
+      if(mainVariants.length && mainVariants.indexOf(String(vid)) === -1) return false;
+      trig.setAttribute('data-set-variant', vid);
+      return true;
+    }
+    function fire(e){
+      e.preventDefault(); e.stopPropagation();
+      if(e.stopImmediatePropagation) e.stopImmediatePropagation();
+      trig.click();
+    }
+    // Klik på "Tilføj til kurv"
+    document.addEventListener('click', function(e){
+      var btn = e.target.closest('button[name="add"], .add-to-cart, .product-form__submit');
+      if(!btn) return;
+      var form = btn.closest('form[action*="/cart/add"]');
+      if(!isMain(form)) return;
+      fire(e);
+    }, true);
+    // Form-submit (hvis knappen submitter formen)
+    document.addEventListener('submit', function(e){
+      var form = e.target.closest('form[action*="/cart/add"]');
+      if(!form || !isMain(form)) return;
+      fire(e);
+    }, true);
+  }
+  if(document.readyState === 'loading'){ document.addEventListener('DOMContentLoaded', init); } else { init(); }
+})();
+</script>
+
+{% schema %}
+{
+  "name": "LP — PDP upsell-trigger",
+  "settings": [
+    { "type": "paragraph", "content": "Placer på skole-sæt-produktskabelonen sammen med 'LP — 2-trins upsell'. Bruger produktets metafelt custom.crosssell_products ([ekstra boks, låg/sugerør]). Fanger 'Tilføj til kurv' og viser 2-trins-upsellet." },
+    { "type": "range", "id": "u1_discount", "label": "Rabat på ekstra boks (%)", "min": 0, "max": 30, "step": 5, "default": 10, "info": "Kun visning i popuppen. Den faktiske rabat kræver en aktiv automatisk rabat i Shopify." },
+    { "type": "text", "id": "u1_note", "label": "Note — ekstra boks", "default": "Til søskende eller dig selv, 10% oveni sættet." },
+    { "type": "text", "id": "u2_note", "label": "Note — låg/sugerør", "default": "Gør drikkedunken nem at drikke af." }
+  ],
+  "presets": [ { "name": "LP — PDP upsell-trigger" } ]
+}
+{% endschema %}

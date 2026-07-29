@@ -1,0 +1,234 @@
+.main-footer {
+ /* margin-top: var(--container-vertical-space); */
+  border-top: 1px solid var(--color-borders-footer);
+  background: var(--color-background-footer);
+  color: var(--color-text-footer);
+}
+
+.main-footer a {
+  color: var(--color-text-footer);
+  transition: all 100ms linear;
+}
+
+.no-touchevents .main-footer a:hover {
+  color: var(--color-text-footer);
+}
+
+.main-footer .social-icons svg * {
+  fill: var(--color-text-footer);
+  transition: all 100ms linear;
+}
+
+.no-touchevents .main-footer .social-icons a:hover svg * {
+  fill: var(--color-text-footer);
+}
+
+.main-footer .localization-form__item-text {
+  color: var(--color-text-footer);
+}
+
+.main-footer .localization-form__item-symbol svg path {
+  fill: var(--color-text-footer);
+}
+
+.main-footer .footer-item__menu span {
+  display: block;
+  margin-bottom: 0.6rem;
+}
+
+.main-footer .footer-item__menu--unstyled a {
+  border-bottom: none !important;
+  color: rgba(var(--color-text-footer-rgb), 0.75);
+}
+
+/* -------------------------------------
+   FOOTER BOTTOM / COPYRIGHT / PAYMENTS 
+-------------------------------------- */
+.footer-top + .footer-bottom {
+  border-top: 1px solid rgba(var(--color-text-footer-rgb), 0.1);
+}
+
+.custom-footer-bottom-wrapper {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+.custom-footer-copyright span {
+  font-size: 13px;
+  color: rgba(var(--color-text-footer-rgb), 0.6);
+}
+
+/* Payment Icons Wrapper */
+.custom-footer-payments .list-payment {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+.custom-footer-payments .list-payment__item {
+  display: flex;
+  align-items: center;
+}
+
+.custom-footer-payments svg,
+.custom-footer-payments img {
+  height: 22px;
+  width: auto;
+  border-radius: 2px;
+}
+
+/* -------------------------------------
+   ACCORDION LOGIC (Desktop vs Mobile)
+-------------------------------------- */
+
+/* DESKTOP DEFAULTS */
+@media screen and (min-width: 768px) {
+  .footer-accordion-icon {
+    display: none;
+  }
+  .footer-item__content-wrapper {
+    display: block !important;
+    height: auto !important;
+  }
+}
+
+/* MOBILE ACCORDION & LAYOUT */
+@media screen and (max-width: 767px) {
+  /* Accordion Header */
+  .footer-item__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+    padding: 18px 0;
+  }
+
+  /* Thin line between items */
+  .footer-item {
+    border-bottom: 1px solid rgba(var(--color-text-footer-rgb), 0.1);
+  }
+  
+  .footer-item:last-child {
+    border-bottom: none;
+  }
+
+  .footer-item__title {
+    margin: 0 !important;
+  }
+
+  .footer-accordion-icon svg {
+    width: 16px;
+    height: 16px;
+    transition: transform 0.3s ease;
+  }
+
+  /* Accordion Content */
+  .footer-item__content-wrapper {
+    display: none;
+    padding-bottom: 20px;
+  }
+
+  /* Active Accordion State */
+  .footer-item.is-open .footer-item__content-wrapper {
+    display: block;
+    animation: fadeIn 0.3s ease forwards;
+  }
+
+  .footer-item.is-open .footer-accordion-icon svg {
+    transform: rotate(180deg);
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-5px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* Bottom Row Flip (Payments on top of copyright) */
+  .custom-footer-bottom-wrapper {
+    flex-direction: column-reverse;
+    align-items: flex-start;
+    gap: 16px;
+  }
+}
+
+/* -------------------------------------
+   MISC BLOCK FIXES
+-------------------------------------- */
+.footer-item__image-heading {
+  margin-bottom: 1em;
+}
+
+.footer-item__newsletter input:-webkit-autofill + button[type=submit] svg path {
+  stroke: #000;
+}
+
+.footer-item__newsletter .form-row {
+  padding-top: 0;
+}
+
+.footer-item__newsletter input {
+  height: 3.125rem;
+  padding-inline-end: 2.5rem;
+  border-color: var(--color-text-footer);
+  color: var(--color-text-footer);
+  background-color: transparent;
+}
+
+.footer-item__newsletter input::placeholder {
+  color: inherit;
+}
+
+.footer-item__newsletter input:focus, .footer-item__newsletter input:hover {
+  border-color: var(--color-text-footer);
+}
+
+.footer-item__newsletter button[type=submit] {
+  top: 0;
+  position: absolute;
+  width: 50px;
+  height: 100%;
+  padding-top: 9px;
+}
+
+html[dir=rtl] .footer-item__newsletter button[type=submit] {
+  left: 0;
+}
+
+html[dir=ltr] .footer-item__newsletter button[type=submit] {
+  right: 0;
+}
+
+.no-touchevents .footer-item__newsletter button[type=submit]:hover svg {
+  opacity: 1;
+}
+
+.footer-item__newsletter button[type=submit] svg {
+  width: 65%;
+  height: 65%;
+  opacity: 0.62;
+  transition: all 100ms linear;
+}
+
+.footer-item__newsletter button[type=submit] svg path {
+  stroke: var(--color-text-footer);
+}
+
+.shop-login-button {
+  display: block;
+}
+
+@media screen and (max-width: 767px) {
+  .footer-item__header {
+    padding: 8px 0 !important;
+  }
+  .main-footer .footer-item__menu span {
+    margin-top: 8px;
+  }
+}

@@ -1,0 +1,165 @@
+/* ============================================================
+   Yummii Yummii — Hero section (full-bleed billede + tekst-overlay)
+   ------------------------------------------------------------
+   Fuld-størrelse baggrundsbillede med en mørk gradient-overlay, så lys
+   tekst forbliver læsbar. Indhold venstre-justeret og lodret centreret.
+   Én enkelt CTA.
+
+   FORVENTET HTML-STRUKTUR
+   ------------------------------------------------------------
+   <section class="yy-hero" style="--hero-image:url('…');">
+     <div class="yy-hero__scrim"></div>
+     <div class="yy-hero__inner">
+       <div class="yy-hero__content">
+         <span class="yy-hero__eyebrow">Hverdag uden mikroplast</span>
+         <h1 class="yy-hero__title">…</h1>
+         <p class="yy-hero__lede">…</p>
+         <a class="yy-hero__cta" href="#">Find jeres sæt →</a>
+         <div class="yy-hero__trust">★★★★★ <span>4,9 · 2.847 anmeldelser</span></div>
+       </div>
+     </div>
+   </section>
+
+   BILLEDE: sæt --hero-image på .yy-hero (inline style eller egen klasse).
+   Uden billede vises en grøn placeholder-gradient.
+   ============================================================ */
+
+:root {
+  --yy-green:   #3d7a4f;
+  --yy-green-d: #2d5a3a;
+  --yy-cream:   #f4eedb;
+  --yy-font:        'DM Sans', system-ui, -apple-system, sans-serif;
+  --yy-font-mono:   'JetBrains Mono', ui-monospace, monospace;
+  --yy-maxw:    1280px;
+}
+
+.yy-hero, .yy-hero * { box-sizing: border-box; }
+
+.yy-hero {
+  position: relative;
+  min-height: clamp(560px, 86vh, 880px);
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+  font-family: var(--yy-font);
+  color: var(--yy-cream);
+  -webkit-font-smoothing: antialiased;
+  isolation: isolate;
+
+  /* placeholder bg if no --hero-image is set */
+  background-color: #8ba07c;
+  background-image:
+    var(--hero-image, linear-gradient(135deg, #6f9170 0%, #3d7a4f 60%, #2d5a3a 100%));
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+/* Readability scrim — darker at the bottom + left where the text sits */
+.yy-hero__scrim {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background:
+    linear-gradient(180deg, rgba(20,28,18,0.30) 0%, rgba(20,28,18,0.05) 32%, rgba(20,28,18,0.10) 62%, rgba(20,28,18,0.72) 100%),
+    linear-gradient(90deg, rgba(20,28,18,0.55) 0%, rgba(20,28,18,0.15) 48%, transparent 100%);
+}
+
+.yy-hero__inner {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: var(--yy-maxw);
+  margin: 0 auto;
+  padding: 64px 48px;
+}
+
+.yy-hero__content { max-width: 640px; }
+
+.yy-hero__eyebrow {
+  display: inline-block;
+  font-family: var(--yy-font-mono);
+  font-size: 12px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--yy-cream);
+  opacity: 0.85;
+  margin-bottom: 22px;
+}
+
+.yy-hero__title {
+  margin: 0;
+  font-size: clamp(42px, 6vw, 84px);
+  line-height: 1.0;
+  letter-spacing: -0.04em;
+  font-weight: 700;
+  text-wrap: balance;
+  text-shadow: 0 2px 28px rgba(0,0,0,0.30);
+}
+
+.yy-hero__lede {
+  margin: 26px 0 0;
+  font-size: clamp(16px, 1.6vw, 20px);
+  line-height: 1.55;
+  max-width: 540px;
+  color: var(--yy-cream);
+  text-shadow: 0 1px 14px rgba(0,0,0,0.28);
+}
+
+/* Single CTA */
+.yy-hero__cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  height: 60px;
+  margin-top: 38px;
+  padding: 0 34px;
+  border-radius: 999px;
+  background: var(--yy-cream);
+  color: #1a1812;
+  font-size: 16px;
+  font-weight: 700;
+  text-decoration: none;
+  cursor: pointer;
+  box-shadow: 0 14px 36px rgba(0,0,0,0.22);
+  transition: transform 140ms ease, filter 140ms ease;
+}
+.yy-hero__cta svg { width: 18px; height: 18px; }
+.yy-hero__cta:hover { transform: translateY(-2px); filter: brightness(1.03); }
+
+/* Trust row */
+.yy-hero__trust {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 34px;
+  font-size: 14px;
+  color: var(--yy-cream);
+  text-shadow: 0 1px 10px rgba(0,0,0,0.3);
+}
+.yy-hero__trust-stars {
+  color: #ffd66b;
+  letter-spacing: 2px;
+  line-height: 1;
+  font-size: 16px;
+}
+
+/* ============================================================
+   MOBILE  (≤ 760px)
+   ============================================================ */
+@media (max-width: 760px) {
+  .yy-hero {
+    min-height: clamp(520px, 88vh, 720px);
+    align-items: flex-end;          /* text sits toward the bottom */
+  }
+  .yy-hero__scrim {
+    background:
+      linear-gradient(180deg, rgba(20,28,18,0.25) 0%, rgba(20,28,18,0.05) 30%, rgba(20,28,18,0.78) 100%);
+  }
+  .yy-hero__inner { padding: 40px 22px 48px; }
+  .yy-hero__eyebrow { margin-bottom: 14px; }
+  .yy-hero__lede { margin-top: 16px; }
+  .yy-hero__cta { width: 100%; justify-content: center; margin-top: 26px; }
+  .yy-hero__trust { margin-top: 22px; }
+}

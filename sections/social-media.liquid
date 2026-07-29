@@ -1,0 +1,295 @@
+{%- liquid
+  assign s_id = section.id
+-%}
+
+{% style %}
+  .section-{{ s_id }} {
+    padding-top: {{ section.settings.padding_top }}px;
+    padding-bottom: {{ section.settings.padding_bottom }}px;
+    background-color: {{ section.settings.background_color }};
+  }
+
+  .ig-wrapper-{{ s_id }} {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+  }
+
+  .ig-header-{{ s_id }} {
+    text-align: center;
+    margin-bottom: 40px;
+  }
+
+  .ig-heading-{{ s_id }} {
+    font-size: clamp(24px, 3vw, 32px);
+    color: {{ section.settings.text_color }};
+    font-weight: 300;
+    margin: 0 0 12px 0;
+    line-height: 1.2;
+    font-family: inherit;
+  }
+
+  .ig-subtext-{{ s_id }} {
+    font-size: clamp(13px, 1.5vw, 15px);
+    color: {{ section.settings.text_color }};
+    margin: 0;
+    font-weight: 400;
+  }
+
+  .ig-subtext-{{ s_id }} a {
+    color: inherit;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+
+  .ig-grid-{{ s_id }} {
+    display: grid;
+    grid-template-columns: repeat({{ section.settings.columns_desktop }}, 1fr);
+    gap: {{ section.settings.gap }}px;
+  }
+
+  .ig-item-{{ s_id }} {
+    position: relative;
+    display: block;
+    width: 100%;
+    aspect-ratio: 4 / 5;
+    overflow: hidden;
+    background-color: #f4f4f4;
+  }
+
+  .ig-item-{{ s_id }} img,
+  .ig-item-{{ s_id }} svg {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    transition: transform 0.5s ease;
+  }
+
+  @media (hover: hover) {
+    .ig-item-{{ s_id }}:hover img {
+      transform: scale(1.03);
+    }
+  }
+
+  .ig-icon-{{ s_id }} {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    width: 20px;
+    height: 20px;
+    z-index: 2;
+    pointer-events: none;
+    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.15));
+  }
+
+  @media screen and (max-width: 768px) {
+    .section-{{ s_id }} {
+      padding-top: {{ section.settings.padding_top_mobile }}px;
+      padding-bottom: {{ section.settings.padding_bottom_mobile }}px;
+    }
+    .ig-header-{{ s_id }} {
+      margin-bottom: 30px;
+    }
+    .ig-grid-{{ s_id }} {
+      grid-template-columns: repeat({{ section.settings.columns_mobile }}, 1fr);
+      gap: {{ section.settings.gap_mobile }}px;
+    }
+    .ig-icon-{{ s_id }} {
+      width: 16px;
+      height: 16px;
+      top: 8px;
+      right: 8px;
+    }
+  }
+{% endstyle %}
+
+<section class="section-{{ s_id }}">
+  <div class="ig-wrapper-{{ s_id }}">
+    
+    <div class="ig-header-{{ s_id }}">
+      {% if section.settings.heading != blank %}
+        <h2 class="ig-heading-{{ s_id }}">{{ section.settings.heading }}</h2>
+      {% endif %}
+      
+      {% if section.settings.subtext != blank %}
+        <div class="ig-subtext-{{ s_id }}">
+          {{ section.settings.subtext }}
+        </div>
+      {% endif %}
+    </div>
+
+    <div class="ig-grid-{{ s_id }}">
+      {% for block in section.blocks %}
+        {%- liquid
+          assign wrapper_tag = 'div'
+          if block.settings.link != blank
+            assign wrapper_tag = 'a'
+          endif
+        -%}
+        
+        <{{ wrapper_tag }} 
+          {% if block.settings.link != blank %}href="{{ block.settings.link }}" target="_blank"{% endif %} 
+          class="ig-item-{{ s_id }}" 
+          {{ block.shopify_attributes }}
+        >
+          {% if block.settings.image != blank %}
+            {{ block.settings.image | image_url: width: 800 | image_tag: loading: 'lazy', alt: block.settings.image.alt | default: 'Instagram post' }}
+          {% else %}
+            {{ 'image' | placeholder_svg_tag: 'placeholder-svg' }}
+          {% endif %}
+
+
+        </{{ wrapper_tag }}>
+      {% endfor %}
+    </div>
+
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Social Grid",
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "@yummiiyummiiuniverse"
+    },
+    {
+      "type": "richtext",
+      "id": "subtext",
+      "label": "Subtext",
+      "default": "<p>Also follow <a href=\"#\">@Planet_Yummii</a> for more inspiration 💚</p>"
+    },
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "range",
+      "id": "columns_desktop",
+      "min": 2,
+      "max": 5,
+      "step": 1,
+      "label": "Columns (Desktop)",
+      "default": 3
+    },
+    {
+      "type": "range",
+      "id": "columns_mobile",
+      "min": 1,
+      "max": 3,
+      "step": 1,
+      "label": "Columns (Mobile)",
+      "default": 2
+    },
+    {
+      "type": "range",
+      "id": "gap",
+      "min": 0,
+      "max": 40,
+      "step": 2,
+      "unit": "px",
+      "label": "Grid Gap (Desktop)",
+      "default": 12
+    },
+    {
+      "type": "range",
+      "id": "gap_mobile",
+      "min": 0,
+      "max": 20,
+      "step": 1,
+      "unit": "px",
+      "label": "Grid Gap (Mobile)",
+      "default": 8
+    },
+    {
+      "type": "header",
+      "content": "Styling"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background Color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text Color",
+      "default": "#555555"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "Desktop Padding Top",
+      "default": 60
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "Desktop Padding Bottom",
+      "default": 60
+    },
+    {
+      "type": "range",
+      "id": "padding_top_mobile",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "Mobile Padding Top",
+      "default": 40
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom_mobile",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "Mobile Padding Bottom",
+      "default": 40
+    }
+  ],
+  "blocks": [
+    {
+      "type": "image",
+      "name": "Social Post",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Image"
+        },
+        {
+          "type": "url",
+          "id": "link",
+          "label": "Post Link"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Social Grid",
+      "blocks": [
+        { "type": "image" },
+        { "type": "image" },
+        { "type": "image" },
+        { "type": "image" }
+      ]
+    }
+  ]
+}
+{% endschema %}

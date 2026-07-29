@@ -1,0 +1,267 @@
+{%- liquid
+  assign s_id = section.id
+-%}
+
+{% style %}
+  /* --- BASE SECTION RESET --- */
+  .section-{{ s_id }} {
+    width: 100%;
+    overflow: hidden;
+  }
+
+  .iwt-container-{{ s_id }} {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+  }
+
+  /* --- DESKTOP LAYOUT (50/50 Split) --- */
+  @media screen and (min-width: 900px) {
+    .iwt-container-{{ s_id }} {
+      flex-direction: {% if section.settings.image_position == 'right' %}row-reverse{% else %}row{% endif %};
+      align-items: stretch; /* Forces equal height for both columns */
+      min-height: {{ section.settings.desktop_min_height }}px;
+    }
+  }
+
+  /* --- IMAGE COLUMN --- */
+  .iwt-image-col-{{ s_id }} {
+    position: relative;
+    width: 100%;
+    /* Mobile image height */
+    aspect-ratio: 4 / 3; 
+    background-color: #f4f4f4;
+  }
+
+  @media screen and (min-width: 900px) {
+    .iwt-image-col-{{ s_id }} {
+      width: 50%;
+      aspect-ratio: auto; /* Let flexbox dictate height on desktop */
+    }
+  }
+
+  .iwt-image-col-{{ s_id }} img,
+  .iwt-image-col-{{ s_id }} svg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  /* --- TEXT COLUMN --- */
+  .iwt-text-col-{{ s_id }} {
+    width: 100%;
+    background-color: {{ section.settings.bg_color }};
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 60px 24px;
+  }
+
+  @media screen and (min-width: 900px) {
+    .iwt-text-col-{{ s_id }} {
+      width: 50%;
+      padding: 80px 8%;
+    }
+  }
+
+  .iwt-content-{{ s_id }} {
+    max-width: 540px;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  /* --- TYPOGRAPHY & BUTTON --- */
+  .iwt-heading-{{ s_id }} {
+    font-size: clamp(26px, 4vw, 36px);
+    color: {{ section.settings.text_color }};
+    font-weight: 300; /* Light base weight */
+    line-height: 1.25;
+    margin: 0 0 20px 0;
+    font-family: inherit;
+    letter-spacing: -0.01em;
+  }
+
+  /* Target the <b> tags inside the heading to make them bold */
+  .iwt-heading-{{ s_id }} b,
+  .iwt-heading-{{ s_id }} strong {
+    font-weight: 700;
+  }
+
+  .iwt-text-{{ s_id }} {
+    font-size: clamp(14px, 1.5vw, 15px);
+    color: {{ section.settings.text_color }};
+    line-height: 1.6;
+    margin: 0 0 32px 0;
+    opacity: 0.9;
+  }
+
+  .iwt-text-{{ s_id }} p {
+    margin: 0;
+  }
+
+  .iwt-btn-{{ s_id }} {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background-color: {{ section.settings.btn_bg_color }};
+    color: {{ section.settings.btn_text_color }} !important;
+    font-size: 14px;
+    font-weight: 500;
+    text-decoration: none;
+    padding: 12px 32px;
+    border-radius: 30px; /* Pill shape */
+    transition: all 0.3s ease;
+    border: none;
+    cursor: pointer;
+  }
+
+  .iwt-btn-{{ s_id }}:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(0,0,0,0.1);
+    opacity: 0.9;
+  }
+{% endstyle %}
+
+<section class="section-{{ s_id }}">
+  <div class="iwt-container-{{ s_id }}">
+    
+    <!-- IMAGE COLUMN -->
+    <div class="iwt-image-col-{{ s_id }}">
+      {% if section.settings.image != blank %}
+        {{ section.settings.image | image_url: width: 1400 | image_tag: loading: 'lazy', alt: section.settings.heading | escape }}
+      {% else %}
+        {{ 'lifestyle-2' | placeholder_svg_tag: 'placeholder-svg' }}
+      {% endif %}
+    </div>
+
+    <!-- TEXT COLUMN -->
+    <div class="iwt-text-col-{{ s_id }}">
+      <div class="iwt-content-{{ s_id }}">
+        
+        {% if section.settings.heading != blank %}
+          <!-- newline_to_br allows enter/return to act as line breaks, allowing custom bolding via HTML -->
+          <h2 class="iwt-heading-{{ s_id }}">
+            {{ section.settings.heading | newline_to_br }}
+          </h2>
+        {% endif %}
+
+        {% if section.settings.text != blank %}
+          <div class="iwt-text-{{ s_id }}">
+            {{ section.settings.text }}
+          </div>
+        {% endif %}
+
+        {% if section.settings.btn_text != blank %}
+          <a href="{{ section.settings.btn_link | default: '#' }}" class="iwt-btn-{{ s_id }}">
+            {{ section.settings.btn_text }}
+          </a>
+        {% endif %}
+
+      </div>
+    </div>
+
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Image with Text (Full)",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Image"
+    },
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "Image"
+    },
+    {
+      "type": "select",
+      "id": "image_position",
+      "label": "Desktop Image Position",
+      "options": [
+        { "value": "left", "label": "Left" },
+        { "value": "right", "label": "Right" }
+      ],
+      "default": "left"
+    },
+    {
+      "type": "range",
+      "id": "desktop_min_height",
+      "min": 400,
+      "max": 800,
+      "step": 20,
+      "unit": "px",
+      "label": "Desktop Minimum Height",
+      "default": 560
+    },
+    {
+      "type": "header",
+      "content": "Content"
+    },
+    {
+      "type": "textarea",
+      "id": "heading",
+      "label": "Heading",
+      "default": "You may have ingested\n<b>~ 5g of microplastics</b> this week..."
+    },
+    {
+      "type": "richtext",
+      "id": "text",
+      "label": "Text",
+      "default": "<p>Some studies estimate people may ingest up to ~5g of microplastics per week (often compared to the weight of a credit card) — but this figure is debated and not a precise measurement.</p>"
+    },
+    {
+      "type": "text",
+      "id": "btn_text",
+      "label": "Button Label",
+      "default": "Learn more"
+    },
+    {
+      "type": "url",
+      "id": "btn_link",
+      "label": "Button Link"
+    },
+    {
+      "type": "header",
+      "content": "Colors"
+    },
+    {
+      "type": "color",
+      "id": "bg_color",
+      "label": "Text Box Background Color",
+      "default": "#706a62"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text Color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "btn_bg_color",
+      "label": "Button Background Color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "btn_text_color",
+      "label": "Button Text Color",
+      "default": "#333333"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Image with Text (Full)"
+    }
+  ]
+}
+{% endschema %}

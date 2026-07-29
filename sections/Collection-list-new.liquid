@@ -1,0 +1,388 @@
+{%- liquid
+  assign s_id = section.id
+-%}
+
+{% style %}
+  .section-{{ s_id }} {
+    padding-top: {{ section.settings.padding_top }}px;
+    padding-bottom: {{ section.settings.padding_bottom }}px;
+    background-color: {{ section.settings.background_color }};
+    overflow: hidden;
+  }
+
+  .cl-wrapper-{{ s_id }} {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 20px;
+  }
+
+  /* --- HEADER --- */
+  .cl-header-{{ s_id }} {
+    margin-bottom: 25px;
+  }
+
+  .cl-title-{{ s_id }} {
+    font-size: clamp(22px, 3vw, 30px);
+    color: {{ section.settings.text_color }};
+    margin: 0;
+    font-weight: {{ section.settings.heading_weight }} !important; 
+    line-height: 1.2;
+    font-family: inherit;
+  }
+
+  /* --- SLIDER --- */
+  .cl-slider-{{ s_id }} {
+    display: flex;
+    gap: 20px;
+    overflow-x: auto;
+    padding-bottom: 20px;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    scroll-snap-type: x mandatory;
+    scroll-behavior: smooth;
+  }
+  .cl-slider-{{ s_id }}::-webkit-scrollbar { display: none; }
+
+  /* CARD */
+  .cl-card-{{ s_id }} {
+    flex: 0 0 calc((100% - ((var(--items-desktop) - 1) * 20px)) / var(--items-desktop));
+    min-width: 240px;
+    scroll-snap-align: start;
+    display: flex;
+    flex-direction: column;
+    text-decoration: none;
+    color: inherit;
+    group: hover;
+  }
+
+  /* IMAGE CONTAINER */
+  .cl-card-img-wrap-{{ s_id }} {
+    width: 100%;
+    aspect-ratio: 1 / 1; /* Makes the images square */
+    background-color: #f4f4f4;
+    overflow: hidden;
+    margin-bottom: 15px;
+  }
+
+  .cl-card-img-wrap-{{ s_id }} img,
+  .cl-card-img-wrap-{{ s_id }} svg {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.5s ease;
+  }
+
+  @media (hover: hover) {
+    .cl-card-{{ s_id }}:hover .cl-card-img-wrap-{{ s_id }} img {
+      transform: scale(1.04);
+    }
+    .cl-card-btn-{{ s_id }}:hover {
+      background-color: #55514f;
+    }
+  }
+
+  /* CARD CONTENT */
+  .cl-card-title-{{ s_id }} {
+    font-size: 15px;
+    font-weight: 700;
+    color: #333;
+    margin: 0 0 6px 0;
+    line-height: 1.3;
+  }
+
+  .cl-card-desc-{{ s_id }} {
+    font-size: 13px;
+    color: #7a7571;
+    margin: 0 0 12px 0;
+    line-height: 1.4;
+  }
+
+  /* BUTTON */
+  .cl-card-btn-{{ s_id }} {
+    display: inline-block;
+    align-self: flex-start;
+    background-color: #6d6864; /* Matches design dark grey */
+    color: #ffffff;
+    padding: 8px 22px;
+    border-radius: 20px; /* Pill shape */
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: capitalize;
+    transition: background-color 0.3s ease;
+  }
+
+  /* PAGINATION DOTS */
+  .cl-dots-{{ s_id }} {
+    display: flex;
+    gap: 8px;
+    margin-top: 5px;
+  }
+
+  .cl-dot-{{ s_id }} {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background-color: #d8d8d8;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+
+  .cl-dot-{{ s_id }}.is-active {
+    background-color: #5c5957; /* Dark active dot */
+  }
+
+  /* MOBILE LAYOUT */
+  @media screen and (max-width: 900px) {
+    .cl-card-{{ s_id }} {
+      flex: 0 0 calc((100% - ((var(--items-mobile) - 1) * 15px)) / var(--items-mobile));
+      min-width: 200px; /* Slightly smaller min-width for mobile */
+    }
+    .cl-slider-{{ s_id }} {
+      gap: 15px;
+    }
+  }
+{% endstyle %}
+
+<section class="section-{{ s_id }}" style="--items-desktop: {{ section.settings.items_desktop }}; --items-mobile: {{ section.settings.items_mobile }};">
+  <div class="cl-wrapper-{{ s_id }}">
+    
+    <!-- HEADER -->
+    <div class="cl-header-{{ s_id }}">
+      <div class="cl-title-{{ s_id }}">{{ section.settings.title | newline_to_br }}</div>
+    </div>
+
+    <!-- MAIN SLIDER -->
+    <div class="cl-slider-{{ s_id }}">
+      
+      {%- if section.blocks.size > 0 -%}
+        {% for block in section.blocks %}
+          {%- liquid 
+            assign coll = collections[block.settings.collection]
+            assign card_title = block.settings.title | default: coll.title | default: 'Collection title'
+            assign card_image = block.settings.image | default: coll.featured_image
+            assign card_url = coll.url | default: '#'
+          -%}
+          
+          <a href="{{ card_url }}" class="cl-card-{{ s_id }}" {{ block.shopify_attributes }}>
+            <div class="cl-card-img-wrap-{{ s_id }}">
+              {% if card_image != blank %}
+                {{ card_image | image_url: width: 600 | image_tag: loading: 'lazy', alt: card_title }}
+              {% else %}
+                {{ 'collection-' | append: forloop.index | placeholder_svg_tag: 'placeholder-svg' }}
+              {% endif %}
+            </div>
+            
+            <h3 class="cl-card-title-{{ s_id }}">{{ card_title }}</h3>
+            
+            {% if block.settings.description != blank %}
+              <div class="cl-card-desc-{{ s_id }}">{{ block.settings.description }}</div>
+            {% endif %}
+
+            <span class="cl-card-btn-{{ s_id }}">{{ block.settings.button_text }}</span>
+          </a>
+        {% endfor %}
+      {%- else -%}
+        <!-- Blank State for Theme Editor -->
+        {% for i in (1..5) %}
+          <a href="#" class="cl-card-{{ s_id }}">
+            <div class="cl-card-img-wrap-{{ s_id }}">
+              {{ 'collection-' | append: i | placeholder_svg_tag: 'placeholder-svg' }}
+            </div>
+            <h3 class="cl-card-title-{{ s_id }}">Bento Boxes</h3>
+            <div class="cl-card-desc-{{ s_id }}">Short description about the collection goes here</div>
+            <span class="cl-card-btn-{{ s_id }}">Shop now</span>
+          </a>
+        {% endfor %}
+      {%- endif -%}
+
+    </div>
+    
+    <!-- DOTS -->
+    <div class="cl-dots-{{ s_id }}"></div>
+
+  </div>
+</section>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const sId = '{{ s_id }}';
+    const section = document.querySelector(`.section-${sId}`);
+    if (!section) return;
+
+    const slider = section.querySelector(`.cl-slider-${sId}`);
+    const dotsContainer = section.querySelector(`.cl-dots-${sId}`);
+    if (!slider || !dotsContainer) return;
+
+    const calculateDots = () => {
+      const scrollW = slider.scrollWidth;
+      const clientW = slider.clientWidth;
+      if(clientW === 0) return; 
+      
+      const totalPages = Math.ceil(scrollW / clientW);
+
+      // Render dots if count is different
+      if (dotsContainer.children.length !== totalPages) {
+        dotsContainer.innerHTML = '';
+        for (let i = 0; i < totalPages; i++) {
+          const dot = document.createElement('button');
+          dot.className = `cl-dot-${sId} ${i === 0 ? 'is-active' : ''}`;
+          dot.setAttribute('aria-label', `Page ${i + 1}`);
+          dot.onclick = () => {
+            slider.scrollTo({ left: i * clientW, behavior: 'smooth' });
+          };
+          dotsContainer.appendChild(dot);
+        }
+      }
+
+      // Update active dot based on scroll position
+      const activeIndex = Math.round(slider.scrollLeft / clientW);
+      Array.from(dotsContainer.children).forEach((dot, i) => {
+        dot.classList.toggle('is-active', i === activeIndex);
+      });
+    };
+
+    // Run on load, on scroll, and on resize
+    calculateDots();
+    slider.addEventListener('scroll', calculateDots, { passive: true });
+    window.addEventListener('resize', calculateDots, { passive: true });
+  });
+</script>
+
+{% schema %}
+{
+  "name": "Collection List Slider",
+  "settings": [
+    {
+      "type": "textarea",
+      "id": "title",
+      "label": "Heading",
+      "default": "Our alternatives\nto plastic",
+      "info": "Use enter/return to create a line break"
+    },
+    {
+      "type": "select",
+      "id": "heading_weight",
+      "label": "Heading Font Weight",
+      "options": [
+        { "value": "300", "label": "Light" },
+        { "value": "400", "label": "Normal" },
+        { "value": "500", "label": "Medium" },
+        { "value": "600", "label": "Semi-Bold" },
+        { "value": "700", "label": "Bold" }
+      ],
+      "default": "300"
+    },
+    {
+      "type": "header",
+      "content": "Slider Layout Settings"
+    },
+    {
+      "type": "range",
+      "id": "items_desktop",
+      "min": 2,
+      "max": 6,
+      "step": 0.5,
+      "label": "Collections visible on Desktop",
+      "info": "Decimal allows the next card to peek out",
+      "default": 4.5
+    },
+    {
+      "type": "range",
+      "id": "items_mobile",
+      "min": 1,
+      "max": 5,
+      "step": 0.5,
+      "label": "Collections visible on Mobile",
+      "info": "Decimal allows the next card to peek out",
+      "default": 1.5
+    },
+    {
+      "type": "header",
+      "content": "Styling"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Header Text Color",
+      "default": "#7a7571"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background Color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "Padding Top",
+      "default": 40
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "Padding Bottom",
+      "default": 40
+    }
+  ],
+  "blocks": [
+    {
+      "type": "collection",
+      "name": "Collection Card",
+      "settings": [
+        {
+          "type": "collection",
+          "id": "collection",
+          "label": "Select Collection"
+        },
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Custom Image",
+          "info": "Leave blank to use the Collection image"
+        },
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Custom Title",
+          "info": "Leave blank to use the Collection title"
+        },
+        {
+          "type": "textarea",
+          "id": "description",
+          "label": "Short Description",
+          "default": "Short description about the collection goes here"
+        },
+        {
+          "type": "text",
+          "id": "button_text",
+          "label": "Button Text",
+          "default": "Shop now"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Collection List Slider",
+      "blocks": [
+        { "type": "collection" },
+        { "type": "collection" },
+        { "type": "collection" },
+        { "type": "collection" },
+        { "type": "collection" }
+      ]
+    }
+  ]
+}
+{% endschema %}

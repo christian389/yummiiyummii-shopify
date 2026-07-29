@@ -1,0 +1,400 @@
+{%- liquid
+  assign s_id = section.id
+-%}
+
+{% style %}
+  .section-{{ s_id }} {
+    padding-top: {{ section.settings.padding_top_mobile }}px;
+    padding-bottom: {{ section.settings.padding_bottom_mobile }}px;
+    background-color: {{ section.settings.background_color }};
+  }
+
+  .fh-wrapper-{{ s_id }} {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+    text-align: center; /* Centered by default for desktop */
+  }
+
+  /* --- HEADER --- */
+  .fh-heading-{{ s_id }} {
+    font-size: clamp(29px, 3vw, 32px);
+    color: {{ section.settings.heading_color }};
+    font-weight: {{ section.settings.heading_weight }};
+    margin: 0 0 16px 0;
+    line-height: 1.3;
+    font-family: inherit;
+  }
+
+  @media screen and (max-width: 768px) {
+   .fh-heading-{{ s_id }} {
+    width: 75%;
+  }
+  .fh-subtext-{{ s_id }} 
+  {
+    width: 70%;
+}
+
+ .fh-icon-wrap-{{ s_id }} {
+    width: 42px!important;
+    height: 42px!important;
+  }
+
+  .fh-label-{{ s_id }} {
+    font-size: 17px!important;
+  }
+  }
+
+
+  .fh-subtext-{{ s_id }} {
+    font-size: clamp(14px, 1.5vw, 16px);
+    color: {{ section.settings.subtext_color }};
+    margin: 0 auto 50px auto;
+    max-width: 800px;
+    line-height: 1.5;
+    font-family: inherit;
+    font-weight: 300;
+  }
+
+  /* --- ICONS GRID --- */
+  .fh-grid-{{ s_id }} {
+    display: flex;
+    justify-content: center;
+    gap: 40px 60px;
+    flex-wrap: wrap;
+  }
+
+  .fh-item-{{ s_id }} {
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* Centered icons for desktop */
+    gap: 16px;
+    flex: 0 0 calc(25% - 45px);
+    min-width: 140px;
+    max-width: 200px;
+  }
+
+  .fh-icon-wrap-{{ s_id }} {
+    width: 38px; /* Adjusted to match Figma size */
+    height: 38px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .fh-icon-wrap-{{ s_id }} svg {
+    width: 100%;
+    height: 100%;
+    stroke: {{ section.settings.icon_color }};
+    fill: none;
+    stroke-width: 1.25; /* Thin elegant lines */
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  .fh-icon-wrap-{{ s_id }} img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+  }
+
+  .fh-label-{{ s_id }} {
+    font-size: 13px;
+    color: {{ section.settings.label_color }};
+    line-height: 1.4;
+    text-align: center; /* Centered text for desktop */
+    font-family: inherit;
+    font-weight: 400;
+    margin: 0;
+  }
+
+  /* --- DESKTOP PADDING OVERRIDE --- */
+  @media screen and (min-width: 769px) {
+    .section-{{ s_id }} {
+      padding-top: {{ section.settings.padding_top }}px;
+      padding-bottom: {{ section.settings.padding_bottom }}px;
+    }
+  }
+
+  /* --- MOBILE LAYOUT (Left Aligned matching Figma) --- */
+  @media screen and (max-width: 768px) {
+    .fh-wrapper-{{ s_id }} {
+      text-align: left; /* Left align heading and subtext */
+      padding: 0 24px;
+    }
+    
+    .fh-subtext-{{ s_id }} {
+      margin: 0 0 40px 0; /* Remove auto margins to keep it left */
+    }
+
+    .fh-grid-{{ s_id }} {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 40px 20px;
+      justify-items: start;
+    }
+    
+    .fh-item-{{ s_id }} {
+      flex: unset;
+      max-width: 100%;
+      align-items: flex-start; /* Left align icon */
+      gap: 12px;
+    }
+    
+    .fh-label-{{ s_id }} {
+      text-align: left; /* Left align label text */
+      padding-right: 10px;
+    }
+  }
+{% endstyle %}
+
+<section class="section-{{ s_id }}">
+  <div class="fh-wrapper-{{ s_id }}">
+
+    {% if section.settings.heading != blank %}
+      <h2 class="fh-heading-{{ s_id }}">{{ section.settings.heading | newline_to_br }}</h2>
+    {% endif %}
+
+    {% if section.settings.subtext != blank %}
+      <p class="fh-subtext-{{ s_id }}">{{ section.settings.subtext | newline_to_br }}</p>
+    {% endif %}
+
+    <div class="fh-grid-{{ s_id }}">
+      {% for block in section.blocks %}
+        <div class="fh-item-{{ s_id }}" {{ block.shopify_attributes }}>
+          <div class="fh-icon-wrap-{{ s_id }}">
+            {% if block.settings.icon_image != blank %}
+              {{ block.settings.icon_image | image_url: width: 120 | image_tag: loading: 'lazy', alt: block.settings.label }}
+            {% else %}
+              {% case block.settings.icon_type %}
+                {% when 'microplastics' %}
+                  <!-- Custom Leaves Icon -->
+                  <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M12 21.5C7.5 21.5 4 18 4 13.5C4 10.5 5.5 8 8 6.5C8 9.5 9.5 11.5 12 11.5V11.5C14.5 11.5 16 9.5 16 6.5C18.5 8 20 10.5 20 13.5C20 18 16.5 21.5 12 21.5Z" stroke-width="1.25"/>
+                    <path d="M11 6.5C7 6.5 4 9 4 13.5" stroke-width="1.25"/>
+                    <path d="M8 2.5C8 5.5 10 7.5 12 7.5" stroke-width="1.25"/>
+                    <path d="M16 2.5C16 5.5 14 7.5 12 7.5" stroke-width="1.25"/>
+                    <path d="M12 11.5V21.5" stroke-width="1.25"/>
+                    <path d="M2.5 16C4.5 18.5 8 20 12 20C16 20 19.5 18.5 21.5 16" stroke-width="1.25" stroke-dasharray="2 3"/>
+                  </svg>
+                {% when 'heart' %}
+                  <!-- Custom Heart Icon -->
+                  <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" stroke-width="1.25"/>
+                  </svg>
+                {% when 'medal' %}
+                  <!-- Custom Medal Icon -->
+                  <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <circle cx="12" cy="9" r="6" stroke-width="1.25"/>
+                    <polygon points="12 5.5 13.5 8 16.5 8.5 14.5 10.5 15 13.5 12 12 9 13.5 9.5 10.5 7.5 8.5 10.5 8 12 5.5" stroke-width="1.25" stroke-linejoin="round"/>
+                    <path d="M8.5 13.8L6.5 21L12 18L17.5 21L15.5 13.8" stroke-width="1.25"/>
+                  </svg>
+                {% when 'delivery' %}
+                  <!-- Custom Truck Icon -->
+                  <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M5 16H3V7H14V16H12" stroke-width="1.25"/>
+                    <path d="M14 7H17.5L21 10.5V16H18" stroke-width="1.25"/>
+                    <circle cx="8.5" cy="16.5" r="3.5" stroke-width="1.25"/>
+                    <circle cx="15.5" cy="16.5" r="2.5" stroke-width="1.25"/>
+                    <path d="M1 10H3" stroke-width="1.25"/>
+                    <path d="M1 13H2" stroke-width="1.25"/>
+                    <path d="M14 11H21" stroke-width="1.25"/>
+                  </svg>
+                {% else %}
+                  <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <circle cx="12" cy="12" r="10" stroke-width="1.25"/>
+                    <path d="M8 12L11 15L16 9" stroke-width="1.25"/>
+                  </svg>
+              {% endcase %}
+            {% endif %}
+          </div>
+          <p class="fh-label-{{ s_id }}">{{ block.settings.label | newline_to_br }}</p>
+        </div>
+      {% endfor %}
+    </div>
+
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Feature Highlights",
+  "settings": [
+    {
+      "type": "textarea",
+      "id": "heading",
+      "label": "Heading",
+      "default": "We do it because we\nuse it ourselves."
+    },
+    {
+      "type": "textarea",
+      "id": "subtext",
+      "label": "Subtext",
+      "default": "If we want to live a long and wonderful life\nand take care of those we love, it starts\nwith diet and a little exercise."
+    },
+    {
+      "type": "select",
+      "id": "heading_weight",
+      "label": "Heading Font Weight",
+      "options": [
+        { "value": "300", "label": "Light" },
+        { "value": "400", "label": "Normal" },
+        { "value": "500", "label": "Medium" },
+        { "value": "600", "label": "Semi-Bold" }
+      ],
+      "default": "300"
+    },
+    {
+      "type": "header",
+      "content": "Colors"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background Color",
+      "default": "#f8f8f8"
+    },
+    {
+      "type": "color",
+      "id": "heading_color",
+      "label": "Heading Color",
+      "default": "#333333"
+    },
+    {
+      "type": "color",
+      "id": "subtext_color",
+      "label": "Subtext Color",
+      "default": "#666666"
+    },
+    {
+      "type": "color",
+      "id": "icon_color",
+      "label": "Icon Color",
+      "default": "#555555"
+    },
+    {
+      "type": "color",
+      "id": "label_color",
+      "label": "Label Color",
+      "default": "#555555"
+    },
+    {
+      "type": "header",
+      "content": "Desktop Spacing"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "Padding Top",
+      "default": 80
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "Padding Bottom",
+      "default": 80
+    },
+    {
+      "type": "header",
+      "content": "Mobile Spacing"
+    },
+    {
+      "type": "range",
+      "id": "padding_top_mobile",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "Padding Top",
+      "default": 60
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom_mobile",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "Padding Bottom",
+      "default": 60
+    }
+  ],
+  "blocks": [
+    {
+      "type": "feature",
+      "name": "Feature Item",
+      "settings": [
+        {
+          "type": "select",
+          "id": "icon_type",
+          "label": "Icon Style",
+          "options": [
+            { "value": "microplastics", "label": "Leaves / Recycle" },
+            { "value": "heart", "label": "Heart" },
+            { "value": "medal", "label": "Medal / Award" },
+            { "value": "delivery", "label": "Delivery / Truck" },
+            { "value": "check", "label": "Checkmark" }
+          ],
+          "default": "check"
+        },
+        {
+          "type": "image_picker",
+          "id": "icon_image",
+          "label": "Custom Icon Image",
+          "info": "Overrides the icon style above."
+        },
+        {
+          "type": "textarea",
+          "id": "label",
+          "label": "Label",
+          "default": "Feature label",
+          "info": "Use enter/return for line breaks"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Feature Highlights",
+      "blocks": [
+        {
+          "type": "feature",
+          "settings": {
+            "icon_type": "microplastics",
+            "label": "Free from\nmicroplastics"
+          }
+        },
+        {
+          "type": "feature",
+          "settings": {
+            "icon_type": "heart",
+            "label": "Created by us,\nused by us"
+          }
+        },
+        {
+          "type": "feature",
+          "settings": {
+            "icon_type": "medal",
+            "label": "Always high quality\nstainless steel"
+          }
+        },
+        {
+          "type": "feature",
+          "settings": {
+            "icon_type": "delivery",
+            "label": "Free, fast delivery on\norders over $XX"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

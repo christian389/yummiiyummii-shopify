@@ -1,0 +1,477 @@
+{%- liquid
+  assign s_id = section.id
+  
+  assign categories = ""
+  for block in section.blocks
+    assign cat = block.settings.category | strip
+    unless categories contains cat
+      assign categories = categories | append: cat | append: "|||"
+    endunless
+  endfor
+  assign unique_categories = categories | split: "|||"
+-%}
+
+{% style %}
+  .section-{{ s_id }} {
+    padding-top: {{ section.settings.padding_top }}px;
+    padding-bottom: {{ section.settings.padding_bottom }}px;
+    background-color: {{ section.settings.background_color }};
+  }
+
+  .faq-wrapper-{{ s_id }} {
+    max-width: 800px; /* Contained width for desktop readability */
+    margin: 0 auto;
+    padding: 0 20px;
+  }
+
+  /* --- HEADER --- */
+  .faq-header-{{ s_id }} {
+    text-align: center;
+    margin-bottom: 30px;
+  }
+
+  .faq-title-{{ s_id }} {
+    font-size: clamp(24px, 3vw, 32px);
+    color: {{ section.settings.heading_color }};
+    font-weight: 300;
+    margin: 0;
+    font-family: inherit;
+  }
+
+  /* --- TABS --- */
+  .faq-tabs-container-{{ s_id }} {
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+    border-bottom: 1px solid #e5e5e5;
+    margin-bottom: 40px;
+  }
+
+  .faq-tab-{{ s_id }} {
+    background: none;
+    border: none;
+    padding: 0 0 12px 0;
+    font-size: 14px;
+    color: #666;
+    cursor: pointer;
+    position: relative;
+    font-weight: 400;
+    transition: color 0.3s ease;
+    white-space: nowrap;
+  }
+
+  .faq-tab-{{ s_id }}:hover {
+    color: #333;
+  }
+
+  .faq-tab-{{ s_id }}.is-active {
+    color: #333;
+    font-weight: 600;
+  }
+
+  .faq-tab-{{ s_id }}::after {
+    content: '';
+    position: absolute;
+    bottom: -1px;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background-color: #333;
+    transform: scaleX(0);
+    transition: transform 0.3s ease;
+    transform-origin: center;
+  }
+
+  .faq-tab-{{ s_id }}.is-active::after {
+    transform: scaleX(1);
+  }
+
+  /* --- PANELS --- */
+  .faq-panel-{{ s_id }} {
+    display: none;
+    animation: fadeInFaq 0.4s ease;
+  }
+
+  .faq-panel-{{ s_id }}.is-active {
+    display: block;
+  }
+
+  @keyframes fadeInFaq {
+    from { opacity: 0; transform: translateY(5px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* --- ACCORDION ITEMS --- */
+  .faq-item-{{ s_id }} {
+    border-bottom: 1px solid #e5e5e5;
+  }
+
+  .faq-item-{{ s_id }}:first-child {
+    border-top: 1px solid transparent; /* Match spacing if needed */
+  }
+
+  .faq-question-{{ s_id }} {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: none;
+    border: none;
+    padding: 24px 0;
+    font-size: 15px;
+    font-weight: 600;
+    color: #333;
+    text-align: left;
+    cursor: pointer;
+    font-family: inherit;
+  }
+
+  .faq-icon-{{ s_id }} {
+    width: 16px;
+    height: 16px;
+    transition: transform 0.3s ease;
+    flex-shrink: 0;
+    margin-left: 20px;
+  }
+
+  .faq-icon-{{ s_id }} svg {
+    width: 100%;
+    height: 100%;
+    stroke: #333;
+    stroke-width: 2;
+    fill: none;
+  }
+
+  .faq-item-{{ s_id }}.is-open .faq-icon-{{ s_id }} {
+    transform: rotate(180deg);
+  }
+
+  .faq-answer-wrapper-{{ s_id }} {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease;
+  }
+
+  .faq-answer-{{ s_id }} {
+    padding-bottom: 24px;
+    font-size: 14px;
+    color: #666;
+    line-height: 1.5;
+    font-weight: 300;
+  }
+  
+  .faq-answer-{{ s_id }} p {
+    margin: 0 0 10px 0;
+  }
+  .faq-answer-{{ s_id }} p:last-child {
+    margin: 0;
+  }
+
+  /* --- VIEW ALL BUTTON --- */
+  .faq-view-all-wrap-{{ s_id }} {
+    display: none; /* Hidden on desktop by default */
+    margin-top: 30px;
+  }
+
+  .faq-btn-{{ s_id }} {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid #333;
+    border-radius: 30px;
+    padding: 10px 30px;
+    font-size: 14px;
+    color: #333;
+    background: transparent;
+    cursor: pointer;
+    font-family: inherit;
+    font-weight: 500;
+    transition: all 0.3s ease;
+  }
+
+  .faq-btn-{{ s_id }}:hover {
+    background: #333;
+    color: #fff;
+  }
+
+  /* --- MOBILE LAYOUT --- */
+  @media screen and (max-width: 768px) {
+    .faq-header-{{ s_id }} {
+      text-align: left;
+      margin-bottom: 24px;
+    }
+    
+    .faq-tabs-container-{{ s_id }} {
+      justify-content: flex-start;
+      gap: 24px;
+      overflow-x: auto;
+      scrollbar-width: none;
+      -ms-overflow-style: none;
+      padding-bottom: 2px;
+    }
+    .faq-tabs-container-{{ s_id }}::-webkit-scrollbar {
+      display: none;
+    }
+
+    /* Mobile Hide Logic */
+    .faq-item-{{ s_id }}:nth-child(n+{{ section.settings.mobile_limit | plus: 1 }}) {
+      display: none;
+    }
+    
+    .faq-panel-{{ s_id }}.show-all .faq-item-{{ s_id }}:nth-child(n) {
+      display: block;
+    }
+
+    .faq-view-all-wrap-{{ s_id }} {
+      display: block; /* Show wrapper if items exist */
+    }
+    
+    .faq-panel-{{ s_id }}.show-all .faq-view-all-wrap-{{ s_id }} {
+      display: none; /* Hide button when expanded */
+    }
+  }
+{% endstyle %}
+
+<section class="section-{{ s_id }}">
+  <div class="faq-wrapper-{{ s_id }}">
+    
+    <div class="faq-header-{{ s_id }}">
+      <h2 class="faq-title-{{ s_id }}">{{ section.settings.title }}</h2>
+    </div>
+
+    {% if unique_categories.size > 0 %}
+      <div class="faq-tabs-container-{{ s_id }}">
+        {% for cat in unique_categories %}
+          <button 
+            class="faq-tab-{{ s_id }} {% if forloop.first %}is-active{% endif %}" 
+            data-target="faq-panel-{{ s_id }}-{{ forloop.index }}"
+          >
+            {{ cat }}
+          </button>
+        {% endfor %}
+      </div>
+
+      <div class="faq-panels-container-{{ s_id }}">
+        {% for cat in unique_categories %}
+          
+          {%- liquid
+            assign cat_item_count = 0
+            for block in section.blocks
+              if block.settings.category == cat
+                assign cat_item_count = cat_item_count | plus: 1
+              endif
+            endfor
+          -%}
+
+          <div 
+            class="faq-panel-{{ s_id }} {% if forloop.first %}is-active{% endif %}" 
+            id="faq-panel-{{ s_id }}-{{ forloop.index }}"
+          >
+            
+            {% for block in section.blocks %}
+              {% if block.settings.category == cat %}
+                <div class="faq-item-{{ s_id }}" {{ block.shopify_attributes }}>
+                  <button class="faq-question-{{ s_id }}">
+                    {{ block.settings.question }}
+                    <span class="faq-icon-{{ s_id }}">
+                      <svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                    </span>
+                  </button>
+                  <div class="faq-answer-wrapper-{{ s_id }}">
+                    <div class="faq-answer-{{ s_id }}">
+                      {{ block.settings.answer }}
+                    </div>
+                  </div>
+                </div>
+              {% endif %}
+            {% endfor %}
+
+            {% if cat_item_count > section.settings.mobile_limit %}
+              <div class="faq-view-all-wrap-{{ s_id }}">
+                <button class="faq-btn-{{ s_id }} js-view-all-{{ s_id }}">{{ section.settings.button_label }}</button>
+              </div>
+            {% endif %}
+
+          </div>
+        {% endfor %}
+      </div>
+    {% endif %}
+
+  </div>
+</section>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const sId = '{{ s_id }}';
+    const section = document.querySelector(`.section-${sId}`);
+    if (!section) return;
+
+    // --- TAB LOGIC ---
+    const tabs = section.querySelectorAll(`.faq-tab-${sId}`);
+    const panels = section.querySelectorAll(`.faq-panel-${sId}`);
+
+    tabs.forEach(tab => {
+      tab.addEventListener('click', () => {
+        tabs.forEach(t => t.classList.remove('is-active'));
+        panels.forEach(p => p.classList.remove('is-active'));
+
+        tab.classList.add('is-active');
+        const targetId = tab.getAttribute('data-target');
+        const targetPanel = document.getElementById(targetId);
+        if (targetPanel) {
+          targetPanel.classList.add('is-active');
+        }
+      });
+    });
+
+    // --- ACCORDION LOGIC ---
+    const questions = section.querySelectorAll(`.faq-question-${sId}`);
+    
+    questions.forEach(question => {
+      question.addEventListener('click', function() {
+        const item = this.parentElement;
+        const wrapper = item.querySelector(`.faq-answer-wrapper-${sId}`);
+        const isOpen = item.classList.contains('is-open');
+
+        // Close all other accordions in the same panel (Optional, keeps it clean)
+        const panel = item.closest(`.faq-panel-${sId}`);
+        const allItems = panel.querySelectorAll(`.faq-item-${sId}`);
+        allItems.forEach(i => {
+          i.classList.remove('is-open');
+          const w = i.querySelector(`.faq-answer-wrapper-${sId}`);
+          if (w) w.style.maxHeight = null;
+        });
+
+        // Toggle clicked
+        if (!isOpen) {
+          item.classList.add('is-open');
+          wrapper.style.maxHeight = wrapper.scrollHeight + "px";
+        }
+      });
+    });
+
+    // --- MOBILE LOAD MORE LOGIC ---
+    const viewAllBtns = section.querySelectorAll(`.js-view-all-${sId}`);
+    viewAllBtns.forEach(btn => {
+      btn.addEventListener('click', function() {
+        const panel = this.closest(`.faq-panel-${sId}`);
+        if (panel) {
+          panel.classList.add('show-all');
+        }
+      });
+    });
+
+  });
+</script>
+
+{% schema %}
+{
+  "name": "Tabbed FAQ",
+  "settings": [
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Heading",
+      "default": "Frequent questions"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background Color",
+      "default": "#f4f4f4"
+    },
+    {
+      "type": "color",
+      "id": "heading_color",
+      "label": "Heading Color",
+      "default": "#5c5957"
+    },
+    {
+      "type": "header",
+      "content": "Mobile Settings"
+    },
+    {
+      "type": "range",
+      "id": "mobile_limit",
+      "min": 2,
+      "max": 10,
+      "step": 1,
+      "label": "Questions visible before 'View all'",
+      "default": 4
+    },
+    {
+      "type": "text",
+      "id": "button_label",
+      "label": "Load More Button Label",
+      "default": "View all"
+    },
+    {
+      "type": "header",
+      "content": "Spacing"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "Padding Top",
+      "default": 60
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "Padding Bottom",
+      "default": 60
+    }
+  ],
+  "blocks": [
+    {
+      "type": "faq",
+      "name": "FAQ Item",
+      "settings": [
+        {
+          "type": "text",
+          "id": "category",
+          "label": "Category / Tab Name",
+          "default": "Products",
+          "info": "Exact matches will be grouped into the same tab."
+        },
+        {
+          "type": "text",
+          "id": "question",
+          "label": "Question",
+          "default": "Are your products completely plastic-free?"
+        },
+        {
+          "type": "richtext",
+          "id": "answer",
+          "label": "Answer",
+          "default": "<p>Most food-contact parts are stainless steel or glass, but some products include components like silicone/PP/bamboo. (We're transparent about this.)</p>"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Tabbed FAQ",
+      "blocks": [
+        { "type": "faq", "settings": { "category": "Products", "question": "Are your products completely plastic-free?" } },
+        { "type": "faq", "settings": { "category": "Products", "question": "How fast is delivery?" } },
+        { "type": "faq", "settings": { "category": "Products", "question": "When is shipping free?" } },
+        { "type": "faq", "settings": { "category": "Products", "question": "Can I return my order?" } },
+        { "type": "faq", "settings": { "category": "Products", "question": "What does the 10-year warranty cover?" } },
+        { "type": "faq", "settings": { "category": "Products", "question": "Extra question to test load more?" } },
+        { "type": "faq", "settings": { "category": "Brand", "question": "Where are you based?" } },
+        { "type": "faq", "settings": { "category": "Shipping", "question": "Do you ship internationally?" } },
+        { "type": "faq", "settings": { "category": "Returns", "question": "How do I start a return?" } }
+      ]
+    }
+  ]
+}
+{% endschema %}

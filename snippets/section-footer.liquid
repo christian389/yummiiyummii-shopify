@@ -1,0 +1,21 @@
+{% comment %}
+  Renders section footer.
+
+  Accepts:
+  - button: {Mixed} Used to check if button is present. Can be String or Boolean.
+  - button_label: {String} button label (can be either a translation key or a string).
+  - button_label_is_translation: {Boolean} set true if button label is a translation key.
+  - link: {String} button link.
+  - show_always: {Boolean} set true if footer should always be shown (otherwise it only appears on mobile devices).
+
+  Usage:
+  {% render 'section-footer', button: 'Add to cart', label: 'general.button.add_to_cart', button_label_is_translation: true, link: '', show_always: false %}
+{% endcomment %}
+
+{%- unless button == blank -%}
+  <div class="section-footer {% unless show_always %} element--hide-on-desk {% endunless %}">
+    <div class="section-footer__actions">
+      {%- render 'button', label: button_label, link: link, style: 'arrow-right', label_is_translation: button_label_is_translation -%}
+    </div>
+  </div>
+{%- endunless -%}

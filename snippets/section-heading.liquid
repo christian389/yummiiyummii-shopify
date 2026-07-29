@@ -1,0 +1,50 @@
+{% comment %}
+  Renders section headings
+
+  Accepts:
+  - heading: {String} the heading text.
+  - subheading: {String} the subheading text.
+  - heading_size: {String} the heading size (can be "text-size--regular" or "text-size--large").
+  - section_layout: {String} the layout of the section heading (can be "section-heading--left section-heading--one-row" or "section-heading--left section-heading--two-rows" or "section-heading--center section-heading--two-rows").
+  - button: {Boolean} if true, it will render a button.
+  - button_label: {String} button label (can be either a translation key or a string).
+  - button_label_is_translation: {Boolean} set true if button label is a translation key.
+  - link: {String} the button link.
+  - seo_h_tag: {String} the HTML heading tag (H1-H6, span, etc.).
+
+  Usage:
+  {% render 'section-heading', heading: 'Welcome to our store', subheading: 'Discover our latest products', heading_size: 'text-size--large', section_layout: 'section-heading--left section-heading--two-rows', button: true, button_label: 'Shop now', link: '/collections/all', seo_h_tag: 'h1' %}
+{% endcomment %}
+
+{%- unless heading == blank and subheading == blank and button == blank -%}
+  
+  <div class="section-heading {{ section_layout }} gutter-bottom--large">
+    
+    {%- unless heading == blank and subheading == blank -%}
+
+      <div class="section-heading__text remove-empty-space">
+
+        {%- unless heading == blank -%}
+          <{{ seo_h_tag }} class="section-heading__title text-font--secondary {{ heading_size }}">{{ heading | escape }}</{{ seo_h_tag }}>
+        {%- endunless -%}
+
+        {%- unless subheading == blank -%}
+          <span class="section-heading__subheading text-size--small text-color--opacity">{{ subheading }}</span>
+        {%- endunless -%}
+
+      </div>
+
+    {%- endunless -%}
+    
+    {%- unless button == blank -%}
+      <div class="section-heading__actions">
+        {%- if button -%}
+          {%- render 'button', label: button_label, link: link, style: 'outline element--hide-on-small', label_is_translation: button_label_is_translation -%}
+        {%- endif -%}
+      </div>
+
+    {%- endunless -%}
+  
+  </div>
+
+{%- endunless -%}

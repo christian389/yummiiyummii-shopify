@@ -1,0 +1,237 @@
+{
+  "sections": {
+    "main": {
+      "type": "main-page",
+      "disabled": true,
+      "settings": {
+        "center": false,
+        "page_cover_metafield": "custom.cover_image",
+        "color_background_main": "#000000",
+        "color_text_main": "#ffffff",
+        "height": "regular"
+      }
+    },
+    "media_with_text_overlay_8VEQec": {
+      "type": "media-with-text-overlay",
+      "blocks": {
+        "image_7W9Jet": {
+          "type": "image",
+          "settings": {
+            "caption": "",
+            "title": "Build Your Kit",
+            "subtitle": "",
+            "link": "",
+            "open_in_new_window": false,
+            "button_label": "",
+            "color_background_main": "#000000",
+            "color_text_main": "#ffffff",
+            "show_horizontal_line": false,
+            "seo_h_tag": "h1"
+          }
+        }
+      },
+      "block_order": [
+        "image_7W9Jet"
+      ],
+      "name": "t:sections.local-extra-words.sections.media-with-text-overlay.name",
+      "settings": {
+        "heading": "",
+        "subheading": "",
+        "section_heading_size": "text-size--regular",
+        "section_heading_layout": "section-heading--left section-heading--one-row",
+        "cta_label": "",
+        "cta_url": "",
+        "layout": "full",
+        "height": "small",
+        "alignment": "horizontal-left align-content--vertical-bottom",
+        "width": "60%",
+        "caption_size": "text-size--regular",
+        "title_size": "heading-size--regular",
+        "subtitle_size": "text-size--regular",
+        "spacing": 18,
+        "button_style": "solid",
+        "border_radius": 0,
+        "section_background_color": "rgba(0,0,0,0)",
+        "section_background_gradient": "",
+        "section_heading_color": "rgba(0,0,0,0)",
+        "gutter_decrease": false,
+        "remove_top_margin": true,
+        "remove_bottom_margin": false,
+        "seo_h_tag": "h2"
+      }
+    },
+    "1664881260f84b1819": {
+      "type": "products-set",
+      "blocks": {
+        "16648812608487c5b9-0": {
+          "type": "price",
+          "settings": {}
+        },
+        "16648812608487c5b9-1": {
+          "type": "title",
+          "settings": {}
+        },
+        "26251fa6-de69-4d3d-a83d-a85a839972f0": {
+          "type": "rating",
+          "settings": {}
+        },
+        "ed7564ad-da7d-41cc-ab59-f9ab491f3e5c": {
+          "type": "description",
+          "disabled": true,
+          "settings": {
+            "excerpt_limit": 15,
+            "show_link": true
+          }
+        }
+      },
+      "block_order": [
+        "16648812608487c5b9-0",
+        "16648812608487c5b9-1",
+        "26251fa6-de69-4d3d-a83d-a85a839972f0",
+        "ed7564ad-da7d-41cc-ab59-f9ab491f3e5c"
+      ],
+      "settings": {
+        "heading": "Mix, Match & Save!",
+        "subheading": "Save when buying more items",
+        "section_heading_size": "text-size--large",
+        "section_heading_layout": "section-heading--left section-heading--two-rows",
+        "products": [],
+        "style": "primary",
+        "style_color": "rgba(0,0,0,0)",
+        "panel_title": "Build your set",
+        "panel_subtitle": "Save $30 when buying 3 items",
+        "panel_bg_color": "#1b1a1a",
+        "panel_text_color": "#f5f5f5",
+        "gutter_decrease": false,
+        "seo_h_tag": "h2"
+      }
+    },
+    "16648784885bef5236": {
+      "type": "products-set",
+      "blocks": {
+        "16648784880891731e-0": {
+          "type": "price",
+          "settings": {}
+        },
+        "16648784880891731e-1": {
+          "type": "title",
+          "settings": {}
+        },
+        "73f604df-e6b9-4d67-920f-46f8f3dfbd26": {
+          "type": "rating",
+          "settings": {}
+        },
+        "a8dd629d-122f-4ce0-99d8-61c6e2e90a94": {
+          "type": "description",
+          "settings": {
+            "excerpt_limit": 15,
+            "show_link": true
+          }
+        }
+      },
+      "block_order": [
+        "16648784880891731e-0",
+        "16648784880891731e-1",
+        "73f604df-e6b9-4d67-920f-46f8f3dfbd26",
+        "a8dd629d-122f-4ce0-99d8-61c6e2e90a94"
+      ],
+      "settings": {
+        "heading": "The Ultimate Kit",
+        "subheading": "Save when buying more items",
+        "section_heading_size": "text-size--large",
+        "section_heading_layout": "section-heading--left section-heading--two-rows",
+        "products": [],
+        "style": "primary",
+        "style_color": "rgba(0,0,0,0)",
+        "panel_title": "Build your set",
+        "panel_subtitle": "Save 25% when buying 3 items",
+        "panel_bg_color": "#1b1a1a",
+        "panel_text_color": "#f5f5f5",
+        "gutter_decrease": false,
+        "seo_h_tag": "h2"
+      }
+    },
+    "1664879334d271656d": {
+      "type": "products-set",
+      "blocks": {
+        "1664879334af4db1b4-0": {
+          "type": "price",
+          "settings": {}
+        },
+        "1664879334af4db1b4-1": {
+          "type": "title",
+          "settings": {}
+        },
+        "110f0b85-9d2f-484a-b012-93a2f16fcdad": {
+          "type": "rating",
+          "settings": {}
+        }
+      },
+      "block_order": [
+        "1664879334af4db1b4-0",
+        "1664879334af4db1b4-1",
+        "110f0b85-9d2f-484a-b012-93a2f16fcdad"
+      ],
+      "settings": {
+        "heading": "The Vital Set",
+        "subheading": "Save when buying more items",
+        "section_heading_size": "text-size--large",
+        "section_heading_layout": "section-heading--left section-heading--two-rows",
+        "products": [],
+        "style": "outline",
+        "style_color": "rgba(0,0,0,0)",
+        "panel_title": "Build your set",
+        "panel_subtitle": "Save 30%",
+        "panel_bg_color": "#1b1a1a",
+        "panel_text_color": "#f5f5f5",
+        "gutter_decrease": false,
+        "seo_h_tag": "h2"
+      }
+    },
+    "16648799364d71f4d2": {
+      "type": "products-set",
+      "blocks": {
+        "1664879936c903b030-0": {
+          "type": "price",
+          "settings": {}
+        },
+        "1664879936c903b030-1": {
+          "type": "title",
+          "settings": {}
+        },
+        "726ab7e4-535e-471e-8756-392e307cfb51": {
+          "type": "rating",
+          "settings": {}
+        }
+      },
+      "block_order": [
+        "1664879936c903b030-0",
+        "1664879936c903b030-1",
+        "726ab7e4-535e-471e-8756-392e307cfb51"
+      ],
+      "settings": {
+        "heading": "The Premium Set",
+        "subheading": "Save when buying more items",
+        "section_heading_size": "text-size--large",
+        "section_heading_layout": "section-heading--left section-heading--two-rows",
+        "products": [],
+        "style": "primary",
+        "style_color": "rgba(0,0,0,0)",
+        "panel_title": "Build your set",
+        "panel_subtitle": "Save 15% on the premium collection",
+        "panel_bg_color": "#1b1a1a",
+        "panel_text_color": "#f5f5f5",
+        "gutter_decrease": false,
+        "seo_h_tag": "h2"
+      }
+    }
+  },
+  "order": [
+    "main",
+    "media_with_text_overlay_8VEQec",
+    "1664881260f84b1819",
+    "16648784885bef5236",
+    "1664879334d271656d",
+    "16648799364d71f4d2"
+  ]
+}

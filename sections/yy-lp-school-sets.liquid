@@ -1,0 +1,277 @@
+{% comment %}
+  Yummii Yummii — Landingsside: Sæt-grid (skole-sæt + andre bundles)
+  PRODUKT-DREVET: vælg et produkt pr. kort, så billede, pris, førpris,
+  spar-badge, variant og link kommer automatisk fra produktet. Alle manuelle
+  felter er valgfrie overrides (bruges kun hvis udfyldt). To knapper:
+  "Se sættet" (produktside) og "Læg i kurv" (udløser 2-trins upsell-popuppen).
+{% endcomment %}
+
+{{ 'yy-landing.css' | asset_url | stylesheet_tag }}
+<script src="{{ 'yy-landing.js' | asset_url }}" defer></script>
+
+{% style %}
+  #shopify-section-{{ section.id }} .yy-sset-grid{
+    display:grid; grid-template-columns:repeat(4, 1fr); gap:18px; margin-top:28px;
+  }
+  #shopify-section-{{ section.id }} .yy-sset-card{
+    display:flex; flex-direction:column; background:var(--yylp-card,#fff);
+    border:1px solid var(--yylp-border,rgba(0,0,0,.08)); border-radius:18px; overflow:hidden;
+    box-shadow:0 1px 2px rgba(0,0,0,.04);
+  }
+  #shopify-section-{{ section.id }} .yy-sset-media{
+    position:relative; aspect-ratio:1/1; background:var(--yylp-soft,#f2efe8);
+    display:flex; align-items:center; justify-content:center; text-align:center;
+    color:var(--yylp-muted,#9a958c); font-size:13px; padding:14px;
+  }
+  #shopify-section-{{ section.id }} .yy-sset-media img{ width:100%; height:100%; object-fit:cover; }
+  #shopify-section-{{ section.id }} .yy-sset-badge{
+    position:absolute; top:12px; left:12px; background:#9C131D; color:#fff;
+    font-weight:700; font-size:12px; padding:5px 10px; border-radius:999px; letter-spacing:.02em;
+  }
+  #shopify-section-{{ section.id }} .yy-sset-body{ display:flex; flex-direction:column; gap:10px; padding:16px 16px 18px; flex:1; }
+  #shopify-section-{{ section.id }} .yy-sset-name{ font-size:17px; line-height:1.2; margin:0; font-weight:700; }
+  #shopify-section-{{ section.id }} .yy-sset-trin{ margin:0; font-size:13px; color:var(--yylp-muted,#8a857c); font-weight:600; }
+  #shopify-section-{{ section.id }} .yy-sset-incl{ list-style:none; margin:2px 0 0; padding:0; display:flex; flex-direction:column; gap:5px; }
+  #shopify-section-{{ section.id }} .yy-sset-incl li{ position:relative; padding-left:20px; font-size:13.5px; line-height:1.35; }
+  #shopify-section-{{ section.id }} .yy-sset-incl li::before{
+    content:""; position:absolute; left:0; top:6px; width:12px; height:12px;
+    background:no-repeat center/contain url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="%23198754" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>');
+  }
+  #shopify-section-{{ section.id }} .yy-sset-price{ display:flex; align-items:baseline; gap:8px; margin-top:auto; padding-top:6px; }
+  #shopify-section-{{ section.id }} .yy-sset-now{ font-size:20px; font-weight:800; }
+  #shopify-section-{{ section.id }} .yy-sset-was{ font-size:14px; color:var(--yylp-muted,#9a958c); text-decoration:line-through; }
+  #shopify-section-{{ section.id }} .yy-sset-cta{ display:flex; flex-direction:column; gap:8px; margin-top:4px; }
+  #shopify-section-{{ section.id }} .yy-sset-cta .yy-lp-btn{ width:100%; justify-content:center; }
+  #shopify-section-{{ section.id }} .yy-sset-ghost{
+    background:transparent; border:1px solid var(--yylp-border,rgba(0,0,0,.18));
+    color:inherit; font-weight:600; border-radius:12px; padding:11px 14px; text-align:center;
+    text-decoration:none; font-size:14px; transition:background .15s ease;
+  }
+  #shopify-section-{{ section.id }} .yy-sset-ghost:hover{ background:rgba(0,0,0,.05); }
+  #shopify-section-{{ section.id }} .yy-sset-values{
+    list-style:none; margin:16px 0 0; padding:0; display:flex; flex-wrap:wrap; justify-content:center; gap:8px 20px;
+  }
+  #shopify-section-{{ section.id }} .yy-sset-values li{ position:relative; padding-left:22px; font-size:14px; font-weight:600; }
+  #shopify-section-{{ section.id }} .yy-sset-values li::before{
+    content:""; position:absolute; left:0; top:3px; width:14px; height:14px;
+    background:no-repeat center/contain url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="%23198754" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>');
+  }
+  #shopify-section-{{ section.id }} .yy-sset-sibling{
+    margin-top:22px; text-align:center; font-size:15px; padding:14px 18px;
+    background:var(--yylp-soft,#f2efe8); border-radius:14px;
+  }
+  @media (max-width:1000px){ #shopify-section-{{ section.id }} .yy-sset-grid{ grid-template-columns:repeat(2,1fr); } }
+  @media (max-width:560px){ #shopify-section-{{ section.id }} .yy-sset-grid{ grid-template-columns:1fr; } }
+{% endstyle %}
+
+<div class="yy-lp-root yy-lp-scheme--{{ section.settings.color_scheme }}">
+  <section id="{{ section.settings.anchor_id | default: 'saet' }}" class="yy-lp-section">
+    <div class="yy-lp-wrap">
+      {%- if section.settings.heading != blank -%}<h2 class="yy-lp-title">{{ section.settings.heading }}</h2>{%- endif -%}
+      {%- if section.settings.intro != blank -%}<p class="yy-lp-intro">{{ section.settings.intro }}</p>{%- endif -%}
+
+      {%- if section.settings.value_stack != blank -%}
+        <ul class="yy-sset-values">
+          {%- assign vlines = section.settings.value_stack | newline_to_br | split: '<br />' -%}
+          {%- for line in vlines -%}
+            {%- assign vclean = line | strip_newlines | strip -%}
+            {%- if vclean != blank -%}<li>{{ vclean }}</li>{%- endif -%}
+          {%- endfor -%}
+        </ul>
+      {%- endif -%}
+
+      <div class="yy-sset-grid">
+        {%- for block in section.blocks -%}
+          {%- if block.type == 'set' -%}
+
+            {%- comment -%} ---- Produkt-drevne værdier (manuelle felter er overrides) ---- {%- endcomment -%}
+            {%- assign sp = block.settings.product -%}
+            {%- assign spv = nil -%}
+            {%- if sp != blank -%}{%- assign spv = sp.selected_or_first_available_variant -%}{%- endif -%}
+
+            {%- assign card_img = block.settings.image -%}
+            {%- if card_img == blank and sp != blank -%}{%- assign card_img = sp.featured_image -%}{%- endif -%}
+            {%- assign card_name = block.settings.name -%}
+            {%- if card_name == blank and sp != blank -%}{%- assign card_name = sp.title -%}{%- endif -%}
+            {%- assign card_url = block.settings.product_url -%}
+            {%- if card_url == blank and sp != blank -%}{%- assign card_url = sp.url -%}{%- endif -%}
+            {%- assign card_variant = block.settings.variant_id -%}
+            {%- if card_variant == blank and spv != blank -%}{%- assign card_variant = spv.id -%}{%- endif -%}
+
+            {%- assign now_html = block.settings.price_text -%}
+            {%- if now_html == blank and spv != blank -%}{%- assign now_html = spv.price | money_without_trailing_zeros -%}{%- endif -%}
+            {%- assign was_html = block.settings.compare_text -%}
+            {%- assign save_html = block.settings.save_text -%}
+            {%- if spv != blank and spv.compare_at_price and spv.compare_at_price > spv.price -%}
+              {%- if was_html == blank -%}{%- assign was_html = spv.compare_at_price | money_without_trailing_zeros -%}{%- endif -%}
+              {%- if save_html == blank -%}
+                {%- assign save_pct = spv.compare_at_price | minus: spv.price | times: 100 | divided_by: spv.compare_at_price | round -%}
+                {%- assign save_html = 'Spar ' | append: save_pct | append: '%' -%}
+              {%- endif -%}
+            {%- endif -%}
+
+            {%- comment -%} ---- Upsell 1 (ekstra boks, valgfri rabat) ---- {%- endcomment -%}
+            {%- assign u1p = block.settings.u1_product -%}
+            {%- assign u1pv = nil -%}
+            {%- if u1p != blank -%}{%- assign u1pv = u1p.selected_or_first_available_variant -%}{%- endif -%}
+            {%- assign u1_disc = block.settings.u1_discount | default: 0 -%}
+            {%- assign u1_variant = block.settings.u1_variant -%}
+            {%- if u1_variant == blank and u1pv != blank -%}{%- assign u1_variant = u1pv.id -%}{%- endif -%}
+            {%- assign u1_title = block.settings.u1_title -%}
+            {%- if u1_title == blank and u1p != blank -%}{%- assign u1_title = u1p.title -%}{%- endif -%}
+            {%- assign u1_img_obj = block.settings.u1_image -%}
+            {%- if u1_img_obj == blank and u1p != blank -%}{%- assign u1_img_obj = u1p.featured_image -%}{%- endif -%}
+            {%- assign u1_now = block.settings.u1_price -%}
+            {%- assign u1_was = block.settings.u1_compare -%}
+            {%- if u1pv != blank -%}
+              {%- if u1_disc > 0 -%}
+                {%- assign u1_disc_cents = u1pv.price | times: u1_disc | divided_by: 100 -%}
+                {%- assign u1_now_cents = u1pv.price | minus: u1_disc_cents -%}
+                {%- if u1_now == blank -%}{%- assign u1_now = u1_now_cents | money_without_trailing_zeros -%}{%- endif -%}
+                {%- if u1_was == blank -%}{%- assign u1_was = u1pv.price | money_without_trailing_zeros -%}{%- endif -%}
+              {%- else -%}
+                {%- if u1_now == blank -%}{%- assign u1_now = u1pv.price | money_without_trailing_zeros -%}{%- endif -%}
+              {%- endif -%}
+            {%- endif -%}
+
+            {%- comment -%} ---- Upsell 2 (låg og sugerør) ---- {%- endcomment -%}
+            {%- assign u2p = block.settings.u2_product -%}
+            {%- assign u2pv = nil -%}
+            {%- if u2p != blank -%}{%- assign u2pv = u2p.selected_or_first_available_variant -%}{%- endif -%}
+            {%- assign u2_variant = block.settings.u2_variant -%}
+            {%- if u2_variant == blank and u2pv != blank -%}{%- assign u2_variant = u2pv.id -%}{%- endif -%}
+            {%- assign u2_title = block.settings.u2_title -%}
+            {%- if u2_title == blank and u2p != blank -%}{%- assign u2_title = u2p.title -%}{%- endif -%}
+            {%- assign u2_img_obj = block.settings.u2_image -%}
+            {%- if u2_img_obj == blank and u2p != blank -%}{%- assign u2_img_obj = u2p.featured_image -%}{%- endif -%}
+            {%- assign u2_now = block.settings.u2_price -%}
+            {%- if u2_now == blank and u2pv != blank -%}{%- assign u2_now = u2pv.price | money_without_trailing_zeros -%}{%- endif -%}
+
+            <article class="yy-sset-card" {{ block.shopify_attributes }}>
+              <div class="yy-sset-media">
+                {%- if save_html != blank -%}<span class="yy-sset-badge">{{ save_html }}</span>{%- endif -%}
+                {%- if card_img != blank -%}
+                  {%- assign ih = 600 | times: card_img.height | divided_by: card_img.width -%}
+                  <img src="{{ card_img | image_url: width: 600 }}" alt="{{ card_name | escape }}" width="600" height="{{ ih }}" loading="lazy">
+                {%- else -%}
+                  {{ card_name }}
+                {%- endif -%}
+              </div>
+              <div class="yy-sset-body">
+                {%- if card_name != blank -%}<h3 class="yy-sset-name">{{ card_name }}</h3>{%- endif -%}
+                {%- if block.settings.trin != blank -%}<p class="yy-sset-trin">{{ block.settings.trin }}</p>{%- endif -%}
+                {%- if block.settings.includes != blank -%}
+                  <ul class="yy-sset-incl">
+                    {%- assign lines = block.settings.includes | newline_to_br | split: '<br />' -%}
+                    {%- for line in lines -%}
+                      {%- assign clean = line | strip_newlines | strip -%}
+                      {%- if clean != blank -%}<li>{{ clean }}</li>{%- endif -%}
+                    {%- endfor -%}
+                  </ul>
+                {%- endif -%}
+                <div class="yy-sset-price">
+                  {%- if now_html != blank -%}<span class="yy-sset-now">{{ now_html }}</span>{%- endif -%}
+                  {%- if was_html != blank -%}<span class="yy-sset-was">{{ was_html }}</span>{%- endif -%}
+                </div>
+                <div class="yy-sset-cta">
+                  {%- if section.settings.show_add_button and card_variant != blank -%}
+                    <button
+                      type="button"
+                      class="yy-lp-btn yy-lp-btn--primary"
+                      data-yy2-trigger
+                      data-set-variant="{{ card_variant }}"
+                      data-set-name="{{ card_name | escape }}"
+                      data-u1-variant="{{ u1_variant }}"
+                      data-u1-title="{{ u1_title | escape }}"
+                      data-u1-price="{{ u1_now }}"
+                      data-u1-compare="{{ u1_was }}"
+                      data-u1-img="{% if u1_img_obj != blank %}{{ u1_img_obj | image_url: width: 200 }}{% endif %}"
+                      data-u1-note="{{ block.settings.u1_note | escape }}"
+                      data-u2-variant="{{ u2_variant }}"
+                      data-u2-title="{{ u2_title | escape }}"
+                      data-u2-price="{{ u2_now }}"
+                      data-u2-img="{% if u2_img_obj != blank %}{{ u2_img_obj | image_url: width: 200 }}{% endif %}"
+                      data-u2-note="{{ block.settings.u2_note | escape }}">
+                      {{ block.settings.cta_label | default: 'Læg i kurv' }}
+                    </button>
+                  {%- endif -%}
+                  {%- if card_url != blank -%}
+                    <a class="yy-sset-ghost" href="{{ card_url }}">{{ block.settings.link_label | default: 'Se sættet' }}</a>
+                  {%- endif -%}
+                </div>
+              </div>
+            </article>
+          {%- endif -%}
+        {%- endfor -%}
+      </div>
+
+      {%- if section.settings.sibling_text != blank -%}
+        <div class="yy-sset-sibling">{{ section.settings.sibling_text }}</div>
+      {%- endif -%}
+    </div>
+  </section>
+</div>
+
+{% schema %}
+{
+  "name": "LP — Sæt-grid",
+  "settings": [
+    {
+      "type": "select",
+      "id": "color_scheme",
+      "label": "Farveskema",
+      "options": [ { "value": "paper", "label": "Papir" }, { "value": "white", "label": "Hvid" }, { "value": "cream", "label": "Cremefarvet" } ],
+      "default": "paper"
+    },
+    { "type": "text", "id": "anchor_id", "label": "Anker-id (til CTA-scroll)", "default": "saet" },
+    { "type": "text", "id": "heading", "label": "Overskrift", "default": "Find dit skole-sæt" },
+    { "type": "textarea", "id": "intro", "label": "Underlinje", "default": "Vælg efter dit barns klassetrin. Alt er i rustfrit stål og glas, uden mikroplast og kemi, med 10 års garanti og gratis fragt." },
+    { "type": "textarea", "id": "value_stack", "label": "Value-stack (én linje pr. fordel)", "info": "Vises som flueben-række under underlinjen. Tom = skjult." },
+    { "type": "checkbox", "id": "show_add_button", "label": "Vis 'Læg i kurv'-knap", "default": true, "info": "Slå fra til krydssalg, hvor kortene kun skal linke til produktsiden." },
+    { "type": "textarea", "id": "sibling_text", "label": "Søskende-bånd (under kortene)", "default": "Flere børn? Vælg to skole-sæt og få ekstra 10% i kurven." }
+  ],
+  "blocks": [
+    {
+      "type": "set",
+      "name": "Sæt",
+      "settings": [
+        { "type": "product", "id": "product", "label": "Produkt", "info": "Vælg sættet, så billede, pris, førpris, spar-badge, variant og link kommer automatisk." },
+        { "type": "text", "id": "trin", "label": "Undertekst / klassetrin", "default": "0.-3. klasse" },
+        { "type": "textarea", "id": "includes", "label": "Indhold (én linje pr. produkt, valgfri)" },
+        { "type": "text", "id": "cta_label", "label": "Knap — læg i kurv", "default": "Læg i kurv" },
+        { "type": "text", "id": "link_label", "label": "Knap — se sættet", "default": "Se sættet" },
+        { "type": "header", "content": "Overrides (valgfri)" },
+        { "type": "image_picker", "id": "image", "label": "Billede (override)" },
+        { "type": "text", "id": "name", "label": "Navn (override)" },
+        { "type": "text", "id": "price_text", "label": "Pris (override)" },
+        { "type": "text", "id": "compare_text", "label": "Førpris (override)" },
+        { "type": "text", "id": "save_text", "label": "Spar-badge (override)" },
+        { "type": "text", "id": "variant_id", "label": "Variant-ID (override)" },
+        { "type": "url", "id": "product_url", "label": "Link (override)" },
+        { "type": "header", "content": "Upsell 1 (ekstra boks)" },
+        { "type": "product", "id": "u1_product", "label": "Produkt" },
+        { "type": "range", "id": "u1_discount", "label": "Rabat % (kun visning)", "min": 0, "max": 50, "step": 5, "default": 10, "info": "Matcher din automatiske 'køb sæt → boks −X%'-rabat." },
+        { "type": "text", "id": "u1_note", "label": "Note", "default": "Til søskende eller dig selv." },
+        { "type": "text", "id": "u1_variant", "label": "Variant-ID (override)" },
+        { "type": "text", "id": "u1_title", "label": "Titel (override)" },
+        { "type": "text", "id": "u1_price", "label": "Pris (override)" },
+        { "type": "text", "id": "u1_compare", "label": "Førpris (override)" },
+        { "type": "image_picker", "id": "u1_image", "label": "Billede (override)" },
+        { "type": "header", "content": "Upsell 2 (låg og sugerør)" },
+        { "type": "product", "id": "u2_product", "label": "Produkt" },
+        { "type": "text", "id": "u2_note", "label": "Note", "default": "Gør drikkedunken nem at drikke af." },
+        { "type": "text", "id": "u2_variant", "label": "Variant-ID (override)" },
+        { "type": "text", "id": "u2_title", "label": "Titel (override)" },
+        { "type": "text", "id": "u2_price", "label": "Pris (override)" },
+        { "type": "image_picker", "id": "u2_image", "label": "Billede (override)" }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "LP — Sæt-grid",
+      "blocks": [ { "type": "set" }, { "type": "set" }, { "type": "set" }, { "type": "set" } ]
+    }
+  ]
+}
+{% endschema %}

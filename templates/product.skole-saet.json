@@ -1,0 +1,975 @@
+{
+  "sections": {
+    "17599300585c25178c": {
+      "type": "_blocks",
+      "settings": {}
+    },
+    "main": {
+      "type": "main-product",
+      "blocks": {
+        "vendor": {
+          "type": "vendor",
+          "settings": {}
+        },
+        "title": {
+          "type": "title",
+          "settings": {}
+        },
+        "0af25365-ec55-462c-b253-2f1ea565f2cd": {
+          "type": "rating",
+          "settings": {}
+        },
+        "text_JDQ7TW": {
+          "type": "text",
+          "settings": {
+            "text": "<p>{{ product.metafields.custom.product_short_description | metafield_tag }}</p>",
+            "text_size": "text-size--regular",
+            "text_style": "text-color--primary",
+            "text_color": "rgba(0,0,0,0)",
+            "text_transform": false
+          }
+        },
+        "price": {
+          "type": "price",
+          "disabled": true,
+          "settings": {}
+        },
+        "variant_picker": {
+          "type": "variant_picker",
+          "disabled": true,
+          "settings": {
+            "heading": "Choose variants",
+            "variants_style": "radio",
+            "variant_labels": true,
+            "color_swatches": true,
+            "style": "outline",
+            "unavailable_variants": "hide"
+          }
+        },
+        "aa3ff737-7b41-4ce2-9059-7d655899a9dd": {
+          "type": "inventory",
+          "disabled": true,
+          "settings": {
+            "show_quantities": "always",
+            "low_inventory_threshold": 5,
+            "show_progress_bar": true
+          }
+        },
+        "buy_buttons": {
+          "type": "buy_buttons",
+          "settings": {
+            "show_quantity_selector": true,
+            "show_preorder": false,
+            "show_dynamic_checkout": false,
+            "show_gift_card_recipient": false,
+            "show_price": true,
+            "style": "outline",
+            "color_text_buttons": "rgba(0,0,0,0)"
+          }
+        },
+        "complementary_HKAWKW": {
+          "type": "complementary",
+          "disabled": true,
+          "settings": {
+            "heading": "Complementary products",
+            "show_price": true,
+            "show_vendor": false,
+            "show_rating": true,
+            "style": "outline"
+          }
+        },
+        "098ecf80-2fe9-4879-8b3d-479e0882b7ed": {
+          "type": "product_promotion",
+          "disabled": true,
+          "settings": {
+            "heading": "Product promotion",
+            "product": "bento-large-1",
+            "show_price_free": false,
+            "text": "Add product promotions or upsell individual items.",
+            "style": "outline",
+            "hide_block_if": false
+          }
+        },
+        "custom_liquid_yRn6b9": {
+          "type": "custom_liquid",
+          "name": "bundle includes",
+          "settings": {
+            "custom_liquid": "{%- comment -%}\n  Custom Liquid block — Bundle indhold\n  Brug på selve bundleproduktets side.\n  Bruger metafelt: custom.bundle_includes (list.product_reference)\n  — sat automatisk via Cowork på alle bundle-produkter.\n{%- endcomment -%}\n\n{%- comment -%} ═══ KONFIGURATION — rediger her ═══ {%- endcomment -%}\n{%- assign section_heading  = 'DETTE SÆT INDEHOLDER' -%}\n{%- assign compare_label    = 'Købt separat' -%}\n{%- assign bundle_label     = 'Sætpris' -%}\n{%- assign savings_label    = 'Du sparer' -%}\n{%- comment -%} ═══════════════════════════════════ {%- endcomment -%}\n\n{%- liquid\n  assign included_products = product.metafields.custom.bundle_includes.value\n  assign current_variant   = product.selected_or_first_available_variant\n\n  assign individual_total = 0\n  if included_products != blank and included_products.size > 0\n    for p in included_products\n      assign pv = p.selected_or_first_available_variant\n      assign individual_total = individual_total | plus: pv.price\n    endfor\n    assign bundle_price   = current_variant.price\n    assign savings_amount = individual_total | minus: bundle_price\n    if individual_total > 0\n      assign savings_pct = savings_amount | times: 100 | divided_by: individual_total\n    else\n      assign savings_pct = 0\n    endif\n    assign show_section = true\n  else\n    assign show_section = false\n  endif\n-%}\n\n{%- if show_section -%}\n\n{%- assign uid = block.id | default: product.id -%}\n<div class=\"yyc-wrap\" id=\"yyc-{{ uid }}\">\n\n  <div class=\"yyc-heading\">{{ section_heading }}</div>\n\n  <div class=\"yyc-card\">\n    {%- if savings_pct > 0 -%}\n    <span class=\"yyc-badge\">−{{ savings_pct }}%</span>\n    {%- endif -%}\n\n    <ul class=\"yyc-list\">\n      {%- for p in included_products -%}\n        {%- assign pv = p.selected_or_first_available_variant -%}\n        <li class=\"yyc-item\">\n          <a href=\"{{ p.url }}\" class=\"yyc-item__link\">\n            <div class=\"yyc-item__thumb\"\n              {%- if p.featured_image %} style=\"background-image:url('{{ p.featured_image | image_url: width: 104 }}')\"{% endif %}></div>\n            <div class=\"yyc-item__name\">{{ p.title }}</div>\n          </a>\n          <span class=\"yyc-item__price\">{{ pv.price | money }}</span>\n        </li>\n      {%- endfor -%}\n    </ul>\n\n    <div class=\"yyc-divider\"></div>\n\n    <div class=\"yyc-summary\">\n      {%- if savings_amount > 0 -%}\n      <div class=\"yyc-summary__row yyc-summary__row--compare\">\n        <span>{{ compare_label }}</span>\n        <span class=\"yyc-summary__strike\">{{ individual_total | money }}</span>\n      </div>\n      {%- endif -%}\n      <div class=\"yyc-summary__row yyc-summary__row--bundle\">\n        <span>{{ bundle_label }}</span>\n        <span class=\"yyc-summary__bundle-price\">{{ bundle_price | money }}</span>\n      </div>\n      {%- if savings_amount > 0 -%}\n      <div class=\"yyc-summary__row yyc-summary__row--savings\">\n        <span>{{ savings_label }}</span>\n        <span class=\"yyc-summary__savings\">{{ savings_amount | money }}</span>\n      </div>\n      {%- endif -%}\n    </div>\n  </div>\n\n</div>\n\n<style>\n  #yyc-{{ uid }} {\n    --yy-green: #5b8a48;\n    --yy-dark:  #1a1a1a;\n    --yy-gray:  #6b6b6b;\n    --yy-line:  #ececec;\n    font-family: -apple-system, BlinkMacSystemFont, 'Inter', sans-serif;\n    -webkit-font-smoothing: antialiased;\n    color: var(--yy-dark);\n  }\n  #yyc-{{ uid }} *, #yyc-{{ uid }} *::before, #yyc-{{ uid }} *::after { box-sizing: border-box; }\n\n  #yyc-{{ uid }} .yyc-heading {\n    font-size: 11px; font-weight: 700; letter-spacing: 0.14em;\n    color: var(--yy-gray); margin: 0 0 10px;\n  }\n  #yyc-{{ uid }} .yyc-card {\n    position: relative;\n    border: 1.5px solid var(--yy-dark);\n    border-radius: 12px; padding: 16px; background: #fff;\n  }\n  #yyc-{{ uid }} .yyc-badge {\n    position: absolute; top: 12px; right: 12px;\n    background: var(--yy-green); color: #fff;\n    font-size: 11px; font-weight: 700; letter-spacing: 0.06em;\n    padding: 4px 9px; border-radius: 999px; line-height: 1;\n  }\n  #yyc-{{ uid }} .yyc-list { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 10px; }\n  #yyc-{{ uid }} .yyc-item { display: flex; align-items: center; gap: 12px; }\n  #yyc-{{ uid }} .yyc-item__link {\n    display: flex; align-items: center; gap: 12px;\n    flex: 1; min-width: 0; text-decoration: none; color: inherit;\n  }\n  #yyc-{{ uid }} .yyc-item__link:hover .yyc-item__name { text-decoration: underline; }\n  #yyc-{{ uid }} .yyc-item__thumb {\n    width: 48px; height: 48px; border-radius: 6px;\n    background-color: #f0ede7; background-size: cover; background-position: center; flex-shrink: 0;\n  }\n  #yyc-{{ uid }} .yyc-item__name { font-size: 13px; font-weight: 500; line-height: 1.3; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }\n  #yyc-{{ uid }} .yyc-item__price { font-size: 13px; font-weight: 600; white-space: nowrap; margin-left: auto; flex-shrink: 0; }\n  #yyc-{{ uid }} .yyc-divider { border: none; border-top: 1px solid var(--yy-line); margin: 14px 0; }\n  #yyc-{{ uid }} .yyc-summary { display: flex; flex-direction: column; gap: 6px; }\n  #yyc-{{ uid }} .yyc-summary__row { display: flex; justify-content: space-between; align-items: center; font-size: 13px; }\n  #yyc-{{ uid }} .yyc-summary__row--compare { color: var(--yy-gray); }\n  #yyc-{{ uid }} .yyc-summary__strike { text-decoration: line-through; }\n  #yyc-{{ uid }} .yyc-summary__row--bundle { font-weight: 700; }\n  #yyc-{{ uid }} .yyc-summary__bundle-price { font-size: 20px; font-weight: 700; }\n  #yyc-{{ uid }} .yyc-summary__row--savings { color: var(--yy-green); font-weight: 600; font-size: 12px; }\n  #yyc-{{ uid }} .yyc-summary__savings { font-weight: 700; }\n</style>\n\n{%- endif -%}"
+          }
+        },
+        "icons_rwrTFw": {
+          "type": "icons",
+          "settings": {
+            "title": "",
+            "icon_1_image": "shopify://shop_images/single-star-5.png",
+            "icon_1_label": "4,5 Stjerner på Trustpilot",
+            "icon_2_image": "shopify://shop_images/22961759.png",
+            "icon_2_label": "Vi tager Mobilepay",
+            "icon_3_image": "shopify://shop_images/anydayio_logo.jpg",
+            "icon_3_label": "Del betalingen op med Anyday",
+            "icon_4_label": "",
+            "icon_5_label": "",
+            "icon_6_label": "",
+            "hide_block_if": false
+          }
+        },
+        "products_list_cenGDi": {
+          "type": "products_list",
+          "settings": {
+            "heading": "Kombiner med",
+            "select_products": "{{ product.metafields.custom.crosssell_products.value }}",
+            "show_price": true,
+            "show_vendor": false,
+            "show_rating": true,
+            "style": "primary"
+          }
+        },
+        "description": {
+          "type": "description",
+          "settings": {
+            "product_description_truncated": "200",
+            "collapsible": false,
+            "heading": "Description"
+          }
+        },
+        "divider_qhG6Qj": {
+          "type": "divider",
+          "settings": {
+            "height": 10,
+            "color": "#ffffff",
+            "style": "solid"
+          }
+        },
+        "ad1a5bf2-807f-49df-acb2-8fefa9cb4df3": {
+          "type": "cross_sell",
+          "disabled": true,
+          "settings": {
+            "heading": "Cross sell",
+            "product": "",
+            "style": "primary",
+            "hide_block_if": false
+          }
+        }
+      },
+      "block_order": [
+        "vendor",
+        "title",
+        "0af25365-ec55-462c-b253-2f1ea565f2cd",
+        "text_JDQ7TW",
+        "price",
+        "variant_picker",
+        "aa3ff737-7b41-4ce2-9059-7d655899a9dd",
+        "buy_buttons",
+        "complementary_HKAWKW",
+        "098ecf80-2fe9-4879-8b3d-479e0882b7ed",
+        "custom_liquid_yRn6b9",
+        "icons_rwrTFw",
+        "products_list_cenGDi",
+        "description",
+        "divider_qhG6Qj",
+        "ad1a5bf2-807f-49df-acb2-8fefa9cb4df3"
+      ],
+      "custom_css": [
+        ".product__title {font-size: 33px;}",
+        ".product__description {color: #121212; font-size: 13px; font-weight: 400;}",
+        "span.product-price--saving.pps {padding: 8px; color: white; width: max-content; background-color: #00b67b; border-radius: 50px; margin-top: 10px !important;}"
+      ],
+      "settings": {
+        "gallery_layout": "one-col slider",
+        "enhance_first_image": false,
+        "gallery_desktop_width": "one-half",
+        "gallery_mobile_width": 100,
+        "gallery_mobile_margin": false,
+        "gallery_aspect_ratio": "1",
+        "gallery_fit": false,
+        "gallery_padding": 0,
+        "gallery_background": "rgba(0,0,0,0)",
+        "gallery_border": "rgba(0,0,0,0)",
+        "border_radius": 0,
+        "show_thumbnails": true,
+        "enable_zoom": true,
+        "enable_video_looping": false,
+        "enable_video_autoplay": true,
+        "video_fit": false,
+        "default_to_first_variant": true,
+        "sticky_add_to_cart": true,
+        "sticky_atc_variants": false,
+        "sticky_atc_style": "wide",
+        "sticky_bar_bgcolor": "#2e2e2e",
+        "sticky_bar_txtcolor": "#ffffff"
+      }
+    },
+    "b59a02ea-9e9e-4a53-b88e-37dfbcc2dc88": {
+      "type": "text-columns-icons",
+      "blocks": {
+        "template--18077830414654__b59a02ea-9e9e-4a53-b88e-37dfbcc2dc88-167767675519bca220-0": {
+          "type": "image",
+          "settings": {
+            "icon": "delivery",
+            "crop": true,
+            "title": "Fri levering på ordre +400 kr.",
+            "caption": "Få gratis levering på ordre over 400 kr.",
+            "link": "",
+            "open_in_new_window": false,
+            "color_background_main": "rgba(0,0,0,0)",
+            "color_icons_main": "rgba(0,0,0,0)",
+            "color_text_main": "rgba(0,0,0,0)",
+            "color_borders_main": "rgba(0,0,0,0)",
+            "seo_h_tag": "h3"
+          }
+        },
+        "template--18077830414654__b59a02ea-9e9e-4a53-b88e-37dfbcc2dc88-167767675519bca220-1": {
+          "type": "image",
+          "settings": {
+            "icon": "time-limit",
+            "crop": true,
+            "title": "Fri returnering",
+            "caption": "Hvis oplever problemer eller andet med dine varer, så kan du gratis returnere den til os.",
+            "link": "",
+            "open_in_new_window": false,
+            "color_background_main": "rgba(0,0,0,0)",
+            "color_icons_main": "rgba(0,0,0,0)",
+            "color_text_main": "rgba(0,0,0,0)",
+            "color_borders_main": "rgba(0,0,0,0)",
+            "seo_h_tag": "h3"
+          }
+        },
+        "template--18077830414654__b59a02ea-9e9e-4a53-b88e-37dfbcc2dc88-167767675519bca220-2": {
+          "type": "image",
+          "settings": {
+            "icon": "security-shield",
+            "crop": true,
+            "title": "10 Års garanti på stål",
+            "caption": "Vi yder en 10 års garanti, der dækker alle vores produkter i rustfrit stål.",
+            "link": "",
+            "open_in_new_window": false,
+            "color_background_main": "rgba(0,0,0,0)",
+            "color_icons_main": "rgba(0,0,0,0)",
+            "color_text_main": "rgba(0,0,0,0)",
+            "color_borders_main": "rgba(0,0,0,0)",
+            "seo_h_tag": "h3"
+          }
+        }
+      },
+      "block_order": [
+        "template--18077830414654__b59a02ea-9e9e-4a53-b88e-37dfbcc2dc88-167767675519bca220-0",
+        "template--18077830414654__b59a02ea-9e9e-4a53-b88e-37dfbcc2dc88-167767675519bca220-1",
+        "template--18077830414654__b59a02ea-9e9e-4a53-b88e-37dfbcc2dc88-167767675519bca220-2"
+      ],
+      "disabled": true,
+      "settings": {
+        "heading": "",
+        "subheading": "",
+        "section_heading_size": "text-size--regular",
+        "section_heading_layout": "section-heading--left section-heading--one-row",
+        "cta_label": "",
+        "cta_url": "",
+        "style": "slider",
+        "layout": "grid-3 grid-lap-2 grid-palm-1",
+        "border_radius": 0,
+        "hide_borders": true,
+        "opacity_on_hover": false,
+        "section_background_color": "rgba(0,0,0,0)",
+        "section_background_gradient": "",
+        "section_heading_color": "rgba(0,0,0,0)",
+        "gutter_decrease": false,
+        "remove_bottom_margin": false,
+        "seo_h_tag": "h2"
+      }
+    },
+    "multicolumn_new_Ra7dPD": {
+      "type": "Multicolumn-new",
+      "blocks": {
+        "feature_Ydz9UJ": {
+          "type": "feature",
+          "settings": {
+            "icon_type": "microplastics",
+            "icon_image": "shopify://shop_images/ecology_2823549_1.png",
+            "label": "Fri for mikroplast \nog kemi"
+          }
+        },
+        "feature_aLFjBD": {
+          "type": "feature",
+          "settings": {
+            "icon_type": "heart",
+            "icon_image": "shopify://shop_images/heart_5348218_1.png",
+            "label": "Skabt af os, \nBrugt af os"
+          }
+        },
+        "feature_7UVfh8": {
+          "type": "feature",
+          "settings": {
+            "icon_type": "medal",
+            "icon_image": "shopify://shop_images/ecology_2823549_1_1.png",
+            "label": "Rustfrit stål i \nhøjeste kvalitet"
+          }
+        },
+        "feature_fy3Cwr": {
+          "type": "feature",
+          "settings": {
+            "icon_type": "delivery",
+            "icon_image": "shopify://shop_images/delivery_1179540_1.png",
+            "label": "Gratis & hurtig levering \nover 400 kr."
+          }
+        }
+      },
+      "block_order": [
+        "feature_Ydz9UJ",
+        "feature_aLFjBD",
+        "feature_7UVfh8",
+        "feature_fy3Cwr"
+      ],
+      "name": "Feature Highlights",
+      "settings": {
+        "heading": "",
+        "subtext": "",
+        "heading_weight": "300",
+        "background_color": "rgba(0,0,0,0)",
+        "heading_color": "#333333",
+        "subtext_color": "#666666",
+        "icon_color": "#555555",
+        "label_color": "#555555",
+        "padding_top": 100,
+        "padding_bottom": 60,
+        "padding_top_mobile": 60,
+        "padding_bottom_mobile": 60
+      }
+    },
+    "scrolling_images_HDMty8": {
+      "type": "scrolling-images",
+      "blocks": {
+        "image_PFhDpx": {
+          "type": "image",
+          "settings": {
+            "image": "shopify://shop_images/yummiihero_4dcb0f1f-13d6-453e-ab4d-e13d8daaa0b7.png",
+            "image_caption": "",
+            "link": "",
+            "open_in_new_tab": false
+          }
+        },
+        "image_6nUjFK": {
+          "type": "image",
+          "settings": {
+            "image": "shopify://shop_images/02_188_7.png",
+            "image_caption": "",
+            "link": "",
+            "open_in_new_tab": false
+          }
+        },
+        "image_g3Xb6g": {
+          "type": "image",
+          "settings": {
+            "image": "shopify://shop_images/Rustfrit_st_l_kop_2_1e708b3b-e292-41f3-89a2-7211dc6d6ddd.png",
+            "image_caption": "",
+            "link": "",
+            "open_in_new_tab": false
+          }
+        },
+        "image_GDTyzK": {
+          "type": "image",
+          "settings": {
+            "image": "shopify://shop_images/badebro_2_b0527b20-10c6-4aee-96a5-6ec538bcc901.png",
+            "image_caption": "",
+            "link": "",
+            "open_in_new_tab": false
+          }
+        },
+        "image_g4YErb": {
+          "type": "image",
+          "settings": {
+            "image": "shopify://shop_images/adaf419b-e8ef-41e2-a004-59f17f9cba76_08b1ab92-cced-466c-9514-89b3af13a9c8.png",
+            "image_caption": "",
+            "link": "",
+            "open_in_new_tab": false
+          }
+        },
+        "image_jakJtT": {
+          "type": "image",
+          "settings": {
+            "image": "shopify://shop_images/SnapInsta.to_671211167_18092392961175876_7168012222922370128_n.png",
+            "image_caption": "",
+            "link": "",
+            "open_in_new_tab": false
+          }
+        }
+      },
+      "block_order": [
+        "image_PFhDpx",
+        "image_6nUjFK",
+        "image_g3Xb6g",
+        "image_GDTyzK",
+        "image_g4YErb",
+        "image_jakJtT"
+      ],
+      "name": "t:sections.refactor_words.settings.scrolling_images.label",
+      "settings": {
+        "heading": "Bliv inspireret",
+        "subheading": "Billeder af vores produkter i brug",
+        "section_heading_size": "text-size--large",
+        "section_heading_layout": "section-heading--left section-heading--one-row",
+        "cta_label": "",
+        "cta_url": "",
+        "columns": "4",
+        "scroll_direction": "ltr",
+        "speed": 50,
+        "pause_on_hover": true,
+        "image_alignment": "top",
+        "border_radius": 10,
+        "remove_inner_padding": false,
+        "caption_alignment": "left",
+        "section_background_color": "#f8f8f8",
+        "section_background_gradient": "",
+        "section_heading_color": "rgba(0,0,0,0)",
+        "remove_top_margin": true,
+        "remove_bottom_margin": false,
+        "seo_h_tag": "h2"
+      }
+    },
+    "ss_comparison_table_10_hhbCJR": {
+      "type": "ss-comparison-table-10",
+      "blocks": {
+        "row_F4WmVG": {
+          "type": "row",
+          "settings": {
+            "first_icon": "yes",
+            "first_text": "100% fri for plastik og kemi",
+            "second_icon": "no",
+            "second_text": "Risiko for mikroplast & BPA"
+          }
+        },
+        "row_hXyWKD": {
+          "type": "row",
+          "settings": {
+            "first_icon": "yes",
+            "first_text": "Neutral og frisk. Altid",
+            "second_icon": "no",
+            "second_text": "Tager smag & lugt over tid"
+          }
+        },
+        "row_tVfAUp": {
+          "type": "row",
+          "settings": {
+            "first_icon": "yes",
+            "first_text": "Kommer skinnende ud af opvaskeren",
+            "second_icon": "no",
+            "second_text": "Svær at gøre helt ren"
+          }
+        },
+        "row_tWVreq": {
+          "type": "row",
+          "settings": {
+            "first_icon": "yes",
+            "first_text": "Holder en livstid",
+            "second_icon": "no",
+            "second_text": "Ofte engangs eller kort levetid"
+          }
+        },
+        "row_EFtnHF": {
+          "type": "row",
+          "settings": {
+            "first_icon": "yes",
+            "first_text": "Bevarer både form og udseende ",
+            "second_icon": "no",
+            "second_text": "Aftager i farve og form"
+          }
+        }
+      },
+      "block_order": [
+        "row_F4WmVG",
+        "row_hXyWKD",
+        "row_tVfAUp",
+        "row_tWVreq",
+        "row_EFtnHF"
+      ],
+      "name": "SS - Comparison table #10",
+      "settings": {
+        "heading": "<h2>Hvorfor du skal vælge plastik- og kemifrit rustfrit stål</h2>",
+        "heading_custom": false,
+        "heading_font": "josefin_sans_n4",
+        "heading_size": 36,
+        "heading_size_mobile": 24,
+        "heading_height": 130,
+        "heading_align": "center",
+        "heading_align_mobile": "center",
+        "body_gap": 16,
+        "body_gap_mobile": 10,
+        "body_mt": 60,
+        "body_mt_mobile": 30,
+        "first_image": "{{ product.featured_image }}",
+        "second_image": "shopify://shop_images/Skaermbillede_2025-03-26_kl._13.27.23.webp",
+        "image_width": 360,
+        "image_radius": 10,
+        "image_ratio": "square",
+        "image_ratio_mobile": "square",
+        "rows_gap": 6,
+        "rows_gap_mobile": 6,
+        "value_padding_horizontal": 20,
+        "value_padding_horizontal_mobile": 14,
+        "value_padding_vertical": 14,
+        "value_padding_vertical_mobile": 14,
+        "value_border_thickness": 1,
+        "value_radius": 0,
+        "icon_size": 18,
+        "icon_size_mobile": 14,
+        "text_custom": false,
+        "text_font": "josefin_sans_n4",
+        "text_size": 18,
+        "text_size_mobile": 12,
+        "text_height": 130,
+        "versus_icon_width": 40,
+        "versus_icon_width_mobile": 40,
+        "button": "",
+        "button_url": "",
+        "button_custom": false,
+        "button_font": "josefin_sans_n4",
+        "button_size": 16,
+        "button_size_mobile": 16,
+        "button_height": 100,
+        "button_padding_vertical": 14,
+        "button_padding_vertical_mobile": 14,
+        "button_padding_horizontal": 48,
+        "button_padding_horizontal_mobile": 48,
+        "button_radius": 100,
+        "button_border_thickness": 0,
+        "button_mt": 26,
+        "button_mt_mobile": 20,
+        "button_style": "non_outline",
+        "button_align": "center",
+        "button_align_mobile": "center",
+        "text_color": "#000000",
+        "true_icon_color": "#437453",
+        "false_icon_color": "#f56b6b",
+        "value_bg_color": "#ffffff",
+        "value_border_color": "#cdcdc5",
+        "versus_icon_color": "#ffffff",
+        "versus_icon_bg_color": "#000000",
+        "button_color": "#ffffff",
+        "button_hover_color": "#ffffff",
+        "button_bg_color": "#497e5a",
+        "button_bg_hover_color": "",
+        "button_border_color": "#c7c7c7",
+        "button_border_hover_color": "#000000",
+        "heading_color": "#000000",
+        "background_color": "#ffffff",
+        "background_gradient": "",
+        "border_color": "#000000",
+        "margin_top": 80,
+        "margin_bottom": 80,
+        "margin_horizontal": 0,
+        "margin_horizontal_mobile": 0,
+        "padding_top": 64,
+        "padding_bottom": 64,
+        "padding_horizontal": 5,
+        "padding_horizontal_mobile": 1.5,
+        "full_width": false,
+        "content_width": 1400,
+        "border_thickness": 0,
+        "section_radius": 0,
+        "lazy": true
+      }
+    },
+    "custom_rich_text_FWYgPj": {
+      "type": "custom-rich-text",
+      "blocks": {
+        "title_3agW3b": {
+          "type": "title",
+          "settings": {
+            "title": "En familie virksomhed 💚",
+            "title_size": "heading-size--small",
+            "seo_h_tag": "h2"
+          }
+        },
+        "text_fnVmey": {
+          "type": "text",
+          "settings": {
+            "text": "<p>Yummii Yummii er en dansk familievirksomhed med fokus på en mere enkel og bevidst hverdag. Vi designer funktionelle produkter i rustfrit stål og naturlige materialer, som gør det nemmere at vælge plastik fra. For os handler det om holdbare løsninger, godt design og små valg, der gør en forskel i hverdagen </p>",
+            "text_size": "regular"
+          }
+        }
+      },
+      "block_order": [
+        "title_3agW3b",
+        "text_fnVmey"
+      ],
+      "name": "custom-rich-text",
+      "settings": {
+        "image": "shopify://shop_images/AAD437E5-7EA0-4534-9609-F34B99969CC9.jpg",
+        "image_position": "right",
+        "height": "small",
+        "image_crop": true,
+        "is_fullwidth": false,
+        "text_alignment": "horizontal-left",
+        "spacing": 24,
+        "color_background_main": "#f8f8f8",
+        "color_text_main": "rgba(0,0,0,0)",
+        "color_borders_main": "rgba(0,0,0,0)",
+        "border_radius": 15,
+        "color_hide_borders": true,
+        "gutter_decrease": false,
+        "remove_margin": false,
+        "remove_bottom_margin": false
+      }
+    },
+    "ugc_video_reviews_3tkxPa": {
+      "type": "ugc-video-reviews",
+      "blocks": {
+        "video_testimonial_GVhXpD": {
+          "type": "video_testimonial",
+          "settings": {
+            "controls": true,
+            "autoplay": false,
+            "muted": false,
+            "loop": true,
+            "rating": 5,
+            "review_text": "Meget god kundeservice. Varen er top kvalitet, jeg er meget tilfreds, og kan varmt anbefale andre at handle der.",
+            "author": "Julie - Anmeldelse fra Trustpilot"
+          }
+        },
+        "video_testimonial_Gx8MtC": {
+          "type": "video_testimonial",
+          "settings": {
+            "controls": false,
+            "autoplay": false,
+            "muted": false,
+            "loop": true,
+            "rating": 5,
+            "review_text": "",
+            "author": ""
+          }
+        },
+        "video_testimonial_NaCD3c": {
+          "type": "video_testimonial",
+          "settings": {
+            "controls": true,
+            "autoplay": false,
+            "muted": false,
+            "loop": true,
+            "rating": 5,
+            "review_text": "Meget god kundeservice. Varen er top kvalitet, jeg er meget tilfreds, og kan varmt anbefale andre at handle der.",
+            "author": "Julie - Anmeldelse fra Trustpilot"
+          }
+        },
+        "video_testimonial_pERUQE": {
+          "type": "video_testimonial",
+          "settings": {
+            "controls": true,
+            "autoplay": false,
+            "muted": false,
+            "loop": true,
+            "rating": 5,
+            "review_text": "Meget god kundeservice. Varen er top kvalitet, jeg er meget tilfreds, og kan varmt anbefale andre at handle der.",
+            "author": "Julie - Anmeldelse fra Trustpilot"
+          }
+        },
+        "video_testimonial_ghhHJT": {
+          "type": "video_testimonial",
+          "settings": {
+            "controls": true,
+            "autoplay": false,
+            "muted": false,
+            "loop": true,
+            "rating": 5,
+            "review_text": "Meget god kundeservice. Varen er top kvalitet, jeg er meget tilfreds, og kan varmt anbefale andre at handle der.",
+            "author": "Julie - Anmeldelse fra Trustpilot"
+          }
+        }
+      },
+      "block_order": [
+        "video_testimonial_GVhXpD",
+        "video_testimonial_Gx8MtC",
+        "video_testimonial_NaCD3c",
+        "video_testimonial_pERUQE",
+        "video_testimonial_ghhHJT"
+      ],
+      "disabled": true,
+      "name": "UGC Videos & Reviews",
+      "settings": {
+        "title": "En del af hverdagen",
+        "heading_weight": "300",
+        "items_desktop": 4.5,
+        "items_mobile": 1.5,
+        "text_color": "#7a7571",
+        "background_color": "#ffffff",
+        "padding_top": 60,
+        "padding_bottom": 60
+      }
+    },
+    "17799662669d73829a": {
+      "type": "apps",
+      "blocks": {
+        "judge_me_reviews_cards_carousel_RLYWjT": {
+          "type": "shopify://apps/judge-me-reviews/blocks/cards_carousel/61ccd3b1-a9f2-4160-9fe9-4fec8413e5d8",
+          "settings": {
+            "show_sample_reviews": false,
+            "reviews_selection": "all",
+            "products": [],
+            "star_rating": "all",
+            "show_review_media": true,
+            "display_order": "media_first",
+            "no_image_fallback": "review_text_only",
+            "max_reviews": 20,
+            "review_length": "medium",
+            "text_size": "medium",
+            "image_ratio": "1",
+            "reviews_shown": 4,
+            "show_reviewer_name": true,
+            "show_product_name": true,
+            "hide_arrows_mobile": true,
+            "arrows_position": "sides",
+            "max_width": 1100,
+            "corner_styling": "soft",
+            "header_text_color": "#000000",
+            "text_color": "#000000",
+            "card_color": "#f9f9f9",
+            "stars_color": "",
+            "arrows_color": "#000000",
+            "transition_speed": 5,
+            "header_text": "Hør hvad vores dejlige kunder siger",
+            "show_average_rating": true
+          }
+        }
+      },
+      "block_order": [
+        "judge_me_reviews_cards_carousel_RLYWjT"
+      ],
+      "settings": {
+        "heading": "",
+        "subheading": "",
+        "section_heading_size": "text-size--regular",
+        "section_heading_layout": "section-heading--left section-heading--one-row",
+        "cta_label": "",
+        "cta_url": "",
+        "full_width": false,
+        "remove_margin": false,
+        "seo_h_tag": "h2"
+      }
+    },
+    "content_toggles_CVXGFt": {
+      "type": "content-toggles",
+      "blocks": {
+        "text_kacVGc": {
+          "type": "text",
+          "settings": {
+            "title": "Hvad er leveringstiden for min ordre?",
+            "subtitle": "",
+            "icon": "no-icon",
+            "button_label": "",
+            "button_link": "",
+            "body": "<p>Vi tilbyder hurtig levering inden for 2-4 hverdage. Gratis levering gælder for ordrer over 400 kr.</p>",
+            "hide_block_if": false
+          }
+        },
+        "text_CtVRUT": {
+          "type": "text",
+          "settings": {
+            "title": "Tilbyder I en garanti på jeres produkter?",
+            "subtitle": "",
+            "icon": "no-icon",
+            "button_label": "",
+            "button_link": "",
+            "body": "<p>Ja, vi tilbyder en 10-års garanti på alle vores produkter fremstillet af rustfrit stål. Du kan derfor føle dig tryg ved at handle hos os.</p>",
+            "hide_block_if": false
+          }
+        },
+        "text_VNBPAA": {
+          "type": "text",
+          "settings": {
+            "title": "Er jeres produkter bæredygtige?",
+            "subtitle": "",
+            "icon": "no-icon",
+            "button_label": "",
+            "button_link": "",
+            "body": "<p>Absolut! Vores produkter er designet til at erstatte plastik og andre engangsvarer. De er lavet af høj kvalitet rustfrit stål, som er holdbart og miljøvenligt.</p>",
+            "hide_block_if": false
+          }
+        },
+        "text_R4EV39": {
+          "type": "text",
+          "settings": {
+            "title": "Hvordan kan jeg returnere en vare?",
+            "subtitle": "",
+            "icon": "no-icon",
+            "button_label": "",
+            "button_link": "",
+            "body": "<p>Hvis du ønsker at returnere en vare, bedes du kontakte vores kundeservice inden for 30 dage efter modtagelsen af din ordre. Vi vil hjælpe dig igennem returprocessen.</p>",
+            "hide_block_if": false
+          }
+        },
+        "text_BGV6wP": {
+          "type": "text",
+          "settings": {
+            "title": "Hvad gør jeg, hvis jeg har spørgsmål til min ordre?",
+            "subtitle": "",
+            "icon": "no-icon",
+            "button_label": "",
+            "button_link": "",
+            "body": "<p>Du kan altid kontakte vores kundeservice via e-mail eller telefon. Vi er her for at hjælpe dig med enhver forespørgsel, du måtte have om din ordre eller vores produkter.</p>",
+            "hide_block_if": false
+          }
+        }
+      },
+      "block_order": [
+        "text_kacVGc",
+        "text_CtVRUT",
+        "text_VNBPAA",
+        "text_R4EV39",
+        "text_BGV6wP"
+      ],
+      "settings": {
+        "heading": "FAQ",
+        "subheading": "Har du spørgsmål? Vi har de bedste svar klar til dig!",
+        "section_heading_size": "text-size--large",
+        "section_heading_layout": "section-heading--center section-heading--two-rows",
+        "cta_label": "",
+        "cta_url": "",
+        "form_enable": false,
+        "form_title": "Contact form",
+        "style": "outline",
+        "open_first": true,
+        "section_background_color": "rgba(0,0,0,0)",
+        "section_background_gradient": "",
+        "section_heading_color": "rgba(0,0,0,0)",
+        "gutter_decrease": true,
+        "remove_bottom_margin": false,
+        "seo_h_tag": "h2"
+      }
+    },
+    "03f9ad56-040a-416d-a22f-0dbfe88a857e": {
+      "type": "products-set",
+      "blocks": {
+        "template--18077830414654__03f9ad56-040a-416d-a22f-0dbfe88a857e-16776763838c9473bf-0": {
+          "type": "price",
+          "settings": {}
+        },
+        "template--18077830414654__03f9ad56-040a-416d-a22f-0dbfe88a857e-16776763838c9473bf-1": {
+          "type": "title",
+          "settings": {}
+        }
+      },
+      "block_order": [
+        "template--18077830414654__03f9ad56-040a-416d-a22f-0dbfe88a857e-16776763838c9473bf-0",
+        "template--18077830414654__03f9ad56-040a-416d-a22f-0dbfe88a857e-16776763838c9473bf-1"
+      ],
+      "disabled": true,
+      "settings": {
+        "heading": "Dette er ofte købt sammen",
+        "subheading": "Sammensæt dit bundle",
+        "section_heading_size": "text-size--regular",
+        "section_heading_layout": "section-heading--left section-heading--one-row",
+        "products": "{{ product.metafields[\"shopify--discovery--product_recommendation\"].related_products.value }}",
+        "style": "outline",
+        "style_color": "rgba(0,0,0,0)",
+        "panel_title": "Build your set",
+        "panel_subtitle": "",
+        "panel_bg_color": "#3e3e3e",
+        "panel_text_color": "#f5f5f5",
+        "gutter_decrease": false,
+        "seo_h_tag": "h2"
+      }
+    },
+    "product-recommendations": {
+      "type": "product-recommendations",
+      "blocks": {
+        "price": {
+          "type": "price",
+          "settings": {}
+        },
+        "title": {
+          "type": "title",
+          "settings": {}
+        },
+        "description_wbrgVW": {
+          "type": "description",
+          "disabled": true,
+          "settings": {
+            "excerpt_limit": 20,
+            "show_link": false
+          }
+        },
+        "quick_buy_rfcW9b": {
+          "type": "quick_buy",
+          "settings": {
+            "type": "inline",
+            "show_only_available": false,
+            "show_price": true,
+            "variant_default": true,
+            "unavailable_variants": "hide"
+          }
+        },
+        "product_link": {
+          "type": "product_link",
+          "disabled": true,
+          "settings": {
+            "button_label": "Se produkt"
+          }
+        },
+        "rating_mpiTkE": {
+          "type": "rating",
+          "disabled": true,
+          "settings": {}
+        }
+      },
+      "block_order": [
+        "price",
+        "title",
+        "description_wbrgVW",
+        "quick_buy_rfcW9b",
+        "product_link",
+        "rating_mpiTkE"
+      ],
+      "disabled": true,
+      "settings": {
+        "heading": "Måske kan du også lide disse produkter",
+        "subheading": "Se udvalget nedenfor",
+        "section_heading_size": "text-size--regular",
+        "section_heading_layout": "section-heading--left section-heading--one-row",
+        "layout_desktop": "four-columns",
+        "layout_mobile": "grid-palm-2",
+        "style": "slider",
+        "layout_mobile_less_items": true,
+        "section_background_color": "rgba(0,0,0,0)",
+        "section_background_gradient": "",
+        "section_heading_color": "rgba(0,0,0,0)",
+        "gutter_decrease": false,
+        "remove_bottom_margin": false
+      }
+    },
+    "yy_upsell2": {
+      "type": "yy-lp-upsell2",
+      "settings": {
+        "step1_heading": "Skal søskende eller du selv også have en?",
+        "step2_heading": "Gør drikkedunken endnu nemmere",
+        "confirm_label": "Ja tak, tilføj",
+        "skip_label": "Nej tak, fortsæt",
+        "trust_text": "Gratis fragt · 10 års garanti · 30 dages returret",
+        "confirm_bg_color": "#ffd66b",
+        "confirm_text_color": "#1a1812",
+        "redirect_url": "/cart"
+      }
+    },
+    "yy_pdp_upsell": {
+      "type": "yy-lp-pdp-upsell",
+      "settings": {
+        "u1_discount": 10,
+        "u1_note": "Til søskende eller dig selv, 10% oveni sættet.",
+        "u2_note": "Gør drikkedunken nem at drikke af."
+      }
+    }
+  },
+  "order": [
+    "17599300585c25178c",
+    "main",
+    "b59a02ea-9e9e-4a53-b88e-37dfbcc2dc88",
+    "multicolumn_new_Ra7dPD",
+    "scrolling_images_HDMty8",
+    "ss_comparison_table_10_hhbCJR",
+    "custom_rich_text_FWYgPj",
+    "ugc_video_reviews_3tkxPa",
+    "17799662669d73829a",
+    "content_toggles_CVXGFt",
+    "03f9ad56-040a-416d-a22f-0dbfe88a857e",
+    "product-recommendations",
+    "yy_upsell2",
+    "yy_pdp_upsell"
+  ]
+}

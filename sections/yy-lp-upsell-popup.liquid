@@ -1,0 +1,140 @@
+{% comment %}
+  Yummii Yummii — Landingsside: Add-to-cart upsell-popup
+  Placer denne sektion ÉN gang på siden (f.eks. nederst). Den er usynlig indtil
+  et "Læg i kurv"-tryk et andet sted på siden (data-yylp-add-trigger) åbner den.
+  Intet lægges i kurven før kunden trykker "Læg til" eller "Spring over" i popuppen.
+{% endcomment %}
+
+{{ 'yy-landing.css' | asset_url | stylesheet_tag }}
+<script src="{{ 'yy-landing.js' | asset_url }}" defer></script>
+
+{% style %}
+  #shopify-section-{{ section.id }} .yy-lp-btn--accent{
+    --yylp-accent: {{ section.settings.confirm_bg_color | default: '#ffd66b' }};
+    --yylp-accent-text: {{ section.settings.confirm_text_color | default: '#1a1812' }};
+  }
+{% endstyle %}
+
+{%- liquid
+  assign upsell = section.settings.upsell_product
+  assign upsell_variant = nil
+  assign upsell_variant_id = ''
+  assign discount_pct = section.settings.discount_percent
+  assign show_discount = false
+  if upsell != blank
+    assign upsell_variant = upsell.selected_or_first_available_variant
+    assign upsell_variant_id = upsell_variant.id
+    if section.settings.show_bundle_discount and discount_pct > 0
+      assign show_discount = true
+      assign discount_fraction = 100 | minus: discount_pct
+      assign discounted_cents = upsell_variant.price | times: discount_fraction | divided_by: 100.0 | round
+    endif
+  endif
+
+  assign video_url = ''
+  if section.settings.video != blank
+    assign vmp4 = section.settings.video.sources | where: 'format', 'mp4' | last
+    if vmp4
+      assign video_url = vmp4.url
+    endif
+  endif
+-%}
+
+<div
+  class="yy-lp-modal-overlay"
+  data-yylp-modal
+  data-upsell-variant-id="{{ upsell_variant_id }}"
+  data-redirect-url="{{ section.settings.redirect_url }}">
+  <div class="yy-lp-modal" role="dialog" aria-modal="true" aria-label="{{ section.settings.heading }}">
+    <button type="button" class="yy-lp-modal__close" data-yylp-modal-close aria-label="Luk">
+      <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
+    </button>
+
+    <div class="yy-lp-modal__media">
+      {%- if show_discount -%}
+        <span class="yy-lp-modal__discount-tag">−{{ discount_pct }}% i dag</span>
+      {%- endif -%}
+      {%- if video_url != blank -%}
+        <video src="{{ video_url }}" muted loop playsinline></video>
+      {%- elsif section.settings.image != blank -%}
+        <img src="{{ section.settings.image | image_url: width: 800 }}" alt="{{ section.settings.image.alt | escape }}" width="800" height="800" loading="lazy">
+      {%- elsif upsell.featured_image != blank -%}
+        <img src="{{ upsell.featured_image | image_url: width: 800 }}" alt="{{ upsell.title | escape }}" width="800" height="800" loading="lazy">
+      {%- endif -%}
+    </div>
+
+    <div class="yy-lp-modal__body">
+      <p class="yy-lp-modal__heading">{{ section.settings.heading | default: 'Vil du også tilføje dette?' }}</p>
+      {%- if section.settings.text != blank -%}<p class="yy-lp-modal__text">{{ section.settings.text }}</p>{%- endif -%}
+
+      {%- if upsell != blank -%}
+        <div class="yy-lp-modal__product">
+          {%- if show_discount -%}<span class="yy-lp-modal__product-badge">−{{ discount_pct }}%</span>{%- endif -%}
+          {%- if upsell.featured_image != blank -%}
+            <img src="{{ upsell.featured_image | image_url: width: 108 }}" alt="{{ upsell.title | escape }}" width="108" height="108" loading="lazy">
+          {%- endif -%}
+          <span class="yy-lp-modal__product-name">{{ upsell.title }}</span>
+          <span class="yy-lp-modal__product-price">
+            {%- if show_discount -%}
+              <span class="yy-lp-modal__product-was">{{ upsell_variant.price | money_without_trailing_zeros }}</span>
+              <span class="yy-lp-modal__product-now">{{ discounted_cents | money_without_trailing_zeros }}</span>
+            {%- else -%}
+              {{ upsell_variant.price | money_without_trailing_zeros }}
+            {%- endif -%}
+          </span>
+        </div>
+        {%- if show_discount -%}<p class="yy-lp-modal__discount-note">Rabatten gælder kun ved køb sammen med sættet</p>{%- endif -%}
+      {%- endif -%}
+
+      <div class="yy-lp-modal__actions">
+        {%- if upsell != blank -%}
+          <button type="button" class="yy-lp-btn yy-lp-btn--accent" data-yylp-modal-confirm data-loading-label="Tilføjer…">
+            {{ section.settings.confirm_label | default: 'Ja tak, tilføj' }}
+          </button>
+        {%- endif -%}
+        <button type="button" class="yy-lp-modal__skip" data-yylp-modal-skip>
+          {{ section.settings.skip_label | default: 'Nej tak, fortsæt' }}
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "LP — Upsell-popup",
+  "settings": [
+    { "type": "paragraph", "content": "Placer kun én gang på siden. Åbnes automatisk når en 'Læg i kurv'-knap med data-yylp-add-trigger klikkes." },
+    { "type": "header", "content": "Tillægsprodukt" },
+    { "type": "product", "id": "upsell_product", "label": "Produkt" },
+    { "type": "header", "content": "Medie" },
+    { "type": "video", "id": "video", "label": "Video (afspilles automatisk)" },
+    { "type": "image_picker", "id": "image", "label": "Billede (bruges hvis ingen video)" },
+    { "type": "header", "content": "Bundt-rabat" },
+    {
+      "type": "checkbox",
+      "id": "show_bundle_discount",
+      "label": "Vis rabat på tillægsproduktet",
+      "default": true,
+      "info": "Kun visning — opret/opdater selve rabatten i Shopify Admin → Rabatter (automatisk 'Køb X, få Y'-rabat), og hold procenten her i sync."
+    },
+    { "type": "range", "id": "discount_percent", "label": "Rabat-procent (kun visning)", "min": 0, "max": 90, "step": 1, "default": 5 },
+    { "type": "header", "content": "Tekst" },
+    { "type": "text", "id": "heading", "label": "Overskrift", "default": "Vil du også tilføje dette?" },
+    { "type": "textarea", "id": "text", "label": "Underoverskrift", "default": "Få rabat, kun når du køber sættet." },
+    { "type": "text", "id": "confirm_label", "label": "Knaptekst — læg til", "default": "Ja tak, tilføj" },
+    { "type": "text", "id": "skip_label", "label": "Knaptekst — spring over", "default": "Nej tak, fortsæt" },
+    { "type": "header", "content": "Knapfarve" },
+    { "type": "color", "id": "confirm_bg_color", "label": "Baggrund", "default": "#ffd66b" },
+    { "type": "color", "id": "confirm_text_color", "label": "Tekst", "default": "#1a1812" },
+    { "type": "header", "content": "Efter tilføjelse" },
+    {
+      "type": "url",
+      "id": "redirect_url",
+      "label": "Videresend til (valgfrit)",
+      "info": "Lad stå tomt hvis I har egen kurv-drawer (yy-cart) — den åbner automatisk. Udfyld kun hvis I IKKE har en drawer og vil sende folk til kurv-siden."
+    }
+  ],
+  "presets": [ { "name": "LP — Upsell-popup" } ]
+}
+{% endschema %}

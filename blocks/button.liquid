@@ -1,0 +1,90 @@
+{%- if block.settings.button_label != blank -%}
+  {%- if block.settings.color_text_buttons != 'rgba(0,0,0,0)' -%}
+    <style type="text/css">
+      #button-{{ block.id }} {
+        {%- if block.settings.color_text_buttons != 'rgba(0,0,0,0)' -%}
+          --color-text-cards: {{ block.settings.color_text_buttons }};
+          {%- liquid
+            assign brightness_button = block.settings.color_text_buttons | color_brightness
+            if brightness_button > 150
+              assign color_foreground_button = '#000'
+            else
+              assign color_foreground_button = '#fff'
+            endif
+          -%}
+          --color-foreground-cards: {{ color_foreground_button }};
+        {%- endif -%}
+      }
+    </style>
+  {%- endif -%}
+
+  {%- assign button_id = block.id | prepend: 'id="button-' | append: '"' -%}
+  {%- render 'button',
+    target_blank: block.settings.open_in_new_window,
+    label: block.settings.button_label,
+    link: block.settings.link,
+    style: block.settings.button_style,
+    fullwidth: false,
+    attribute: button_id
+  -%}
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "t:sections.rich-text.blocks.button.name",
+  "settings": [
+    {
+      "type": "text",
+      "id": "button_label",
+      "label": "t:sections.contact-form.blocks.field.settings.labels.label",
+      "default": "Button label"
+    },
+    {
+      "type": "url",
+      "id": "link",
+      "label": "t:sections.image-with-text.blocks.image.settings.url.label"
+    },
+    {
+      "type": "checkbox",
+      "id": "open_in_new_window",
+      "visible_if": "{{ block.settings.link != blank }}",
+      "label": "t:sections.local-extra-words.sections.announcement-bar.blocks.content.settings.target",
+      "default": false
+    },
+    {
+      "type": "select",
+      "id": "button_style",
+      "label": "t:sections.local-extra-words.sections.buttons.style.label",
+      "options": [
+        {
+          "value": "outline",
+          "label": "t:sections.local-extra-words.sections.buttons.style.option__1"
+        },
+        {
+          "value": "solid",
+          "label": "t:sections.local-extra-words.sections.buttons.style.option__2"
+        }
+      ],
+      "default": "outline"
+    },
+    {
+      "type": "header",
+      "content": "t:sections.split-extra-words.settings_schema.colors.headings.custom_colors"
+    },
+    {
+      "type": "color",
+      "id": "color_text_buttons",
+      "label": "t:sections.split-extra-words.settings_schema.colors.settings.background",
+      "default": "rgba(0,0,0,0)"
+    }
+  ],
+  "presets": [
+    {
+      "name": "t:sections.rich-text.blocks.button.name",
+      "settings": {
+        "button_label": "Button label"
+      }
+    }
+  ]
+}
+{% endschema %}

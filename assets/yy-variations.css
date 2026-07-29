@@ -1,0 +1,294 @@
+/* ============================================================
+   Yummii Yummii — Produktvariationer
+   ------------------------------------------------------------
+   Klikbare bokse med produktbilleder til valg af variant.
+   Understøtter flere variant-grupper (fx Farve, Størrelse, Antal).
+
+   Hver boks vælges via radio-input (tilgængeligt, virker uden JS).
+   Den valgte boks får grøn kant + flueben — ren CSS via :checked.
+
+   FORVENTET HTML-STRUKTUR
+   ------------------------------------------------------------
+   <div class="yy-variations">
+     <div class="yy-vargroup">
+       <div class="yy-vargroup__head">
+         <span class="yy-vargroup__label">Vælg farve</span>
+         <span class="yy-vargroup__value">Salvie</span>
+       </div>
+       <div class="yy-vargroup__grid">
+         <label class="yy-varbox">
+           <input type="radio" name="farve" class="yy-varbox__input" checked />
+           <span class="yy-varbox__media">
+             <img src="…" alt="" />               (eller .tone-* placeholder)
+             <span class="yy-varbox__badge">Populær</span>   (valgfri)
+           </span>
+           <span class="yy-varbox__body">
+             <span class="yy-varbox__name">Salvie</span>
+             <span class="yy-varbox__meta">349 kr</span>
+           </span>
+           <span class="yy-varbox__check" aria-hidden="true"></span>
+         </label>
+         …flere .yy-varbox…
+       </div>
+     </div>
+     …flere .yy-vargroup…
+   </div>
+   ============================================================ */
+
+:root {
+  --yy-green:   #3d7a4f;
+  --yy-green-d: #2d5a3a;
+  --yy-ink:     #1a1812;
+  --yy-cream:   #f7f2e7;
+  --yy-muted:   #6b6657;
+  --yy-line:    rgba(26, 24, 18, 0.14);
+  --yy-line-2:  rgba(26, 24, 18, 0.08);
+  --yy-sale:    #9c6b58;
+  --yy-radius:  14px;
+  --yy-font:      'DM Sans', system-ui, -apple-system, sans-serif;
+  --yy-font-mono: 'JetBrains Mono', ui-monospace, monospace;
+}
+
+.yy-variations,
+.yy-variations * { box-sizing: border-box; }
+
+.yy-variations {
+  font-family: var(--yy-font);
+  color: var(--yy-ink);
+  -webkit-font-smoothing: antialiased;
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+
+/* ---- Group --------------------------------------------------- */
+.yy-vargroup__head {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+.yy-vargroup__label {
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+.yy-vargroup__value {
+  font-size: 14px;
+  color: var(--yy-muted);
+}
+.yy-vargroup__value::before { content: "· "; }
+
+.yy-vargroup__hint {
+  margin-left: auto;
+  font-size: 13px;
+  color: var(--yy-green);
+  cursor: pointer;
+  border-bottom: 1px solid currentColor;
+  padding-bottom: 1px;
+}
+
+/* Grid of boxes — auto-fit so it reflows on any width */
+.yy-vargroup__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(132px, 1fr));
+  gap: 14px;
+}
+/* Fixed-column variants if you want exact control */
+.yy-vargroup__grid--2 { grid-template-columns: repeat(2, 1fr); }
+.yy-vargroup__grid--3 { grid-template-columns: repeat(3, 1fr); }
+.yy-vargroup__grid--4 { grid-template-columns: repeat(4, 1fr); }
+
+/* ---- Variation box ------------------------------------------ */
+.yy-varbox {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  background: #fff;
+  border: 1.5px solid var(--yy-line);
+  border-radius: var(--yy-radius);
+  padding: 10px;
+  cursor: pointer;
+  transition: border-color 140ms ease, box-shadow 140ms ease, transform 140ms ease;
+}
+.yy-varbox:hover {
+  border-color: var(--yy-ink);
+  box-shadow: 0 8px 20px -12px rgba(26, 24, 18, 0.4);
+  transform: translateY(-2px);
+}
+
+/* The radio itself is hidden — the label is the hit target */
+.yy-varbox__input {
+  position: absolute;
+  opacity: 0;
+  width: 0; height: 0;
+  margin: 0;
+}
+
+/* Media */
+.yy-varbox__media {
+  position: relative;
+  display: block;
+  border-radius: 9px;
+  overflow: hidden;
+  aspect-ratio: 1 / 1;
+  background: #e7e0cf;
+}
+.yy-varbox__media img {
+  width: 100%; height: 100%;
+  object-fit: cover;
+  display: block;
+}
+.yy-varbox__badge {
+  position: absolute;
+  top: 8px; left: 8px;
+  background: var(--yy-green);
+  color: #fff;
+  font-size: 10px; font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  padding: 3px 8px;
+  border-radius: 999px;
+}
+.yy-varbox__badge--sale { background: var(--yy-sale); }
+.yy-varbox__badge--soldout { background: #9a9484; }
+
+/* Body */
+.yy-varbox__body {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 12px 4px 4px;
+}
+.yy-varbox__name {
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  line-height: 1.25;
+}
+.yy-varbox__meta {
+  font-size: 13px;
+  color: var(--yy-muted);
+}
+.yy-varbox__meta--strike { text-decoration: line-through; opacity: 0.7; }
+
+/* Checkmark badge (hidden until selected) */
+.yy-varbox__check {
+  position: absolute;
+  top: 16px; right: 16px;
+  width: 24px; height: 24px;
+  border-radius: 50%;
+  background: var(--yy-green);
+  display: grid;
+  place-items: center;
+  opacity: 0;
+  transform: scale(0.6);
+  transition: opacity 160ms ease, transform 160ms ease;
+  pointer-events: none;
+}
+.yy-varbox__check::after {
+  content: "";
+  width: 11px; height: 6px;
+  border-left: 2px solid #fff;
+  border-bottom: 2px solid #fff;
+  transform: rotate(-45deg) translate(1px, -1px);
+}
+
+/* ---- Selected state (CSS only via :checked) ----------------- */
+.yy-varbox__input:checked ~ .yy-varbox__check {
+  opacity: 1;
+  transform: scale(1);
+}
+.yy-varbox:has(.yy-varbox__input:checked) {
+  border-color: var(--yy-green);
+  box-shadow: 0 0 0 1.5px var(--yy-green);
+}
+.yy-varbox:has(.yy-varbox__input:checked) .yy-varbox__name { color: var(--yy-green-d); }
+
+/* Keyboard focus ring */
+.yy-varbox__input:focus-visible ~ .yy-varbox__media {
+  outline: 2px solid var(--yy-green);
+  outline-offset: 2px;
+}
+
+/* ---- Sold-out / disabled ------------------------------------ */
+.yy-varbox--disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+.yy-varbox--disabled:hover {
+  border-color: var(--yy-line);
+  box-shadow: none;
+  transform: none;
+}
+.yy-varbox--disabled .yy-varbox__media::after {
+  content: "";
+  position: absolute; inset: 0;
+  background: rgba(247, 242, 231, 0.45);
+}
+
+/* ============================================================
+   COMPACT SWATCH VARIANT
+   ------------------------------------------------------------
+   Small round colour swatches for e.g. colour when you don't
+   need full image boxes. Use .yy-swatches > label.yy-swatch.
+   ============================================================ */
+.yy-swatches { display: flex; flex-wrap: wrap; gap: 10px; }
+.yy-swatch { position: relative; cursor: pointer; }
+.yy-swatch__input { position: absolute; opacity: 0; width: 0; height: 0; }
+.yy-swatch__dot {
+  display: block;
+  width: 36px; height: 36px;
+  border-radius: 50%;
+  border: 2px solid #fff;
+  box-shadow: 0 0 0 1px var(--yy-line);
+  transition: box-shadow 140ms ease;
+}
+.yy-swatch:hover .yy-swatch__dot { box-shadow: 0 0 0 1px var(--yy-ink); }
+.yy-swatch__input:checked ~ .yy-swatch__dot { box-shadow: 0 0 0 2px var(--yy-ink); }
+.yy-swatch__input:focus-visible ~ .yy-swatch__dot { outline: 2px solid var(--yy-green); outline-offset: 3px; }
+
+/* ============================================================
+   PLACEHOLDER TONES
+   ------------------------------------------------------------
+   Drop these on .yy-varbox__media (or any element) instead of an
+   <img> while you don't have real product photos. Swap for real
+   <img> later — the layout is identical.
+   ============================================================ */
+.tone-sage   { background: linear-gradient(135deg, #cdd9c2, #a8b89a); }
+.tone-wheat  { background: linear-gradient(135deg, #ead9b8, #c9b487); }
+.tone-honey  { background: linear-gradient(135deg, #f0d99a, #d3b260); }
+.tone-stone  { background: linear-gradient(135deg, #d9d4c8, #b3ac9b); }
+.tone-moss   { background: linear-gradient(135deg, #b9c8a8, #7e9270); }
+.tone-linen  { background: linear-gradient(135deg, #ebe4d4, #cbc1a8); }
+.tone-deep   { background: linear-gradient(135deg, #3d7a4f, #2d5a3a); }
+.tone-char   { background: linear-gradient(135deg, #4a4740, #2a2820); }
+/* faint photo-ish texture on placeholders */
+.yy-varbox__media[class*="tone-"]::before,
+.yy-swatch__dot[class*="tone-"] {
+  /* no-op hook; kept for parity */
+}
+
+/* ============================================================
+   MOBILE
+   ============================================================ */
+@media (max-width: 560px) {
+  /* Auto-fit med min 96px → 3 kolonner på 375px */
+  .yy-vargroup__grid {
+    grid-template-columns: repeat(auto-fill, minmax(96px, 1fr));
+    gap: 10px;
+  }
+  .yy-vargroup__grid--4 { grid-template-columns: repeat(2, 1fr); }
+
+  /* Kompakt boks */
+  .yy-varbox { padding: 8px; border-radius: 10px; }
+  .yy-varbox__media { border-radius: 7px; }
+  .yy-varbox__body { padding: 8px 2px 2px; }
+  .yy-varbox__name { font-size: 12px; }
+  .yy-varbox__meta { font-size: 11px; }
+  .yy-varbox__badge { font-size: 9px; padding: 2px 6px; }
+  .yy-varbox__check { width: 20px; height: 20px; top: 12px; right: 12px; }
+  .yy-varbox__check::after { width: 9px; height: 5px; }
+  .yy-vargroup__head { margin-bottom: 10px; }
+  .yy-vargroup__label { font-size: 14px; }
+}

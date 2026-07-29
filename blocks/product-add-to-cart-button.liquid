@@ -1,0 +1,79 @@
+<div id="button-{{ block.id }}" {{ block.shopify_attributes }} style="display:inline-block">
+  {%- if block.settings.color_text_buttons != 'rgba(0,0,0,0)' -%}
+    <style type="text/css">
+      #button-{{ block.id }} {
+        {%- if block.settings.color_text_buttons != 'rgba(0,0,0,0)' -%}
+          --color-text-cards: {{ block.settings.color_text_buttons }};
+          {%- liquid
+            assign brightness_button = block.settings.color_text_buttons | color_brightness
+            if brightness_button > 150
+              assign color_foreground_button = '#000'
+            else
+              assign color_foreground_button = '#fff'
+            endif
+          -%}
+          --color-foreground-cards: {{ color_foreground_button }};
+        {%- endif -%}
+      }
+    </style>
+  {%- endif -%}
+
+  {%- assign block_id = block.id | append: '-' | append: section.id -%}
+  {%- render 'quick-buy-modal',
+    product: block.settings.product,
+    button_style: block.settings.button_style,
+    add_to_cart_price: block.settings.show_price,
+    id: block_id
+  -%}
+</div>
+
+{% schema %}
+{
+  "name": "t:theme_blocks.product-add-to-cart-button.name",
+  "tag": null,
+  "settings": [
+    {
+      "type": "product",
+      "id": "product",
+      "label": "t:sections.featured-product.settings.product.label"
+    },
+    {
+      "type": "select",
+      "id": "button_style",
+      "label": "t:sections.local-extra-words.sections.buttons.style.label",
+      "options": [
+        {
+          "value": "outline",
+          "label": "t:sections.local-extra-words.sections.buttons.style.option__1"
+        },
+        {
+          "value": "solid",
+          "label": "t:sections.local-extra-words.sections.buttons.style.option__2"
+        }
+      ],
+      "default": "outline"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_price",
+      "label": "t:sections.bundle-extra-words.sections.product_grid.blocks.quick_buy.settings.show_price.label",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "t:sections.split-extra-words.settings_schema.colors.headings.custom_colors"
+    },
+    {
+      "type": "color",
+      "id": "color_text_buttons",
+      "label": "t:sections.split-extra-words.settings_schema.colors.settings.background",
+      "default": "rgba(0,0,0,0)"
+    }
+  ],
+  "presets": [
+    {
+      "name": "t:theme_blocks.product-add-to-cart-button.name"
+    }
+  ]
+}
+{% endschema %}

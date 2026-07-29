@@ -1,0 +1,103 @@
+{% comment %}
+  This snippet is a "product item skeleton". It is used in the product grid for combined listings, to assist in replacing the entire product item with the updated product when a combined variant option is changed. It acts like a structural placeholder for the product item, and is used to render the product item's content via JS.
+  
+  Accepts:
+  - section_blocks: {array} section.blocks array (to access block settings).
+  - layout: {String} desktop grid classes (used to determine the image sizes attribute).
+  - mobile_layout: {String} desktop grid classes (used to determine the image sizes attribute).
+  
+  Usage:
+  <div style="display:none" data-js-product-item-skeleton>{%- render 'product-item-skeleton', section_blocks: section.blocks, layout: 'grid-4', mobile_layout: 'palm-1' -%}</div>
+{% endcomment %}
+
+
+<div class="product-item" data-js-product-item> 
+
+  {%- if layout contains 'set' -%}
+    {%- assign sizes = sizes -%}
+  {%- else -%}
+    {%- if layout contains 'grid-4' -%}
+      {%- capture sizes -%}
+        (max-width: 1023px) calc((100vw - 100px) / 3), (max-width: {{ settings.theme_max_width }}px) calc((100vw - 120px) / 4), {{ settings.theme_max_width | minus: 120 | divided_by: 4 }}px
+      {%- endcapture -%}
+    {%- else -%}
+      {%- capture sizes -%}
+        (max-width: {{ settings.theme_max_width }}px) calc((100vw - 120px) / 3), {{ settings.theme_max_width | minus: 120 | divided_by: 3 }}px
+      {%- endcapture -%}
+    {%- endif -%} 
+    {%- liquid
+      assign sizes = sizes | prepend: '(max-width: 767px) calc((100vw - 50px) / 2), '
+      if mobile_layout contains 'palm-1'
+        assign sizes = sizes | prepend: "(max-width: 474px) calc(100vw - 30px), "
+      else 
+        assign sizes = sizes | prepend: "(max-width: 474px) calc(50vw - 20px), "
+      endif
+    -%}
+  {%- endif -%}
+
+  <div class="product-item__text">
+
+    {%- for block in section_blocks -%}
+      {%- case block.type %}
+
+        {%- when 'title' -%}
+          <a class="product-item__title"></a>
+
+        {%- when 'price' -%}
+          <div class="product-item__price"></div>
+
+        {%- when 'icons' -%}
+          <div class="product-item__icons"></div>
+
+        {%- when 'description' -%}
+          {%- assign product_description_excerpt_length = block.settings.excerpt_limit -%}
+          {%- assign product_description_excerpt_link = block.settings.show_link -%}
+          <div class="product-item__excerpt"></div>
+
+        {%- when 'vendor' -%}
+          <div class="product-item__vendor"></div>
+
+        {%- when 'quick_buy' -%}
+          {%- liquid
+            assign quick_buy_show_only_available = block.settings.show_only_available 
+            assign quick_buy_add_to_cart_price = block.settings.show_price
+            assign quick_buy_default_to_first_variant = block.settings.variant_default
+            assign quick_buy_unavailable_variants = block.settings.unavailable_variants
+          -%}
+          <div class="product-item__quick-buy-direct"></div>
+
+        {%- when 'product_link' -%}
+          {%- assign product_link_button_label = block.settings.button_label -%}
+          <a class="product-item__link"></a>
+
+        {%- when 'rating' -%}
+          <div class="product-item__ratings"></div>
+
+      {%- endcase %}
+    {%- endfor -%}
+
+    {%- if add_quick_buy -%}
+      <div class="product-item__quick-buy-defered"></div>
+    {%- endif -%}
+
+  </div>
+
+  {%- unless settings.show_badges == false -%}
+    <div class="product-item__badges"></div>
+  {%- endunless -%}
+
+</div>
+
+<script type="application/json" data-product-skeleton-settings>
+  {
+    "product_image_sizes": "{{ sizes }}"
+    , "unavailable_variants": "{{ quick_buy_unavailable_variants }}"
+    , "default_to_first_variant": "{{ quick_buy_default_to_first_variant }}"
+    , "show_add_to_cart_price": "{{ quick_buy_add_to_cart_price }}"
+    , "defer_add": "{{ defer_add }}"
+    {%- if product_link_button_label -%} , "product_link_button_label": "{{ product_link_button_label }}" {%- endif -%}
+    {%- if quick_buy_show_only_available -%} , "quick_buy_show_only_available": {{ quick_buy_show_only_available }} {%- endif -%}
+    {%- if product_description_excerpt_length -%}, "product_description_excerpt_length": {{ product_description_excerpt_length }} {%- endif -%}
+    {%- if product_description_excerpt_link -%} , "product_description_excerpt_link": {{ product_description_excerpt_link }} {%- endif -%}
+  }
+</script>

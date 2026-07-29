@@ -1,0 +1,262 @@
+{% comment %}Yummii Yummii — Landingsside: Hero{% endcomment %}
+
+{{ 'yy-landing.css' | asset_url | stylesheet_tag }}
+<script src="{{ 'yy-landing.js' | asset_url }}" defer></script>
+
+{%- liquid
+  assign scrim = section.settings.overlay_strength | divided_by: 100.0 | round: 2
+  assign min_h = section.settings.min_height
+
+  assign video_url = ''
+  if section.settings.video != blank
+    assign video_mp4 = section.settings.video.sources | where: 'format', 'mp4' | last
+    if video_mp4
+      assign video_url = video_mp4.url
+    endif
+  endif
+-%}
+
+{% style %}
+  #shopify-section-{{ section.id }} .yy-lp-hero{
+    --yylp-scrim: {{ scrim }};
+    --yylp-hero-minh: {{ min_h }}vh;
+    {%- if section.settings.image_desktop != blank -%}
+    --yylp-hero-image: url('{{ section.settings.image_desktop | image_url: width: 2400 }}');
+    --yylp-hero-pos: {{ section.settings.image_position }};
+    {%- endif -%}
+  }
+  @media (max-width: 760px) {
+    #shopify-section-{{ section.id }} .yy-lp-hero{
+      {%- if section.settings.image_mobile != blank -%}
+      --yylp-hero-image: url('{{ section.settings.image_mobile | image_url: width: 1200 }}');
+      --yylp-hero-pos: {{ section.settings.image_position_mobile }};
+      {%- elsif section.settings.image_desktop != blank -%}
+      --yylp-hero-pos: {{ section.settings.image_position_mobile }};
+      {%- endif -%}
+    }
+  }
+  #shopify-section-{{ section.id }} .yy-lp-hero__secondary{
+    display:inline-block; margin-top:14px; color:inherit; opacity:.9;
+    font-size:14px; font-weight:600; text-decoration:underline; text-underline-offset:3px;
+  }
+  #shopify-section-{{ section.id }} .yy-lp-hero__secondary:hover{ opacity:1; }
+
+  /* Avatar-ikoner (folkene bag) */
+  #shopify-section-{{ section.id }} .yy-lp-hero__avatars{ display:flex; align-items:center; gap:16px; margin-top:20px; flex-wrap:wrap; justify-content:center; }
+  #shopify-section-{{ section.id }} .yy-lp-hero--left .yy-lp-hero__avatars{ justify-content:flex-start; }
+  #shopify-section-{{ section.id }} .yy-lp-hero__avlabel{ font-size:13px; font-weight:600; opacity:.9; max-width:16ch; line-height:1.3; text-align:left; }
+  #shopify-section-{{ section.id }} .yy-lp-hero__avrow{ display:flex; gap:{{ section.settings.avatars_gap | default: 16 }}px; }
+  #shopify-section-{{ section.id }} .yy-lp-hero__av{ margin:0; text-align:center; }
+  #shopify-section-{{ section.id }} .yy-lp-hero__avimg{ display:block; width:{{ section.settings.avatars_size | default: 56 }}px; height:{{ section.settings.avatars_size | default: 56 }}px; border-radius:50%; overflow:hidden; background:rgba(255,255,255,.18); box-shadow:0 0 0 2px rgba(255,255,255,.65), 0 4px 12px rgba(0,0,0,.2); }
+  #shopify-section-{{ section.id }} .yy-lp-hero__av a{ display:block; }
+  #shopify-section-{{ section.id }} .yy-lp-hero__avimg img{ width:100%; height:100%; object-fit:cover; display:block; }
+  #shopify-section-{{ section.id }} .yy-lp-hero__avimg--ph{ display:flex; align-items:center; justify-content:center; }
+  #shopify-section-{{ section.id }} .yy-lp-hero__avimg--ph svg{ width:46%; height:46%; opacity:.7; }
+  #shopify-section-{{ section.id }} .yy-lp-hero__av figcaption{ font-size:11.5px; font-weight:600; margin-top:6px; opacity:.9; white-space:nowrap; }
+  @media (max-width:560px){
+    #shopify-section-{{ section.id }} .yy-lp-hero__avatars{ gap:12px; }
+    #shopify-section-{{ section.id }} .yy-lp-hero__avlabel{ text-align:center; max-width:none; flex-basis:100%; }
+  }
+{% endstyle %}
+
+<div class="yy-lp-root yy-lp-scheme--{{ section.settings.color_scheme }}">
+  <header class="yy-lp-hero {% if section.settings.text_alignment == 'left' %}yy-lp-hero--left{% endif %} yy-lp-hero--valign-{{ section.settings.content_valign }}">
+    <div class="yy-lp-hero__bg" aria-hidden="true"></div>
+    {%- if video_url != blank -%}
+      <video class="yy-lp-hero__video" src="{{ video_url }}" autoplay muted loop playsinline aria-hidden="true"></video>
+    {%- endif -%}
+    <div class="yy-lp-hero__scrim" aria-hidden="true"></div>
+    <div class="yy-lp-wrap">
+
+      {%- if section.settings.show_trust and section.settings.trust_text != blank -%}
+        <div class="yy-lp-statline">
+          <span class="yy-lp-stars" aria-hidden="true">★★★★★</span>
+          <span>{{ section.settings.trust_text }}</span>
+        </div>
+      {%- endif -%}
+
+      {%- if section.settings.title != blank -%}
+        <h1>{{ section.settings.title }}</h1>
+      {%- endif -%}
+
+      {%- if section.settings.sub != blank -%}
+        <p class="yy-lp-sub">{{ section.settings.sub }}</p>
+      {%- endif -%}
+
+      {%- if section.blocks.size > 0 -%}
+        <div class="yy-lp-hero__avatars">
+          {%- if section.settings.avatars_label != blank -%}<span class="yy-lp-hero__avlabel">{{ section.settings.avatars_label }}</span>{%- endif -%}
+          <div class="yy-lp-hero__avrow">
+            {%- for block in section.blocks -%}
+              {%- if block.type == 'avatar' -%}
+                <figure class="yy-lp-hero__av" {{ block.shopify_attributes }}>
+                  {%- if block.settings.link != blank -%}<a href="{{ block.settings.link }}">{%- endif -%}
+                  <span class="yy-lp-hero__avimg{% if block.settings.image == blank %} yy-lp-hero__avimg--ph{% endif %}">
+                    {%- if block.settings.image != blank -%}
+                      <img src="{{ block.settings.image | image_url: width: 160 }}" alt="{{ block.settings.name | escape }}" width="60" height="60" loading="lazy">
+                    {%- else -%}
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>
+                    {%- endif -%}
+                  </span>
+                  {%- if block.settings.link != blank -%}</a>{%- endif -%}
+                  {%- if block.settings.name != blank -%}<figcaption>{{ block.settings.name }}</figcaption>{%- endif -%}
+                </figure>
+              {%- endif -%}
+            {%- endfor -%}
+          </div>
+        </div>
+      {%- endif -%}
+
+      {%- if section.settings.cta_label != blank -%}
+        <a href="{{ section.settings.cta_url | default: '#kob' }}" class="yy-lp-btn yy-lp-btn--light" data-yylp-anchor>
+          {{ section.settings.cta_label }}
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+        </a>
+      {%- endif -%}
+
+      {%- if section.settings.secondary_cta_label != blank -%}
+        <a href="{{ section.settings.secondary_cta_url | default: '#saet' }}" class="yy-lp-hero__secondary" data-yylp-anchor {% if section.settings.secondary_opens_popup %}data-qp-open{% endif %}>{{ section.settings.secondary_cta_label }}</a>
+      {%- endif -%}
+
+      {%- if section.settings.reassure_text != blank -%}
+        <div class="yy-lp-reassure">{{ section.settings.reassure_text }}</div>
+      {%- endif -%}
+
+    </div>
+  </header>
+</div>
+
+{% schema %}
+{
+  "name": "LP — Hero",
+  "settings": [
+    { "type": "header", "content": "Billede (desktop/mobil)" },
+    { "type": "image_picker", "id": "image_desktop", "label": "Baggrund — desktop" },
+    {
+      "type": "select",
+      "id": "image_position",
+      "label": "Position — desktop",
+      "options": [
+        { "value": "center center", "label": "Centreret" },
+        { "value": "center top", "label": "Top" },
+        { "value": "center bottom", "label": "Bund" },
+        { "value": "left center", "label": "Venstre" },
+        { "value": "right center", "label": "Højre" }
+      ],
+      "default": "center center"
+    },
+    { "type": "image_picker", "id": "image_mobile", "label": "Baggrund — mobil (valgfri)" },
+    {
+      "type": "select",
+      "id": "image_position_mobile",
+      "label": "Position — mobil",
+      "options": [
+        { "value": "center center", "label": "Centreret" },
+        { "value": "center top", "label": "Top" },
+        { "value": "center bottom", "label": "Bund" }
+      ],
+      "default": "center center"
+    },
+    {
+      "type": "video",
+      "id": "video",
+      "label": "Baggrundsvideo (valgfri)",
+      "info": "Afspilles automatisk, lydløst, i loop. Erstatter ikke billedet — sæt kun én af delene for renest resultat."
+    },
+    {
+      "type": "range",
+      "id": "overlay_strength",
+      "label": "Mørkning af billede/video",
+      "min": 0,
+      "max": 100,
+      "step": 5,
+      "default": 60
+    },
+    {
+      "type": "range",
+      "id": "min_height",
+      "label": "Minimumshøjde",
+      "min": 40,
+      "max": 100,
+      "step": 5,
+      "unit": "vh",
+      "default": 80
+    },
+    { "type": "header", "content": "Layout & farve" },
+    {
+      "type": "select",
+      "id": "color_scheme",
+      "label": "Farveskema (tekstfarve)",
+      "options": [
+        { "value": "dark", "label": "Mørk baggrund / lys tekst" },
+        { "value": "green", "label": "Grøn baggrund / lys tekst" },
+        { "value": "cream", "label": "Cremefarvet / mørk tekst" },
+        { "value": "white", "label": "Hvid / mørk tekst" }
+      ],
+      "default": "dark"
+    },
+    {
+      "type": "select",
+      "id": "text_alignment",
+      "label": "Tekstjustering",
+      "options": [
+        { "value": "center", "label": "Centreret" },
+        { "value": "left", "label": "Venstrestillet" }
+      ],
+      "default": "center"
+    },
+    {
+      "type": "select",
+      "id": "content_valign",
+      "label": "Lodret placering",
+      "options": [
+        { "value": "top", "label": "Top" },
+        { "value": "center", "label": "Midten" },
+        { "value": "bottom", "label": "Bund" }
+      ],
+      "default": "center"
+    },
+    { "type": "header", "content": "Trustpilot-linje" },
+    { "type": "checkbox", "id": "show_trust", "label": "Vis trustlinje", "default": true },
+    { "type": "text", "id": "trust_text", "label": "Tekst", "default": "+45.000 kunder · 4,5 på Trustpilot" },
+    { "type": "header", "content": "Tekst" },
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Overskrift",
+      "default": "En hverdag <em>uden</em> mikroplast",
+      "info": "Brug <em>ord</em> for kursiv fremhævning"
+    },
+    { "type": "textarea", "id": "sub", "label": "Underoverskrift", "default": "To madkasser i rustfrit stål til hele familien — lufttætte, holdbare og helt fri for mikroplast og kemi." },
+    { "type": "header", "content": "Avatar-ikoner (folkene bag)" },
+    { "type": "paragraph", "content": "Tilføj ‘Avatar’-blokke nedenfor — små runde billeder under overskrifterne. Brug fx billeder af jer der står bag." },
+    { "type": "text", "id": "avatars_label", "label": "Label ved siden af (valgfri)", "info": "Fx ‘Skabt af os der selv bruger dem’. Tom = kun billeder." },
+    { "type": "range", "id": "avatars_size", "label": "Størrelse", "min": 40, "max": 88, "step": 4, "unit": "px", "default": 56 },
+    { "type": "range", "id": "avatars_gap", "label": "Afstand mellem", "min": 6, "max": 32, "step": 2, "unit": "px", "default": 16 },
+    { "type": "header", "content": "CTA-knap" },
+    { "type": "text", "id": "cta_label", "label": "Knaptekst", "default": "Køb startsættet" },
+    { "type": "url", "id": "cta_url", "label": "Knaplink (default: #kob)" },
+    { "type": "text", "id": "secondary_cta_label", "label": "Sekundær knap (tekst)", "info": "F.eks. link til quiz. Tom = skjult." },
+    { "type": "url", "id": "secondary_cta_url", "label": "Sekundær knap (link, default: #saet)" },
+    { "type": "checkbox", "id": "secondary_opens_popup", "label": "Sekundær knap åbner quiz-popup", "default": false },
+    { "type": "text", "id": "reassure_text", "label": "Tryghedslinje", "default": "399 kr · spar 26% · 30 dages pengene-tilbage-garanti" }
+  ],
+  "blocks": [
+    {
+      "type": "avatar",
+      "name": "Avatar",
+      "settings": [
+        { "type": "image_picker", "id": "image", "label": "Billede" },
+        { "type": "text", "id": "name", "label": "Navn (valgfrit)" },
+        { "type": "url", "id": "link", "label": "Link (valgfrit)" }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "LP — Hero",
+      "blocks": [ { "type": "avatar" }, { "type": "avatar" }, { "type": "avatar" } ]
+    }
+  ]
+}
+{% endschema %}

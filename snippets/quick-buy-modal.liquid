@@ -1,0 +1,61 @@
+{%- comment -%}
+  Renders a quick buy button for a product card.
+
+  Accepts:
+  - product: {Object} the product object.
+  - button_style: {String} the style of the button. Possible values: 'solid', 'outline'.
+
+  Usage:
+  {% render 'quick-buy', product: product %}
+{%- endcomment -%}
+
+{%- if product != blank and product.available -%}
+
+  {%- if product.has_only_default_variant -%}
+
+    <quick-add-to-cart class="quick-add-to-cart">
+      <product-form {% if settings.cart_action == 'overlay' %} data-ajax-cart {% endif %}>
+        <div class="quick-add-to-cart-button">
+          {%- form 'product', product -%}
+            <input type="hidden" name="id" value="{{ product.selected_or_first_available_variant.id }}">
+            <button class="button {% if button_style == 'solid' %} button--solid {% else %} button--outline button--outline-hover-solid button--fullwidth {% endif %} {% if button_size == 'small' %} button--small {% endif %} button--loader button--move" data-js-product-add-to-cart type="submit" name="add">
+              <span class="button__text">
+                {{ 'products.page.add_to_cart_button' | t }}
+                {%- liquid
+                  if add_to_cart_price 
+                    if settings.show_currency_codes
+                      assign iso_code = localization.country.currency.iso_code | prepend: ' ' 
+                    endif
+                    echo product.selected_or_first_available_variant.price | money | append: iso_code | prepend: '<span class="element--hide-on-small"> - ' | append: '</span>' 
+                  endif 
+                -%}
+              </span>
+              <span class="button__preloader">
+                <svg class="button__preloader-element" viewBox="25 25 50 50"><circle cx="50" cy="50" r="20" fill="none" stroke-width="4" style="fill:none!important"/></svg>
+              </span>
+            </button>
+          {%- endform -%} 
+        </div>
+      </product-form>
+    </quick-add-to-cart>
+
+  {%- else -%}
+
+    <quick-view-product class="quick-add-to-cart">
+      <a href="{{ product.url }}" class="button {% if button_style == 'solid' %} button--solid {% else %} button--outline button--outline-hover-solid button--fullwidth {% endif %} {% if button_size == 'small' %} button--small {% endif %} button--loader button--move" data-js-product-add-to-cart data-id="{{ product.id }}">
+        <span class="button__text"> {{ 'products.page.choose_options_button' | t }}</span>
+        <span class="button__preloader">
+          <svg class="button__preloader-element" viewBox="25 25 50 50"><circle cx="50" cy="50" r="20" fill="none" stroke-width="4" style="fill:none!important"/></svg>
+        </span>
+      </a>
+    </quick-view-product>
+
+  {%- endif -%}
+
+{%- else -%}
+
+  <button class="quick-add-to-cart button {% if button_style == 'solid' %} button--solid {% else %} button--outline button--outline-hover-solid button--fullwidth {% endif %} {% if button_size == 'small' %} button--small {% endif %}" disabled style="opacity:.36;pointer-events:none">
+    <span class="button__text">{{ 'products.page.inventory.sold_out_variant' | t }}</span>
+  </button>
+  
+{%- endif -%}

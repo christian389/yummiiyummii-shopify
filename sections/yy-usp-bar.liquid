@@ -1,0 +1,75 @@
+{% comment %}
+  Yummii Yummii — USP/Trust-bånd (genbrugelig)
+  Række af tryghedspunkter (ikon + titel + tekst) som blokke. Bruges under
+  kollektioner, på landingssider osv.
+{% endcomment %}
+
+{%- assign cols = section.settings.columns | default: 4 -%}
+
+{% style %}
+  #shopify-section-{{ section.id }} .yyusp{ background:{{ section.settings.bg_color | default: '#f4eedb' }}; }
+  #shopify-section-{{ section.id }} .yyusp__in{ max-width:1320px; margin:0 auto; padding:{{ section.settings.padding | default: 34 }}px 30px; display:grid; grid-template-columns:repeat({{ cols }},1fr); gap:24px; }
+  #shopify-section-{{ section.id }} .yyusp__t{ display:flex; align-items:flex-start; gap:13px; }
+  #shopify-section-{{ section.id }} .yyusp__ic{ flex:none; width:40px; height:40px; border-radius:50%; background:#fff; display:flex; align-items:center; justify-content:center; color:{{ section.settings.icon_color | default: '#3d7a4f' }}; }
+  #shopify-section-{{ section.id }} .yyusp__ic svg{ width:20px; height:20px; }
+  #shopify-section-{{ section.id }} .yyusp__h{ font-family:'DM Sans',system-ui,sans-serif; font-size:14px; font-weight:600; letter-spacing:-.01em; color:{{ section.settings.title_color | default: '#1a1812' }}; }
+  #shopify-section-{{ section.id }} .yyusp__p{ font-family:'DM Sans',system-ui,sans-serif; font-size:12.5px; color:{{ section.settings.text_color | default: '#5a5648' }}; margin-top:3px; line-height:1.45; }
+  @media(max-width:900px){ #shopify-section-{{ section.id }} .yyusp__in{ grid-template-columns:1fr 1fr; gap:24px 20px; } }
+  @media(max-width:520px){ #shopify-section-{{ section.id }} .yyusp__in{ grid-template-columns:1fr; padding:26px 16px; } }
+{% endstyle %}
+
+<section class="yyusp">
+  <div class="yyusp__in">
+    {%- for b in section.blocks -%}
+      <div class="yyusp__t" {{ b.shopify_attributes }}>
+        <span class="yyusp__ic">
+          {%- case b.settings.icon -%}
+            {%- when 'leaf' -%}<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20C4 11 11 5 20 5c0 9-6 16-15 16-1 0-1 0-1 0z"/><path d="M9 15c3-3 6-4 9-5"/></svg>
+            {%- when 'refresh' -%}<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 0115-6.7L21 8M21 3v5h-5"/><path d="M21 12a9 9 0 01-15 6.7L3 16M3 21v-5h5"/></svg>
+            {%- when 'star' -%}<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.6 6.6 7 .5-5.4 4.5 1.8 6.9L12 17.3 5.9 20.5l1.8-6.9L2.3 9.1l7-.5z"/></svg>
+            {%- when 'shield' -%}<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l7 3v6c0 5-3.5 8-7 9-3.5-1-7-4-7-9V6z"/><path d="M9 12l2 2 4-4"/></svg>
+            {%- when 'heart' -%}<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20s-7-4.3-9.3-8.5C1 8 2.8 5 6 5c2 0 3.2 1.2 4 2.3C10.8 6.2 12 5 14 5c3.2 0 5 3 3.3 6.5C19 15.7 12 20 12 20z"/></svg>
+            {%- else -%}<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h11v9H3zM14 9h4l3 3v3h-7z"/><circle cx="7" cy="18" r="1.6"/><circle cx="17.5" cy="18" r="1.6"/></svg>
+          {%- endcase -%}
+        </span>
+        <div><div class="yyusp__h">{{ b.settings.title }}</div>{%- if b.settings.text != blank -%}<div class="yyusp__p">{{ b.settings.text }}</div>{%- endif -%}</div>
+      </div>
+    {%- endfor -%}
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "YY — USP-bånd",
+  "settings": [
+    { "type": "select", "id": "columns", "label": "Kolonner", "options": [ { "value": "2", "label": "2" }, { "value": "3", "label": "3" }, { "value": "4", "label": "4" } ], "default": "4" },
+    { "type": "range", "id": "padding", "min": 16, "max": 80, "step": 2, "unit": "px", "label": "Lodret padding", "default": 34 },
+    { "type": "color", "id": "bg_color", "label": "Baggrund", "default": "#f4eedb" },
+    { "type": "color", "id": "icon_color", "label": "Ikon-farve", "default": "#3d7a4f" },
+    { "type": "color", "id": "title_color", "label": "Titel-farve", "default": "#1a1812" },
+    { "type": "color", "id": "text_color", "label": "Tekst-farve", "default": "#5a5648" }
+  ],
+  "blocks": [
+    {
+      "type": "usp",
+      "name": "USP-punkt",
+      "settings": [
+        { "type": "select", "id": "icon", "label": "Ikon", "options": [ { "value": "truck", "label": "Levering" }, { "value": "leaf", "label": "Blad" }, { "value": "refresh", "label": "Retur" }, { "value": "star", "label": "Stjerne" }, { "value": "shield", "label": "Skjold" }, { "value": "heart", "label": "Hjerte" } ], "default": "truck" },
+        { "type": "text", "id": "title", "label": "Titel", "default": "Fri fragt over 400 kr" },
+        { "type": "textarea", "id": "text", "label": "Tekst", "default": "Sendes samme dag ved bestilling inden kl. 14." }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "YY — USP-bånd",
+      "blocks": [
+        { "type": "usp", "settings": { "icon": "truck", "title": "Fri fragt over 400 kr", "text": "Sendes samme dag ved bestilling inden kl. 14." } },
+        { "type": "usp", "settings": { "icon": "leaf", "title": "100% mikroplastfri", "text": "Fødevaregodkendt rustfrit stål — ingen plast, BPA eller kemi." } },
+        { "type": "usp", "settings": { "icon": "refresh", "title": "30 dages returret", "text": "Fortryd roligt — gratis retur i hele Danmark." } },
+        { "type": "usp", "settings": { "icon": "star", "title": "4,5 på Trustpilot", "text": "Over 45.000 glade familier." } }
+      ]
+    }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,350 @@
+{% comment %}
+  Yummii Yummii — Kollektions-side (optimeret)
+  Ny collection-template-sektion: hero-banner, sticky filter/sortér-toolbar,
+  produkt-grid (rigtige produkter, badges, pris, quick-add), promo-felter,
+  trust-bånd og SEO-tekst. Udsolgte kort kobler til Back-in-Stock-popup'en.
+  Upload som sections/yy-collection.liquid + brug templates/collection.yy.json.
+{% endcomment %}
+
+{%- assign accent      = section.settings.accent | default: '#3d7a4f' -%}
+{%- assign per_page    = section.settings.per_page | default: 12 -%}
+{%- assign cols        = section.settings.cols | default: 4 -%}
+{%- assign framed = false -%}
+{%- if section.settings.card_style == 'framed' -%}{%- assign framed = true -%}{%- endif -%}
+
+{% style %}
+  #shopify-section-{{ section.id }}{ --green:{{ accent }}; --ink:#1a1812; --cream:#f4eedb; --paper:#fbf9f2; --muted:#8a8f88; --line:#e6e2d4; --sale:#c2543a; }
+  .yycol{ font-family:'DM Sans',system-ui,-apple-system,"Segoe UI",Roboto,sans-serif; color:var(--ink); background:var(--paper); -webkit-font-smoothing:antialiased; overflow-x:hidden; }
+  .yycol *{ box-sizing:border-box; }
+  .yycol a{ text-decoration:none; color:inherit; }
+  .yycol img{ display:block; max-width:100%; }
+
+  /* Toolbar */
+  .yycol-wrap{ max-width:1320px; margin:0 auto; padding:0 30px; }
+  .yycol-toolbar{ position:sticky; top:0; z-index:40; background:rgba(251,249,242,.92); -webkit-backdrop-filter:blur(10px); backdrop-filter:blur(10px); border-bottom:1px solid var(--line); margin:0 -30px; padding:0 30px; }
+  .yycol-toolbar__in{ display:flex; align-items:center; justify-content:space-between; gap:20px; padding:15px 0; flex-wrap:wrap; }
+  .yycol-chips{ display:flex; align-items:center; gap:9px; flex-wrap:wrap; }
+  .yycol-chip{ font-size:13px; font-weight:500; color:#5a5648; background:#fff; border:1px solid var(--line); border-radius:999px; padding:9px 16px; transition:.15s; white-space:nowrap; cursor:pointer; }
+  .yycol-chip:hover{ border-color:var(--green); color:var(--green); }
+  .yycol-chip.on{ background:var(--green); border-color:var(--green); color:#fff; }
+  .yycol-sort{ display:flex; align-items:center; gap:10px; flex:none; }
+  .yycol-sort__res{ font-size:13px; color:var(--muted); }
+  .yycol-sort__sel{ position:relative; display:flex; align-items:center; gap:8px; font-size:13.5px; font-weight:600; color:var(--ink); background:#fff; border:1px solid var(--line); border-radius:999px; padding:9px 14px; }
+  .yycol-sort__sel svg{ width:13px; height:13px; color:var(--muted); }
+  .yycol-sort__sel select{ position:absolute; inset:0; opacity:0; width:100%; cursor:pointer; font-family:inherit; }
+
+  /* Grid */
+  .yycol-grid{ display:grid; grid-template-columns:repeat({{ cols }},1fr); gap:{% if framed %}20px{% else %}1px{% endif %}; margin:34px 0 20px; {% unless framed %}background:var(--line); border:1px solid var(--line);{% endunless %} }
+  .yycol-card{ position:relative; display:flex; flex-direction:column; background:{% if framed %}#fff{% else %}var(--paper){% endif %}; {% if framed %}border:1px solid var(--line); padding:12px;{% else %}padding:14px 14px 18px;{% endif %} transition:.16s; min-width:0; }
+  .yycol-card:hover{ {% if framed %}border-color:var(--green);{% else %}background:#fff;{% endif %} }
+  .yycol-media{ position:relative; aspect-ratio:1/1; overflow:hidden; background:var(--cream); border:1px solid var(--line); }
+  .yycol-media img{ width:100%; height:100%; object-fit:cover; transition:opacity .25s; }
+  .yycol-media img.hover{ position:absolute; inset:0; opacity:0; }
+  .yycol-card:hover .yycol-media img.hover{ opacity:1; }
+  .yycol-badge{ position:absolute; top:10px; left:10px; z-index:2; background:var(--green); color:#fff; font-size:10px; font-weight:700; letter-spacing:.05em; text-transform:uppercase; padding:5px 10px; }
+  .yycol-badge.sale{ background:var(--sale); }
+  .yycol-badge.new{ background:var(--ink); }
+  .yycol-wish{ position:absolute; top:9px; right:9px; z-index:2; width:32px; height:32px; border:1px solid var(--line); background:rgba(255,255,255,.92); color:var(--ink); display:flex; align-items:center; justify-content:center; cursor:pointer; opacity:0; transform:translateY(-4px); transition:.18s; }
+  .yycol-card:hover .yycol-wish{ opacity:1; transform:none; }
+  .yycol-wish svg{ width:17px; height:17px; }
+  .yycol-wish.on{ color:var(--sale); }
+  .yycol-wish.on svg{ fill:var(--sale); }
+  .yycol-qadd{ position:absolute; left:10px; right:10px; bottom:10px; z-index:2; display:flex; align-items:center; justify-content:center; gap:8px; height:42px; border:none; background:var(--ink); color:#fff; font-size:13px; font-weight:600; font-family:inherit; cursor:pointer; opacity:0; transform:translateY(10px); transition:opacity .2s, transform .2s, background .15s; text-decoration:none; }
+  .yycol-card:hover .yycol-qadd{ opacity:1; transform:none; }
+  .yycol-qadd:hover{ background:var(--green); }
+  .yycol-qadd.added{ background:var(--green); }
+  .yycol-qadd svg{ width:16px; height:16px; }
+  .yycol-qadd--soldout{ background:var(--green); }
+  .yycol-info{ padding-top:14px; }
+  .yycol-name{ font-size:15px; font-weight:600; letter-spacing:-.01em; line-height:1.25; transition:color .14s; }
+  .yycol-card:hover .yycol-name{ color:var(--green); }
+  .yycol-rating{ display:flex; align-items:center; gap:6px; margin-top:5px; font-size:12px; color:var(--muted); }
+  .yycol-rating .stars{ color:#e0a83a; letter-spacing:.5px; }
+  .yycol-price{ margin-top:8px; display:flex; align-items:baseline; gap:9px; }
+  .yycol-price .now{ font-size:15px; font-weight:600; white-space:nowrap; }
+  .yycol-price .now.is-sale{ color:var(--sale); }
+  .yycol-price .was{ font-size:13px; color:var(--muted); text-decoration:line-through; }
+  .yycol-price .fra{ font-size:12px; color:var(--muted); font-weight:500; }
+
+  /* Promo tile */
+  .yycol-promo{ grid-column:span 2; position:relative; display:flex; flex-direction:column; justify-content:space-between; padding:30px; overflow:hidden; }
+  .yycol-promo.green{ background:var(--green); color:#fff; }
+  .yycol-promo.dark{ background:var(--ink); color:var(--cream); }
+  .yycol-promo.cream{ background:var(--cream); color:var(--ink); }
+  .yycol-promo__eye{ font-size:10.5px; letter-spacing:.16em; text-transform:uppercase; font-weight:700; opacity:.85; }
+  .yycol-promo__title{ font-size:clamp(21px,2.2vw,28px); font-weight:600; letter-spacing:-.02em; line-height:1.1; margin-top:14px; max-width:16ch; }
+  .yycol-promo__body{ font-size:14px; line-height:1.5; opacity:.88; margin-top:11px; max-width:34ch; }
+  .yycol-promo__cta{ display:inline-flex; align-items:center; gap:9px; margin-top:20px; font-size:13.5px; font-weight:600; align-self:flex-start; padding-bottom:3px; border-bottom:1.5px solid currentColor; transition:gap .16s; }
+  .yycol-promo:hover .yycol-promo__cta{ gap:15px; }
+  .yycol-promo__cta svg{ width:15px; height:15px; }
+  .yycol-promo__deco{ position:absolute; right:-70px; bottom:-70px; width:230px; height:230px; border:1px solid currentColor; opacity:.14; border-radius:50%; }
+
+  .yycol-empty{ grid-column:1/-1; text-align:center; padding:70px 0; color:var(--muted); font-size:15px; }
+
+  /* Pagination */
+  .yycol-pag{ display:flex; justify-content:center; align-items:center; gap:6px; margin:10px 0 8px; padding-bottom:10px; }
+  .yycol-pag a, .yycol-pag span{ min-width:40px; height:40px; display:inline-flex; align-items:center; justify-content:center; border:1px solid var(--line); background:#fff; border-radius:999px; font-size:14px; font-weight:600; color:var(--ink); padding:0 12px; }
+  .yycol-pag a:hover{ border-color:var(--green); color:var(--green); }
+  .yycol-pag .current{ background:var(--green); border-color:var(--green); color:#fff; }
+
+  /* SEO */
+  .yycol-seo{ max-width:820px; margin:0 auto; padding:56px 30px 20px; }
+  .yycol-seo__eye{ font-size:11px; letter-spacing:.16em; text-transform:uppercase; color:var(--green); font-weight:700; margin-bottom:12px; }
+  .yycol-seo h2{ font-size:clamp(22px,3vw,30px); font-weight:600; letter-spacing:-.02em; line-height:1.16; margin:0 0 16px; }
+  .yycol-seo p{ font-size:15.5px; line-height:1.7; color:#4a4739; margin:0 0 14px; }
+  .yycol-seo h3{ font-size:18px; font-weight:600; margin:24px 0 10px; }
+  .yycol-seo ul{ margin:6px 0 0; padding-left:20px; display:flex; flex-direction:column; gap:9px; }
+  .yycol-seo li{ font-size:15px; line-height:1.55; color:#4a4739; }
+
+  @media(max-width:1040px){ .yycol-grid{ grid-template-columns:repeat(2,1fr); } .yycol-promo{ grid-column:span 2; } }
+  @media(max-width:560px){
+    .yycol-wrap{ padding:0 16px; } .yycol-toolbar{ margin:0 -16px; padding:0 16px; }
+    .yycol-grid{ grid-template-columns:1fr 1fr; gap:1px; margin-top:22px; }
+    .yycol-promo{ grid-column:span 2; }
+    .yycol-chips{ flex-wrap:nowrap; overflow-x:auto; -webkit-overflow-scrolling:touch; scrollbar-width:none; margin:0 -16px; padding:0 16px; flex:1 1 auto; }
+    .yycol-chips::-webkit-scrollbar{ display:none; }
+    .yycol-chip{ flex:0 0 auto; }
+    .yycol-sort__res{ display:none; }
+  }
+  @media(hover:none){ .yycol-wish{ opacity:1; transform:none; } .yycol-qadd{ opacity:1; transform:none; } }
+{% endstyle %}
+
+<div class="yycol">
+  <div class="yycol-wrap">
+    {%- comment -%} ---------- TOOLBAR ---------- {%- endcomment -%}
+    <div class="yycol-toolbar">
+      <div class="yycol-toolbar__in">
+        <div class="yycol-chips">
+          <a class="yycol-chip{% if collection.current_tags == blank %} on{% endif %}" href="{{ collection.url }}">Alle</a>
+          {%- assign filter_blocks = section.blocks | where: 'type', 'filter' -%}
+          {%- if filter_blocks.size > 0 -%}
+            {%- for b in filter_blocks -%}
+              {%- assign tg = b.settings.tag -%}
+              <a class="yycol-chip{% if collection.current_tags contains tg %} on{% endif %}" href="{{ collection.url }}/{{ tg | handleize }}" {{ b.shopify_attributes }}>{{ b.settings.label | default: tg }}</a>
+            {%- endfor -%}
+          {%- else -%}
+            {%- for tg in collection.all_tags limit: 7 -%}
+              <a class="yycol-chip{% if collection.current_tags contains tg %} on{% endif %}" href="{{ collection.url }}/{{ tg | handleize }}">{{ tg }}</a>
+            {%- endfor -%}
+          {%- endif -%}
+        </div>
+        <div class="yycol-sort">
+          <span class="yycol-sort__res">{{ collection.products_count }} varer</span>
+          <div class="yycol-sort__sel">
+            <span data-yycol-sortlabel>Sortér</span>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M6 9l6 6 6-6"/></svg>
+            {%- assign cur_sort = collection.sort_by | default: collection.default_sort_by -%}
+            <select data-yycol-sort aria-label="Sortér">
+              <option value="best-selling"{% if cur_sort == 'best-selling' %} selected{% endif %}>Mest populære</option>
+              <option value="price-ascending"{% if cur_sort == 'price-ascending' %} selected{% endif %}>Pris: lav → høj</option>
+              <option value="price-descending"{% if cur_sort == 'price-descending' %} selected{% endif %}>Pris: høj → lav</option>
+              <option value="created-descending"{% if cur_sort == 'created-descending' %} selected{% endif %}>Nyeste</option>
+              <option value="title-ascending"{% if cur_sort == 'title-ascending' %} selected{% endif %}>Titel: A → Å</option>
+            </select>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    {%- comment -%} ---------- GRID ---------- {%- endcomment -%}
+    {%- assign promo_blocks = section.blocks | where: 'type', 'promo' -%}
+    {% paginate collection.products by per_page %}
+      <div class="yycol-grid">
+        {%- if collection.products.size == 0 -%}
+          <div class="yycol-empty">Ingen varer matcher dette filter.</div>
+        {%- else -%}
+          {%- for product in collection.products -%}
+            {%- comment -%} promo-felter indsættes før det N'te kort (kun på side 1) {%- endcomment -%}
+            {%- if paginate.current_page == 1 -%}
+              {%- for pb in promo_blocks -%}
+                {%- if pb.settings.after_position == forloop.parentloop.index0 -%}
+                  <a class="yycol-promo {{ pb.settings.tone }}" href="{{ pb.settings.cta_link | default: '#' }}" {{ pb.shopify_attributes }}>
+                    <span class="yycol-promo__deco"></span>
+                    <div>
+                      {%- if pb.settings.eyebrow != blank -%}<div class="yycol-promo__eye">{{ pb.settings.eyebrow }}</div>{%- endif -%}
+                      <div class="yycol-promo__title">{{ pb.settings.title }}</div>
+                      {%- if pb.settings.body != blank -%}<div class="yycol-promo__body">{{ pb.settings.body }}</div>{%- endif -%}
+                    </div>
+                    {%- if pb.settings.cta_label != blank -%}<span class="yycol-promo__cta">{{ pb.settings.cta_label }} <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>{%- endif -%}
+                  </a>
+                {%- endif -%}
+              {%- endfor -%}
+            {%- endif -%}
+
+            {%- assign on_sale = false -%}
+            {%- if product.compare_at_price > product.price -%}{%- assign on_sale = true -%}{%- endif -%}
+            <div class="yycol-card">
+              <a class="yycol-media" href="{{ product.url }}">
+                {%- if section.settings.show_badges -%}
+                  {%- if on_sale -%}
+                    {%- assign off = product.compare_at_price | minus: product.price | times: 100 | divided_by: product.compare_at_price -%}
+                    <span class="yycol-badge sale">Spar {{ off }}%</span>
+                  {%- elsif product.metafields.custom.badge != blank -%}
+                    <span class="yycol-badge">{{ product.metafields.custom.badge }}</span>
+                  {%- elsif product.tags contains 'Nyhed' or product.tags contains 'nyhed' or product.tags contains 'new' -%}
+                    <span class="yycol-badge new">Nyhed</span>
+                  {%- endif -%}
+                {%- endif -%}
+                {%- if product.featured_media -%}
+                  <img src="{{ product.featured_media | image_url: width: 600 }}" alt="{{ product.featured_media.alt | escape | default: product.title }}" width="600" height="600" loading="lazy">
+                  {%- if product.media[1] -%}<img class="hover" src="{{ product.media[1] | image_url: width: 600 }}" alt="" width="600" height="600" loading="lazy">{%- endif -%}
+                {%- endif -%}
+              </a>
+              {%- if section.settings.show_wishlist -%}
+                <button type="button" class="yycol-wish" data-yycol-wish="{{ product.id }}" aria-label="Ønskeliste"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20s-7-4.3-9.3-8.5C1 8 2.8 5 6 5c2 0 3.2 1.2 4 2.3C10.8 6.2 12 5 14 5c3.2 0 5 3 3.3 6.5C19 15.7 12 20 12 20z"/></svg></button>
+              {%- endif -%}
+              {%- comment -%} quick-add / vis / udsolgt→Back-in-Stock {%- endcomment -%}
+              {%- if section.settings.show_quick_add -%}
+                {%- assign fv = product.selected_or_first_available_variant -%}
+                {%- if product.available == false -%}
+                  <button type="button" class="yycol-qadd yycol-qadd--soldout" data-yybis-cardbtn="1" data-handle="{{ product.handle }}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg>Giv besked når tilbage</button>
+                {%- elsif product.variants.size == 1 -%}
+                  <button type="button" class="yycol-qadd" data-yycol-add="{{ fv.id }}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8h12l-1 12H7L6 8z"/><path d="M9 8V6a3 3 0 016 0v2"/></svg>Læg i kurv</button>
+                {%- else -%}
+                  <a class="yycol-qadd" href="{{ product.url }}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8h12l-1 12H7L6 8z"/><path d="M9 8V6a3 3 0 016 0v2"/></svg>Vælg variant</a>
+                {%- endif -%}
+              {%- endif -%}
+              <div class="yycol-info">
+                <a href="{{ product.url }}"><div class="yycol-name">{{ product.title }}</div></a>
+                {%- if section.settings.show_rating and product.metafields.reviews.rating.value != blank -%}
+                  {%- assign rv = product.metafields.reviews.rating.value.rating | default: product.metafields.reviews.rating.value -%}
+                  {%- assign rv_round = rv | times: 1.0 | round -%}
+                  <div class="yycol-rating"><span class="stars">{% for i in (1..5) %}{% if i <= rv_round %}★{% else %}☆{% endif %}{% endfor %}</span> {{ rv | replace: '.', ',' }}{% if product.metafields.reviews.rating_count %} <span>({{ product.metafields.reviews.rating_count }})</span>{% endif %}</div>
+                {%- endif -%}
+                <div class="yycol-price">
+                  {%- if on_sale -%}
+                    <span class="now is-sale">{{ product.price | money }}</span><span class="was">{{ product.compare_at_price | money }}</span>
+                  {%- elsif product.price_varies -%}
+                    <span class="fra">fra</span><span class="now">{{ product.price | money }}</span>
+                  {%- else -%}
+                    <span class="now">{{ product.price | money }}</span>
+                  {%- endif -%}
+                </div>
+              </div>
+            </div>
+          {%- endfor -%}
+        {%- endif -%}
+      </div>
+
+      {%- if paginate.pages > 1 -%}
+        <div class="yycol-pag">
+          {%- if paginate.previous -%}<a href="{{ paginate.previous.url }}" aria-label="Forrige">‹</a>{%- endif -%}
+          {%- for part in paginate.parts -%}
+            {%- if part.is_link -%}<a href="{{ part.url }}">{{ part.title }}</a>
+            {%- elsif part.title == paginate.current_page -%}<span class="current">{{ part.title }}</span>
+            {%- else -%}<span>{{ part.title }}</span>{%- endif -%}
+          {%- endfor -%}
+          {%- if paginate.next -%}<a href="{{ paginate.next.url }}" aria-label="Næste">›</a>{%- endif -%}
+        </div>
+      {%- endif -%}
+    {% endpaginate %}
+  </div>
+
+  {%- comment -%} ---------- SEO ---------- {%- endcomment -%}
+  {%- if section.settings.seo_richtext != blank -%}
+    <section class="yycol-seo">
+      {%- if section.settings.seo_eyebrow != blank -%}<div class="yycol-seo__eye">{{ section.settings.seo_eyebrow }}</div>{%- endif -%}
+      {{ section.settings.seo_richtext }}
+    </section>
+  {%- endif -%}
+</div>
+
+<script>
+(function(){
+  var root = document.querySelector('#shopify-section-{{ section.id }} .yycol');
+  if(!root) return;
+  // Sortér → naviger med ?sort_by=
+  var sel = root.querySelector('[data-yycol-sort]');
+  if(sel){
+    var lbl = root.querySelector('[data-yycol-sortlabel]');
+    if(lbl && sel.selectedIndex >= 0) lbl.textContent = sel.options[sel.selectedIndex].text;
+    sel.addEventListener('change', function(){
+      var u = new URL(window.location.href);
+      u.searchParams.set('sort_by', sel.value);
+      u.searchParams.delete('page');
+      window.location.href = u.toString();
+    });
+  }
+  // Quick-add (enkelt-variant) → /cart/add.js
+  root.addEventListener('click', function(e){
+    var b = e.target.closest('[data-yycol-add]');
+    if(!b) return;
+    e.preventDefault();
+    if(b.classList.contains('added')) return;
+    var id = b.getAttribute('data-yycol-add');
+    b.setAttribute('disabled','');
+    fetch('{{ routes.cart_add_url }}.js', { method:'POST', headers:{'Content-Type':'application/json','Accept':'application/json'}, body: JSON.stringify({ items:[{ id: Number(id), quantity: 1 }] }) })
+      .then(function(r){ return r.ok ? r.json() : null; })
+      .then(function(d){
+        b.removeAttribute('disabled');
+        if(!d) return;
+        var t = b.innerHTML; b.classList.add('added'); b.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5 9-11"/></svg>Lagt i kurv';
+        try{ if(window.yyCart && window.yyCart.refresh) window.yyCart.refresh(); if(window.yyCart && window.yyCart.open) window.yyCart.open(); }catch(_){}
+        try{ document.dispatchEvent(new CustomEvent('cart:refresh',{bubbles:true})); }catch(_){}
+        setTimeout(function(){ b.classList.remove('added'); b.innerHTML = t; }, 1600);
+      }).catch(function(){ b.removeAttribute('disabled'); });
+  });
+  // Ønskeliste (localStorage-toggle)
+  try{
+    var wl = JSON.parse(localStorage.getItem('yy_wishlist')||'[]');
+    root.querySelectorAll('[data-yycol-wish]').forEach(function(w){
+      var id = w.getAttribute('data-yycol-wish');
+      if(wl.indexOf(id)>-1) w.classList.add('on');
+      w.addEventListener('click', function(e){
+        e.preventDefault();
+        var arr = JSON.parse(localStorage.getItem('yy_wishlist')||'[]');
+        var i = arr.indexOf(id);
+        if(i>-1){ arr.splice(i,1); w.classList.remove('on'); } else { arr.push(id); w.classList.add('on'); }
+        localStorage.setItem('yy_wishlist', JSON.stringify(arr));
+      });
+    });
+  }catch(_){}
+})();
+</script>
+
+{% schema %}
+{
+  "name": "YY — Kollektion",
+  "settings": [
+    { "type": "paragraph", "content": "Hero-banneret og USP-båndet er nu selvstændige sektioner (YY — Hero / YY — USP-bånd), som ligger før/efter denne i skabelonen." },
+    { "type": "header", "content": "Grid" },
+    { "type": "select", "id": "cols", "label": "Kolonner (desktop)", "options": [ { "value": "3", "label": "3" }, { "value": "4", "label": "4" } ], "default": "4" },
+    { "type": "select", "id": "card_style", "label": "Kort-stil", "options": [ { "value": "minimal", "label": "Minimal (delelinjer)" }, { "value": "framed", "label": "Rammer" } ], "default": "minimal" },
+    { "type": "range", "id": "per_page", "min": 8, "max": 48, "step": 4, "label": "Produkter pr. side", "default": 16 },
+    { "type": "checkbox", "id": "show_badges", "label": "Vis badges (udsalg/nyhed)", "default": true },
+    { "type": "checkbox", "id": "show_quick_add", "label": "Vis quick-add / vælg", "default": true },
+    { "type": "checkbox", "id": "show_wishlist", "label": "Vis ønskeliste-hjerte", "default": true },
+    { "type": "checkbox", "id": "show_rating", "label": "Vis rating (kræver reviews-metafelt)", "default": true },
+    { "type": "header", "content": "Udseende" },
+    { "type": "color", "id": "accent", "label": "Accentfarve", "default": "#3d7a4f" },
+    { "type": "header", "content": "SEO-tekst (nederst)" },
+    { "type": "text", "id": "seo_eyebrow", "label": "Overtekst", "default": "Om kollektionen" },
+    { "type": "richtext", "id": "seo_richtext", "label": "SEO-tekst" }
+  ],
+  "blocks": [
+    {
+      "type": "filter",
+      "name": "Filter-chip",
+      "settings": [
+        { "type": "text", "id": "label", "label": "Tekst" },
+        { "type": "text", "id": "tag", "label": "Produkt-tag", "info": "Filtrerer kollektionen til dette tag." }
+      ]
+    },
+    {
+      "type": "promo",
+      "name": "Kampagne-felt",
+      "settings": [
+        { "type": "range", "id": "after_position", "min": 0, "max": 24, "step": 1, "label": "Vis efter (antal kort)", "default": 4 },
+        { "type": "select", "id": "tone", "label": "Farve", "options": [ { "value": "green", "label": "Grøn" }, { "value": "dark", "label": "Mørk" }, { "value": "cream", "label": "Creme" } ], "default": "green" },
+        { "type": "text", "id": "eyebrow", "label": "Overtekst", "default": "Kampagne" },
+        { "type": "text", "id": "title", "label": "Titel", "default": "Spar 20% på meal-prep sæt" },
+        { "type": "textarea", "id": "body", "label": "Tekst" },
+        { "type": "text", "id": "cta_label", "label": "CTA-tekst", "default": "Shop sæt" },
+        { "type": "url", "id": "cta_link", "label": "CTA-link" }
+      ]
+    }
+  ],
+  "presets": [ { "name": "YY — Kollektion" } ],
+  "enabled_on": { "templates": ["collection"] }
+}
+{% endschema %}

@@ -1,0 +1,548 @@
+{%- liquid
+  assign s_id = section.id
+-%}
+
+{% style %}
+  .section-{{ s_id }} {
+    padding-top: {{ section.settings.padding_top }}px;
+    padding-bottom: {{ section.settings.padding_bottom }}px;
+    background-color: {{ section.settings.background_color }};
+    overflow: hidden;
+  }
+
+  .ugc-wrapper-{{ s_id }} {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 20px;
+  }
+
+  /* --- HEADER --- */
+  .ugc-header-{{ s_id }} {
+    margin-bottom: 30px;
+  }
+
+  .ugc-title-{{ s_id }} {
+    font-size: clamp(24px, 3vw, 32px);
+    color: {{ section.settings.text_color }};
+    margin: 0;
+    font-weight: {{ section.settings.heading_weight }} !important; 
+    line-height: 1.2;
+    font-family: inherit;
+  }
+
+  /* --- VIDEO SLIDER --- */
+  .ugc-slider-{{ s_id }} {
+    display: flex;
+    gap: 20px;
+    overflow-x: auto;
+    padding-bottom: 15px;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    scroll-snap-type: x mandatory;
+    scroll-behavior: smooth;
+  }
+  .ugc-slider-{{ s_id }}::-webkit-scrollbar { display: none; }
+
+  .ugc-slide-{{ s_id }} {
+    flex: 0 0 calc((100% - ((var(--items-desktop) - 1) * 20px)) / var(--items-desktop));
+    min-width: 260px;
+    scroll-snap-align: start;
+    position: relative;
+    aspect-ratio: 3 / 4; /* Standardizes vertical video size */
+    border-radius: 6px;
+    overflow: hidden;
+    background-color: #f4f4f4;
+    cursor: pointer;
+  }
+
+  .ugc-slide-{{ s_id }} video,
+  .ugc-slide-{{ s_id }} img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  /* Custom Play Button Overlay */
+  .ugc-play-overlay-{{ s_id }} {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: opacity 0.3s ease;
+    z-index: 2;
+  }
+  
+  .ugc-play-overlay-{{ s_id }} svg {
+    width: 50px;
+    height: 50px;
+    fill: rgba(255, 255, 255, 0.8);
+    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
+    transition: transform 0.2s ease;
+  }
+
+  .ugc-slide-{{ s_id }}:hover .ugc-play-overlay-{{ s_id }} svg {
+    transform: scale(1.1);
+    fill: #ffffff;
+  }
+
+  .ugc-slide-{{ s_id }}.is-playing .ugc-play-overlay-{{ s_id }} {
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  /* --- PAGINATION DOTS --- */
+  .ugc-dots-{{ s_id }} {
+    display: flex;
+    gap: 8px;
+    margin-top: 5px;
+    margin-bottom: 20px;
+  }
+
+  .ugc-dot-{{ s_id }} {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background-color: #d8d8d8;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+
+  .ugc-dot-{{ s_id }}.is-active {
+    background-color: #5c5957; 
+  }
+
+  /* --- TESTIMONIALS AREA --- */
+  .ugc-testimonials-wrapper-{{ s_id }} {
+    position: relative;
+    width: 100%;
+    max-width: 600px;
+    min-height: 120px; /* Prevents layout jump */
+    transition: opacity 0.4s ease, transform 0.4s ease;
+  }
+
+  /* Desktop Hidden State */
+  @media screen and (min-width: 901px) {
+    .ugc-testimonials-wrapper-{{ s_id }} {
+      opacity: 0;
+      transform: translateY(-10px);
+      pointer-events: none;
+      height: 0;
+      min-height: 0;
+      overflow: hidden;
+    }
+    .ugc-testimonials-wrapper-{{ s_id }}.is-visible {
+      opacity: 1;
+      transform: translateY(0);
+      pointer-events: auto;
+      height: auto;
+      min-height: 120px;
+      margin-top: 20px;
+    }
+  }
+
+  .ugc-testimonial-{{ s_id }} {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease;
+    background: #ffffff;
+    padding: 24px;
+    border-radius: 6px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+    border: 1px solid #f0f0f0;
+  }
+
+  .ugc-testimonial-{{ s_id }}.is-active {
+    opacity: 1;
+    visibility: visible;
+    position: relative; /* Takes up space when active */
+  }
+
+  .ugc-stars-{{ s_id }} {
+    display: flex;
+    gap: 2px;
+    margin-bottom: 12px;
+  }
+  .ugc-stars-{{ s_id }} svg {
+    width: 14px;
+    height: 14px;
+    fill: #f5c518;
+  }
+
+  .ugc-review-text-{{ s_id }} {
+    font-size: 15px;
+    color: #5c5957;
+    line-height: 1.5;
+    margin: 0 0 12px 0;
+    font-weight: 300;
+  }
+
+  .ugc-author-{{ s_id }} {
+    font-size: 11px;
+    color: #9e9a97;
+    margin: 0;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  /* --- MOBILE LAYOUT --- */
+  @media screen and (max-width: 900px) {
+    .ugc-slide-{{ s_id }} {
+      flex: 0 0 calc((100% - ((var(--items-mobile) - 1) * 15px)) / var(--items-mobile));
+      min-width: 220px;
+    }
+    .ugc-slider-{{ s_id }} {
+      gap: 15px;
+    }
+    .ugc-testimonial-{{ s_id }} {
+      padding: 20px;
+    }
+  }
+{% endstyle %}
+
+<section class="section-{{ s_id }}" style="--items-desktop: {{ section.settings.items_desktop }}; --items-mobile: {{ section.settings.items_mobile }};">
+  <div class="ugc-wrapper-{{ s_id }}">
+    
+    <div class="ugc-header-{{ s_id }}">
+      <h2 class="ugc-title-{{ s_id }}">{{ section.settings.title | newline_to_br }}</h2>
+    </div>
+
+    <!-- UPPER: VIDEO SLIDER -->
+    <div class="ugc-slider-{{ s_id }}" id="ugc-slider-{{ s_id }}">
+      {% for block in section.blocks %}
+        <div class="ugc-slide-{{ s_id }}" data-index="{{ forloop.index0 }}" {{ block.shopify_attributes }}>
+          
+          {% if block.settings.video %}
+            <!-- Native Shopify Video Element -->
+            {{ block.settings.video | video_tag: 
+              image_size: '600x', 
+              autoplay: block.settings.autoplay, 
+              loop: block.settings.loop, 
+              muted: block.settings.muted, 
+              controls: block.settings.controls,
+              class: 'ugc-video-element'
+            }}
+          {% elsif block.settings.image %}
+            <!-- Fallback Image -->
+            {{ block.settings.image | image_url: width: 600 | image_tag: loading: 'lazy' }}
+          {% else %}
+            <!-- Placeholder -->
+             {{ 'lifestyle-1' | placeholder_svg_tag: 'placeholder-svg' }}
+          {% endif %}
+
+          <!-- Custom Play Button Overlay -->
+          <div class="ugc-play-overlay-{{ s_id }}">
+            <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+          </div>
+
+        </div>
+      {% endfor %}
+    </div>
+
+    <!-- MIDDLE: PAGINATION DOTS -->
+    <div class="ugc-dots-{{ s_id }}" id="ugc-dots-{{ s_id }}"></div>
+
+    <!-- LOWER: DYNAMIC TESTIMONIALS -->
+    <div class="ugc-testimonials-wrapper-{{ s_id }}" id="ugc-text-wrapper-{{ s_id }}">
+      {% for block in section.blocks %}
+        <div class="ugc-testimonial-{{ s_id }} {% if forloop.first %}is-active{% endif %}" data-text-index="{{ forloop.index0 }}">
+          
+          <div class="ugc-stars-{{ s_id }}">
+            {% for i in (1..block.settings.rating) %}
+              <svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+            {% endfor %}
+          </div>
+          
+          <p class="ugc-review-text-{{ s_id }}">"{{ block.settings.review_text }}"</p>
+          <p class="ugc-author-{{ s_id }}">&mdash; {{ block.settings.author }}</p>
+
+        </div>
+      {% endfor %}
+    </div>
+
+  </div>
+</section>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const sId = '{{ s_id }}';
+    const slider = document.getElementById(`ugc-slider-${sId}`);
+    const dotsContainer = document.getElementById(`ugc-dots-${sId}`);
+    const textWrapper = document.getElementById(`ugc-text-wrapper-${sId}`);
+    const textCards = textWrapper.querySelectorAll(`.ugc-testimonial-${sId}`);
+    const slides = slider.querySelectorAll(`.ugc-slide-${sId}`);
+    
+    if (!slider) return;
+
+    // 1. SYNC LOGIC (Updates Dots & Text Box based on scroll position)
+    const syncSlider = () => {
+      const scrollW = slider.scrollWidth;
+      const clientW = slider.clientWidth;
+      if(clientW === 0) return; 
+
+      const slideWidth = slides[0].clientWidth + 20; // 20 is the gap
+      const activeIndex = Math.round(slider.scrollLeft / slideWidth);
+      const totalPages = slides.length;
+
+      // Render dots
+      if (dotsContainer.children.length !== totalPages) {
+        dotsContainer.innerHTML = '';
+        for (let i = 0; i < totalPages; i++) {
+          const dot = document.createElement('button');
+          dot.className = `ugc-dot-${sId} ${i === 0 ? 'is-active' : ''}`;
+          dot.setAttribute('aria-label', `Page ${i + 1}`);
+          dot.onclick = () => {
+            slider.scrollTo({ left: i * slideWidth, behavior: 'smooth' });
+          };
+          dotsContainer.appendChild(dot);
+        }
+      }
+
+      // Update active state of Dots
+      Array.from(dotsContainer.children).forEach((dot, i) => {
+        dot.classList.toggle('is-active', i === activeIndex);
+      });
+
+      // Update active state of Text Cards
+      textCards.forEach((card, i) => {
+        card.classList.toggle('is-active', i === activeIndex);
+      });
+
+      // Pause videos that scrolled out of view
+      slides.forEach((slide, i) => {
+        if(i !== activeIndex) {
+          const video = slide.querySelector('video');
+          if(video && !video.paused) {
+            video.pause();
+            slide.classList.remove('is-playing');
+          }
+        }
+      });
+    };
+
+    // Initialize & Listen to Scroll
+    syncSlider();
+    slider.addEventListener('scroll', syncSlider, { passive: true });
+    window.addEventListener('resize', syncSlider, { passive: true });
+
+    // 2. CLICK & VIDEO PLAY LOGIC
+    slides.forEach((slide, index) => {
+      const overlay = slide.querySelector(`.ugc-play-overlay-${sId}`);
+      const video = slide.querySelector('video');
+
+      // Click on Video Card
+      slide.addEventListener('click', () => {
+        const slideWidth = slides[0].clientWidth + 20;
+        
+        // Snap the clicked video to the left/center focus
+        slider.scrollTo({ left: index * slideWidth, behavior: 'smooth' });
+        
+        // Desktop: Reveal the hidden testimonial wrapper
+        if (window.innerWidth > 900) {
+          textWrapper.classList.add('is-visible');
+        }
+
+        // Handle Video Play/Pause
+        if (video) {
+          if (video.paused) {
+            video.play();
+            slide.classList.add('is-playing');
+          } else {
+            video.pause();
+            slide.classList.remove('is-playing');
+          }
+        }
+      });
+
+      // Sync custom overlay with native video events (in case user clicks native controls)
+      if (video) {
+        video.addEventListener('play', () => slide.classList.add('is-playing'));
+        video.addEventListener('pause', () => slide.classList.remove('is-playing'));
+        video.addEventListener('ended', () => slide.classList.remove('is-playing'));
+      }
+    });
+  });
+</script>
+
+{% schema %}
+{
+  "name": "UGC Videos & Reviews",
+  "settings": [
+    {
+      "type": "textarea",
+      "id": "title",
+      "label": "Heading",
+      "default": "Loved in everyday routines, everyday.",
+      "info": "Use enter/return to create a line break"
+    },
+    {
+      "type": "select",
+      "id": "heading_weight",
+      "label": "Heading Font Weight",
+      "options": [
+        { "value": "300", "label": "Light" },
+        { "value": "400", "label": "Normal" },
+        { "value": "500", "label": "Medium" },
+        { "value": "600", "label": "Semi-Bold" },
+        { "value": "700", "label": "Bold" }
+      ],
+      "default": "300"
+    },
+    {
+      "type": "header",
+      "content": "Layout Settings"
+    },
+    {
+      "type": "range",
+      "id": "items_desktop",
+      "min": 2,
+      "max": 6,
+      "step": 0.5,
+      "label": "Videos visible on Desktop",
+      "info": "Decimal allows next card to peek out",
+      "default": 4.5
+    },
+    {
+      "type": "range",
+      "id": "items_mobile",
+      "min": 1,
+      "max": 3,
+      "step": 0.5,
+      "label": "Videos visible on Mobile",
+      "default": 1.5
+    },
+    {
+      "type": "header",
+      "content": "Styling"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Heading Text Color",
+      "default": "#7a7571"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background Color",
+      "default": "#f9f9f9"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "Padding Top",
+      "default": 60
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "Padding Bottom",
+      "default": 60
+    }
+  ],
+  "blocks": [
+    {
+      "type": "video_testimonial",
+      "name": "Video Review",
+      "settings": [
+        {
+          "type": "video",
+          "id": "video",
+          "label": "Shopify Hosted Video"
+        },
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Fallback/Poster Image",
+          "info": "Shows if video is empty, or while video loads."
+        },
+        {
+          "type": "header",
+          "content": "Video Controls"
+        },
+        {
+          "type": "checkbox",
+          "id": "controls",
+          "label": "Show native video controls",
+          "default": true
+        },
+        {
+          "type": "checkbox",
+          "id": "autoplay",
+          "label": "Autoplay (Muted required usually)",
+          "default": false
+        },
+        {
+          "type": "checkbox",
+          "id": "muted",
+          "label": "Mute video",
+          "default": false
+        },
+        {
+          "type": "checkbox",
+          "id": "loop",
+          "label": "Loop video",
+          "default": true
+        },
+        {
+          "type": "header",
+          "content": "Testimonial Content"
+        },
+        {
+          "type": "range",
+          "id": "rating",
+          "min": 1,
+          "max": 5,
+          "step": 1,
+          "label": "Star Rating",
+          "default": 5
+        },
+        {
+          "type": "textarea",
+          "id": "review_text",
+          "label": "Review Text",
+          "default": "Meget god kundeservice. Varen er top kvalitet, jeg er meget tilfreds, og kan varmt anbefale andre at handle der."
+        },
+        {
+          "type": "text",
+          "id": "author",
+          "label": "Author & Source",
+          "default": "Julie - Anmeldelse fra Trustpilot"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "UGC Videos & Reviews",
+      "blocks": [
+        { "type": "video_testimonial" },
+        { "type": "video_testimonial" },
+        { "type": "video_testimonial" },
+        { "type": "video_testimonial" },
+        { "type": "video_testimonial" }
+      ]
+    }
+  ]
+}
+{% endschema %}

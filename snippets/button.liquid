@@ -1,0 +1,46 @@
+{% comment %}
+  Renders a button object
+
+	Accepts:
+	-	style: {String} button style (solid, outline). Supports additional classes as well.
+  - label: {String} button label (can be either a translation key or a string).
+  - label_is_translation: {Boolean} set true if label is a translation key.
+  - is_submit: {Boolean} set true if button is a submit button.
+  - type: {String} button type (button, link).
+  - link: {String} link URL.
+  - fullwidth: {Boolean} set true if button should be fullwidth.
+  - target_blank: {Boolean} set true if link should open in a new tab.
+  - icon: {String} icon name (will be rendered using theme-symbols snippet). Defaults to "arrow-right".
+  - icon_position: {String} icon position (left, right). Defaults to "right".
+  - text_weight: {String} text weight (regular, bold). 
+  - text_size: {String} text size (small, regular, large).
+
+  Usage:
+  {% render 'button', style: 'solid', label: 'general.button.add_to_cart', label_is_translation: true, is_submit: false, type: 'button', link: '', fullwidth: false, target_blank: false, icon: 'arrow-left', icon_position: 'left' %}
+{% endcomment %}
+
+{%- liquid
+  if icon == blank
+    assign icon = "arrow-right"
+  endif
+  if label_is_translation == true
+    assign label = label | t
+  else 
+    assign label = label | escape
+  endif 
+-%}
+
+{%- capture element_attributes -%}
+  class="button button--{{ style }} {% if fullwidth %} button--fullwidth {% endif %} button--icon {% if icon_position == 'left' %} button--icon-left {% endif %}" {{ attribute }}
+{%- endcapture -%}
+
+{%- if type == 'button' -%}
+  <button {% if is_submit %} type="submit" {% endif %} {{ element_attributes }}>
+{%- else -%}
+  <a href="{{ link | escape }}" {% if target_blank %} target="_blank" {% endif %} {{ element_attributes }}>
+{%- endif -%}
+
+  <span class="button__icon" role="img" aria-hidden="true">{%- render 'theme-symbols', icon: icon -%}</span>
+  <span class="button__text text-weight--{{ text_weight }} text-size--{{ text_size }}">{{ label }}</span>
+
+{%- if type == 'button' -%} </button> {%- else -%} </a> {%- endif -%}

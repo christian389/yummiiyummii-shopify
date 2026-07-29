@@ -1,0 +1,200 @@
+{% comment %}
+  Yummii Yummii — Landingsside: 2-trins upsell-popup
+  Selvstændig (rører IKKE yy-lp-upsell-popup / yy-landing.js). Lyt efter klik på
+  [data-yy2-trigger] hvor som helst på siden. Knappen bærer selv sine data:
+    data-set-variant, data-set-name
+    data-u1-variant, data-u1-title, data-u1-price, data-u1-compare, data-u1-img, data-u1-note
+    data-u2-variant, data-u2-title, data-u2-price, data-u2-img, data-u2-note
+  Trin uden variant springes over. Efter valg: sæt + tilvalg i kurv, drawer åbnes.
+  Tracking: dataLayer-events (yy_upsell_view/accept/skip/complete) + linje-egenskab
+  "_Tilføjet via" på upsell-varerne (synlig på ordren i Shopify).
+{% endcomment %}
+
+{{ 'yy-landing.css' | asset_url | stylesheet_tag }}
+
+{% style %}
+  #shopify-section-{{ section.id }} .yy-u2-btn{
+    --yylp-accent: {{ section.settings.confirm_bg_color | default: '#ffd66b' }};
+    --yylp-accent-text: {{ section.settings.confirm_text_color | default: '#1a1812' }};
+  }
+  .yy-u2-overlay{ position:fixed; inset:0; z-index:9999; display:none; align-items:center; justify-content:center; padding:18px; background:rgba(20,18,12,.55); }
+  .yy-u2-overlay.is-open{ display:flex; }
+  body.yy-u2-open{ overflow:hidden; }
+  .yy-u2-modal{ position:relative; width:100%; max-width:440px; background:#fff; border-radius:20px; overflow:hidden; box-shadow:0 20px 60px rgba(0,0,0,.3); }
+  .yy-u2-close{ position:absolute; top:12px; right:12px; z-index:2; width:32px; height:32px; border-radius:50%; border:none; background:rgba(255,255,255,.85); cursor:pointer; display:flex; align-items:center; justify-content:center; }
+  .yy-u2-media{ width:100%; aspect-ratio:16/10; background:#f2efe8; display:flex; align-items:center; justify-content:center; }
+  .yy-u2-media img{ width:100%; height:100%; object-fit:cover; }
+  .yy-u2-body{ padding:20px 22px 22px; }
+  .yy-u2-step{ font-size:12px; font-weight:700; letter-spacing:.04em; text-transform:uppercase; color:#8a857c; margin:0 0 6px; }
+  .yy-u2-heading{ font-size:19px; font-weight:800; line-height:1.2; margin:0 0 14px; }
+  .yy-u2-product{ display:flex; align-items:center; gap:12px; border:1px solid rgba(0,0,0,.08); border-radius:14px; padding:10px 12px; margin-bottom:10px; }
+  .yy-u2-product img{ width:56px; height:56px; object-fit:cover; border-radius:10px; flex:0 0 56px; background:#f2efe8; }
+  .yy-u2-pname{ flex:1; font-weight:700; font-size:14px; }
+  .yy-u2-price{ text-align:right; white-space:nowrap; }
+  .yy-u2-price s{ color:#9a958c; font-size:13px; margin-right:6px; }
+  .yy-u2-price b{ font-size:16px; }
+  .yy-u2-note{ font-size:13px; color:#6f6a60; margin:0 0 16px; }
+  .yy-u2-actions{ display:flex; flex-direction:column; gap:8px; }
+  .yy-u2-btn{ width:100%; justify-content:center; }
+  .yy-u2-skip{ background:none; border:none; color:#8a857c; font-size:14px; text-decoration:underline; cursor:pointer; padding:6px; }
+  .yy-u2-trust{ text-align:center; font-size:12px; color:#9a958c; margin:12px 0 0; }
+{% endstyle %}
+
+<div class="yy-u2-overlay" data-yy2-modal
+  data-redirect-url="{{ section.settings.redirect_url }}"
+  data-step1-heading="{{ section.settings.step1_heading | escape }}"
+  data-step2-heading="{{ section.settings.step2_heading | escape }}"
+  data-confirm-label="{{ section.settings.confirm_label | default: 'Ja tak, tilføj' | escape }}"
+  data-skip-label="{{ section.settings.skip_label | default: 'Nej tak, fortsæt' | escape }}">
+  <div class="yy-u2-modal" role="dialog" aria-modal="true" aria-label="Tilbud">
+    <button type="button" class="yy-u2-close" data-yy2-close aria-label="Luk">
+      <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
+    </button>
+    <div class="yy-u2-media"><img data-yy2-img alt="" width="440" height="275"></div>
+    <div class="yy-u2-body">
+      <p class="yy-u2-step">Trin <span data-yy2-stepnum>1</span> af <span data-yy2-steptotal>2</span></p>
+      <p class="yy-u2-heading" data-yy2-heading></p>
+      <div class="yy-u2-product">
+        <img data-yy2-pimg alt="" width="56" height="56">
+        <span class="yy-u2-pname" data-yy2-pname></span>
+        <span class="yy-u2-price"><s data-yy2-pcompare></s><b data-yy2-pnow></b></span>
+      </div>
+      <p class="yy-u2-note" data-yy2-note></p>
+      <div class="yy-u2-actions">
+        <button type="button" class="yy-lp-btn yy-lp-btn--accent yy-u2-btn" data-yy2-yes></button>
+        <button type="button" class="yy-u2-skip" data-yy2-no></button>
+      </div>
+      {%- if section.settings.trust_text != blank -%}<p class="yy-u2-trust">{{ section.settings.trust_text }}</p>{%- endif -%}
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  function init(){
+    if(window.__yyU2Init) return; window.__yyU2Init = true;
+    var modal = document.querySelector('[data-yy2-modal]');
+    if(!modal) return;
+    var q = function(s){ return modal.querySelector(s); };
+    var state = null; // { setVariant, setName, steps:[...], idx, chosen:[] }
+    var busy = false;
+
+    function track(name, data){
+      try {
+        window.dataLayer = window.dataLayer || [];
+        var o = { event: 'yy_' + name };
+        if(data){ for(var k in data){ o[k] = data[k]; } }
+        window.dataLayer.push(o);
+      } catch(e){}
+    }
+
+    function cartAdd(items){
+      return fetch('/cart/add.js', {
+        method:'POST', headers:{'Content-Type':'application/json','Accept':'application/json'},
+        body: JSON.stringify({ items: items })
+      }).then(function(r){ if(!r.ok) return r.json().then(function(e){ throw e; }); return r.json(); });
+    }
+    function open(){ modal.classList.add('is-open'); document.body.classList.add('yy-u2-open'); }
+    function close(){ modal.classList.remove('is-open'); document.body.classList.remove('yy-u2-open'); state=null; busy=false; }
+    function finish(){
+      var items = [{ id: state.setVariant, quantity: 1 }];
+      state.chosen.forEach(function(v){ items.push({ id:v, quantity:1, properties:{ '_Tilføjet via': 'Skole-sæt upsell' } }); });
+      track('upsell_complete', { added: state.chosen.length, set: state.setName || '' });
+      busy = true;
+      cartAdd(items).then(function(){
+        // Åbn ALTID drawer-kurven hvis den findes (yy-cart er global på alle sider).
+        // Kun hvis der ingen drawer er, bruges evt. redirect.
+        if(window.yyCart && typeof window.yyCart.open === 'function'){
+          close();
+          if(typeof window.yyCart.refresh === 'function') window.yyCart.refresh();
+          window.yyCart.open();
+          return;
+        }
+        var url = modal.getAttribute('data-redirect-url');
+        if(url){ window.location.href = url; return; }
+        close();
+      }).catch(function(){ busy=false; alert('Der opstod en fejl. Prøv igen.'); });
+    }
+    function render(){
+      if(state.idx >= state.steps.length){ finish(); return; }
+      var s = state.steps[state.idx];
+      q('[data-yy2-stepnum]').textContent = String(state.idx + 1);
+      q('[data-yy2-steptotal]').textContent = String(state.steps.length);
+      q('[data-yy2-heading]').textContent = s.heading;
+      q('[data-yy2-img]').src = s.img || s.pimg || '';
+      q('[data-yy2-pimg]').src = s.pimg || '';
+      q('[data-yy2-pname]').textContent = s.title;
+      q('[data-yy2-pcompare]').textContent = s.compare || '';
+      q('[data-yy2-pnow]').textContent = s.now || '';
+      q('[data-yy2-note]').textContent = s.note || '';
+      q('[data-yy2-yes]').textContent = modal.getAttribute('data-confirm-label');
+      q('[data-yy2-no]').textContent = modal.getAttribute('data-skip-label');
+    }
+    function step(el, n){ return el.getAttribute('data-u'+n+'-variant'); }
+    function buildStep(el, n, heading){
+      return {
+        heading: heading,
+        variant: el.getAttribute('data-u'+n+'-variant'),
+        title: el.getAttribute('data-u'+n+'-title') || '',
+        now: el.getAttribute('data-u'+n+'-price') || '',
+        compare: el.getAttribute('data-u'+n+'-compare') || '',
+        img: el.getAttribute('data-u'+n+'-img') || '',
+        pimg: el.getAttribute('data-u'+n+'-img') || '',
+        note: el.getAttribute('data-u'+n+'-note') || ''
+      };
+    }
+
+    document.addEventListener('click', function(e){
+      var t = e.target.closest('[data-yy2-trigger]');
+      if(!t) return;
+      e.preventDefault(); e.stopPropagation();
+      if(e.stopImmediatePropagation) e.stopImmediatePropagation();
+      var setVariant = t.getAttribute('data-set-variant');
+      if(!setVariant) return;
+      var steps = [];
+      if(step(t,1)) steps.push(buildStep(t,1, modal.getAttribute('data-step1-heading')));
+      if(step(t,2)) steps.push(buildStep(t,2, modal.getAttribute('data-step2-heading')));
+      state = { setVariant: setVariant, setName: t.getAttribute('data-set-name') || '', steps: steps, idx: 0, chosen: [] };
+      if(steps.length === 0){ finish(); return; }
+      render(); open();
+      track('upsell_view', { set: state.setName, steps: steps.length });
+    }, true);
+
+    modal.addEventListener('click', function(e){
+      if(e.target === modal || e.target.closest('[data-yy2-close]')){ close(); return; }
+      if(busy || !state) return;
+      if(e.target.closest('[data-yy2-yes]')){
+        track('upsell_accept', { step: state.idx + 1, product: state.steps[state.idx].title || '' });
+        state.chosen.push(state.steps[state.idx].variant);
+        state.idx++; render(); return;
+      }
+      if(e.target.closest('[data-yy2-no]')){
+        track('upsell_skip', { step: state.idx + 1, product: state.steps[state.idx].title || '' });
+        state.idx++; render(); return;
+      }
+    });
+    document.addEventListener('keydown', function(e){ if(e.key === 'Escape') close(); });
+  }
+  if(document.readyState === 'loading'){ document.addEventListener('DOMContentLoaded', init); } else { init(); }
+})();
+</script>
+
+{% schema %}
+{
+  "name": "LP — 2-trins upsell",
+  "settings": [
+    { "type": "paragraph", "content": "Placer én gang på siden. Udløses af knapper med data-yy2-trigger (skole-sæt + quiz). Trin uden variant springes over." },
+    { "type": "text", "id": "step1_heading", "label": "Overskrift trin 1", "default": "Skal søskende eller du selv også have en?" },
+    { "type": "text", "id": "step2_heading", "label": "Overskrift trin 2", "default": "Gør drikkedunken endnu nemmere" },
+    { "type": "text", "id": "confirm_label", "label": "Knap — ja tak", "default": "Ja tak, tilføj" },
+    { "type": "text", "id": "skip_label", "label": "Knap — nej tak", "default": "Nej tak, fortsæt" },
+    { "type": "text", "id": "trust_text", "label": "Tryghedslinje", "default": "Gratis fragt · 10 års garanti · 30 dages returret" },
+    { "type": "header", "content": "Knapfarve" },
+    { "type": "color", "id": "confirm_bg_color", "label": "Baggrund", "default": "#ffd66b" },
+    { "type": "color", "id": "confirm_text_color", "label": "Tekst", "default": "#1a1812" },
+    { "type": "header", "content": "Efter tilføjelse" },
+    { "type": "url", "id": "redirect_url", "label": "Videresend til (valgfrit)", "info": "Ignoreres når kurv-draweren (yy-cart) findes — så åbnes draweren altid. Bruges kun som fallback hvis der ingen drawer er." }
+  ],
+  "presets": [ { "name": "LP — 2-trins upsell" } ]
+}
+{% endschema %}

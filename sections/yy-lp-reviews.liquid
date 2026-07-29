@@ -1,0 +1,80 @@
+{% comment %}Yummii Yummii — Landingsside: Anmeldelser (auto-scrollende karrusel){% endcomment %}
+
+{{ 'yy-landing.css' | asset_url | stylesheet_tag }}
+
+{%- liquid
+  assign speed = section.settings.scroll_speed | default: 32
+-%}
+
+{% style %}
+  #shopify-section-{{ section.id }} .yy-lp-rev-track{
+    animation-duration: {{ speed }}s;
+  }
+{% endstyle %}
+
+<div class="yy-lp-root yy-lp-scheme--{{ section.settings.color_scheme }}">
+  <section class="yy-lp-section">
+    <div class="yy-lp-wrap">
+      {%- if section.settings.show_top_stars -%}
+        <div style="text-align:center; margin-bottom:8px"><span class="yy-lp-stars" style="font-size:20px">★★★★★</span></div>
+      {%- endif -%}
+      {%- if section.settings.heading != blank -%}<h2 class="yy-lp-title">{{ section.settings.heading }}</h2>{%- endif -%}
+      {%- if section.settings.intro != blank -%}<p class="yy-lp-intro">{{ section.settings.intro }}</p>{%- endif -%}
+    </div>
+
+    <div class="yy-lp-rev-carousel">
+      <div class="yy-lp-rev-track">
+        {%- for pass in (1..2) -%}
+          {%- for block in section.blocks -%}
+            <div class="yy-lp-rev" {% if pass == 1 %}{{ block.shopify_attributes }}{% endif %} aria-hidden="{% if pass == 2 %}true{% else %}false{% endif %}">
+              <div class="yy-lp-body">
+                <span class="yy-lp-stars">
+                  {%- for i in (1..5) -%}{% if i <= block.settings.stars %}★{% else %}☆{% endif %}{%- endfor -%}
+                </span>
+                <p>"{{ block.settings.quote }}"</p>
+                <div class="yy-lp-who">{{ block.settings.name }} <span class="yy-lp-v">· {{ block.settings.verified_text | default: 'Verificeret køb' }}</span></div>
+              </div>
+            </div>
+          {%- endfor -%}
+        {%- endfor -%}
+      </div>
+    </div>
+  </section>
+</div>
+
+{% schema %}
+{
+  "name": "LP — Anmeldelser",
+  "settings": [
+    {
+      "type": "select",
+      "id": "color_scheme",
+      "label": "Farveskema",
+      "options": [ { "value": "paper", "label": "Papir" }, { "value": "white", "label": "Hvid" }, { "value": "cream", "label": "Cremefarvet" } ],
+      "default": "paper"
+    },
+    { "type": "checkbox", "id": "show_top_stars", "label": "Vis stjerner øverst", "default": true },
+    { "type": "text", "id": "heading", "label": "Overskrift", "default": "Det siger +45.000 kunder" },
+    { "type": "textarea", "id": "intro", "label": "Introtekst", "default": "4,5 ud af 5 på Trustpilot. Her er et udvalg." },
+    { "type": "range", "id": "scroll_speed", "label": "Scrollhastighed (sek. pr. runde)", "min": 10, "max": 60, "step": 2, "default": 32, "info": "Lavere tal = hurtigere scroll" }
+  ],
+  "blocks": [
+    {
+      "type": "review",
+      "name": "Anmeldelse",
+      "settings": [
+        { "type": "range", "id": "stars", "label": "Stjerner", "min": 1, "max": 5, "step": 1, "default": 5 },
+        { "type": "textarea", "id": "quote", "label": "Citat", "default": "Endelig madkasser der holder." },
+        { "type": "text", "id": "name", "label": "Navn", "default": "Maria K." },
+        { "type": "text", "id": "verified_text", "label": "Verificeret-tekst", "default": "Verificeret køb" }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "LP — Anmeldelser",
+      "blocks": [ { "type": "review" }, { "type": "review" }, { "type": "review" } ]
+    }
+  ]
+}
+{% endschema %}

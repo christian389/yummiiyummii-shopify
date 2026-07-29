@@ -1,0 +1,391 @@
+{%- if section.blocks.size > 0 -%}
+  <div
+    id="section-{{ section.id }}"
+    class="container--large container--vertical-space{% if section.settings.gutter_decrease %}-small{% endif %} {% if section.settings.section_background_color != "rgba(0,0,0,0)" or section.settings.section_background_gradient != blank %} container--has-background {% endif %} {% if section.settings.remove_bottom_margin %} container--negative-margin {% endif %} remove-empty-space"
+  >
+    {%- render 'section-heading',
+      heading: section.settings.heading,
+      subheading: section.settings.subheading,
+      heading_size: section.settings.section_heading_size,
+      section_layout: section.settings.section_heading_layout,
+      button: section.settings.cta_label,
+      button_label: section.settings.cta_label,
+      link: section.settings.cta_url,
+      seo_h_tag: section.settings.seo_h_tag
+    -%}
+
+    <div
+      class="grid grid--layout grid--layout-flex {% if section.settings.is_autoheight == true %} mobile-autoheight {% endif %}"
+    >
+      {% content_for 'blocks' %}
+    </div>
+
+    {%- render 'section-footer',
+      button: section.settings.cta_label,
+      button_label: section.settings.cta_label,
+      link: section.settings.cta_url
+    -%}
+  </div>
+{%- endif -%}
+
+<style>
+  {%- if section.settings.section_background_color != "rgba(0,0,0,0)" -%}
+    #shopify-section-{{ section.id }} {
+      background-color: {{ section.settings.section_background_color }};
+    }
+  {%- endif -%}
+  {%- if section.settings.section_background_gradient != blank -%}
+    #shopify-section-{{ section.id }} {
+      background-image: {{ section.settings.section_background_gradient }};
+    }
+  {%- endif -%}
+  {%- if section.settings.section_heading_color != "rgba(0,0,0,0)" -%}
+    #shopify-section-{{ section.id }} .section-heading,
+    #shopify-section-{{ section.id }} .section-footer,
+    #shopify-section-{{ section.id }} .css-slider-navigation-container {
+      --color-text-main: {{ section.settings.section_heading_color }};
+      --color-borders-forms-primary: {{ section.settings.section_heading_color | color_modify: 'alpha', 0.3 }};
+      --color-secondary-background-main: {{ section.settings.section_heading_color | color_modify: 'alpha', 0.08 }};
+    }
+  {%- endif -%}
+</style>
+
+{% schema %}
+{
+  "name": "t:flex-cards.header",
+  "class": "mount-css-slider",
+  "blocks": [
+    {
+      "type": "_card"
+    }
+  ],
+  "settings": [
+    {
+      "type": "header",
+      "content": "t:sections.bundle-extra-words.sections.headings.name"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "t:sections.local-extra-words.sections.headings.heading",
+      "default": "Promotion cards"
+    },
+    {
+      "type": "inline_richtext",
+      "id": "subheading",
+      "label": "t:sections.local-extra-words.sections.headings.subheading",
+      "default": "Share your <strong>best</strong> offers"
+    },
+    {
+      "type": "select",
+      "id": "section_heading_size",
+      "label": "t:sections.bundle-extra-words.sections.headings.size.label",
+      "options": [
+        {
+          "value": "text-size--regular",
+          "label": "t:sections.bundle-extra-words.sections.headings.size.option_1"
+        },
+        {
+          "value": "text-size--large",
+          "label": "t:sections.bundle-extra-words.sections.headings.size.option_2"
+        }
+      ],
+      "default": "text-size--regular"
+    },
+    {
+      "type": "select",
+      "id": "section_heading_layout",
+      "label": "t:sections.bundle-extra-words.sections.headings.alignment.label",
+      "options": [
+        {
+          "value": "section-heading--left section-heading--one-row",
+          "label": "t:sections.bundle-extra-words.sections.headings.alignment.option_1",
+          "group": "t:sections.bundle-extra-words.sections.headings.layout.option_1"
+        },
+        {
+          "value": "section-heading--left section-heading--two-rows",
+          "label": "t:sections.bundle-extra-words.sections.headings.alignment.option_1",
+          "group": "t:sections.bundle-extra-words.sections.headings.layout.option_2"
+        },
+        {
+          "value": "section-heading--center section-heading--two-rows",
+          "label": "t:sections.bundle-extra-words.sections.headings.alignment.option_2",
+          "group": "t:sections.bundle-extra-words.sections.headings.layout.option_2"
+        }
+      ],
+      "default": "section-heading--left section-heading--one-row"
+    },
+    {
+      "type": "text",
+      "id": "cta_label",
+      "label": "t:sections.bundle-extra-words.settings_schema.labels.button_text"
+    },
+    {
+      "type": "url",
+      "id": "cta_url",
+      "visible_if": "{{ section.settings.cta_label != blank }}",
+      "label": "t:sections.bundle-extra-words.settings_schema.labels.button_url"
+    },
+    {
+      "type": "header",
+      "content": "t:sections.bundle-extra-words.sections.headings.layout.label"
+    },
+    {
+      "type": "range",
+      "id": "image_height_desktop",
+      "visible_if": "{{ section.settings.hide_media == false }}",
+      "min": 100,
+      "max": 600,
+      "step": 10,
+      "default": 300,
+      "unit": "px",
+      "label": "t:flex-cards.settings.height.desktop"
+    },
+    {
+      "type": "checkbox",
+      "id": "is_autoheight",
+      "visible_if": "{{ section.settings.hide_media == false }}",
+      "label": "t:flex-cards.settings.height.auto",
+      "default": true
+    },
+    {
+      "type": "range",
+      "id": "image_height_mobile",
+      "visible_if": "{{ section.settings.hide_media == false and section.settings.is_autoheight == false }}",
+      "label": "t:flex-cards.settings.height.mobile",
+      "min": 100,
+      "max": 500,
+      "step": 10,
+      "default": 200,
+      "unit": "px"
+    },
+    {
+      "type": "checkbox",
+      "id": "hide_media",
+      "label": "t:flex-cards.settings.image_visibility",
+      "default": false
+    },
+    {
+      "type": "header",
+      "content": "t:sections.local-extra-words.sections.headings.text_style"
+    },
+    {
+      "type": "select",
+      "id": "text_alignment",
+      "label": "t:sections.image-with-text.settings.text_alignment.label",
+      "options": [
+        {
+          "value": "text-align--left",
+          "label": "t:sections.rich-text.settings.text_alignment.options__1.label"
+        },
+        {
+          "value": "text-align--center",
+          "label": "t:sections.rich-text.settings.text_alignment.options__2.label"
+        },
+        {
+          "value": "text-align--right",
+          "label": "t:sections.rich-text.settings.text_alignment.options__3.label"
+        }
+      ],
+      "default": "text-align--center"
+    },
+    {
+      "type": "range",
+      "id": "spacing",
+      "label": "t:sections.bundle-extra-words.settings_schema.labels.spacing",
+      "min": -12,
+      "max": 60,
+      "step": 1,
+      "default": 12,
+      "unit": "px"
+    },
+    {
+      "type": "select",
+      "id": "gutter_size",
+      "label": "t:theme_blocks.sections.flex-section.gutter_size",
+      "options": [
+        {
+          "value": "regular",
+          "label": "t:sections.local-extra-words.sections.media-with-text-overlay.settings.option__5"
+        },
+        {
+          "value": "large",
+          "label": "t:sections.local-extra-words.sections.media-with-text-overlay.settings.option__2"
+        }
+      ],
+      "default": "regular"
+    },
+    {
+      "type": "header",
+      "content": "t:sections.bundle-extra-words.settings_schema.card.settings.design.header"
+    },
+    {
+      "type": "range",
+      "id": "border_radius",
+      "label": "t:sections.bundle-extra-words.settings_schema.buttons.settings.border_radius",
+      "min": 0,
+      "max": 30,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "header",
+      "content": "t:bundle-240.section_design"
+    },
+    {
+      "type": "color",
+      "id": "section_background_color",
+      "label": "t:bundle-240.background_color",
+      "default": "rgba(0,0,0,0)"
+    },
+    {
+      "type": "color_background",
+      "id": "section_background_gradient",
+      "label": "t:bundle-240.background_gradient"
+    },
+    {
+      "type": "color",
+      "id": "section_heading_color",
+      "label": "t:bundle-240.heading_text_color",
+      "default": "rgba(0,0,0,0)"
+    },
+    {
+      "type": "header",
+      "content": "t:sections.bundle-extra-words.sections.headings.gutter.label"
+    },
+    {
+      "type": "checkbox",
+      "id": "gutter_decrease",
+      "label": "t:sections.bundle-extra-words.sections.headings.gutter.content",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "remove_bottom_margin",
+      "label": "t:sections.local-extra-words.settings_schema.layout.sections.remove_bottom_margin",
+      "default": false
+    },
+    {
+      "type": "header",
+      "content": "t:sections.refactor_words.seo.name"
+    },
+    {
+      "type": "select",
+      "id": "seo_h_tag",
+      "label": "t:sections.refactor_words.seo.label",
+      "info": "t:sections.refactor_words.seo.info",
+      "options": [
+        {
+          "value": "h1",
+          "label": "H1"
+        },
+        {
+          "value": "h2",
+          "label": "H2"
+        },
+        {
+          "value": "h3",
+          "label": "H3"
+        },
+        {
+          "value": "h4",
+          "label": "H4"
+        },
+        {
+          "value": "span",
+          "label": "span"
+        }
+      ],
+      "default": "h2"
+    }
+  ],
+  "presets": [
+    {
+      "name": "t:sections-categories.presets.flex_promotion_cards",
+      "category": "t:sections-categories.promotions",
+      "blocks": [
+        {
+          "type": "_card",
+          "settings": { "column_desktop": 7, "hide_on_mobile": false, "color_hide_borders": false },
+          "blocks": [
+            { "type": "caption", "settings": { "caption": "Introducing", "text_size": "regular" } },
+            {
+              "type": "heading",
+              "settings": {
+                "heading": "Your best promotion yet",
+                "title_size": "h4",
+                "line_height": "default",
+                "seo_h_tag": "span"
+              }
+            }
+          ]
+        },
+        {
+          "type": "_card",
+          "settings": { "column_desktop": 5, "hide_on_mobile": false, "color_hide_borders": false },
+          "blocks": [
+            { "type": "caption", "settings": { "caption": "Discover Now", "text_size": "regular" } },
+            {
+              "type": "heading",
+              "settings": {
+                "heading": "Your greatest deal yet",
+                "title_size": "h4",
+                "line_height": "default",
+                "seo_h_tag": "span"
+              }
+            }
+          ]
+        },
+        {
+          "type": "_card",
+          "settings": { "column_desktop": 5, "hide_on_mobile": false, "color_hide_borders": false },
+          "blocks": [
+            { "type": "caption", "settings": { "caption": "Just Arrived", "text_size": "regular" } },
+            {
+              "type": "heading",
+              "settings": {
+                "heading": "Don’t miss this special promotion",
+                "title_size": "h4",
+                "line_height": "default",
+                "seo_h_tag": "span"
+              }
+            }
+          ]
+        },
+        {
+          "type": "_card",
+          "settings": { "column_desktop": 7, "hide_on_mobile": false, "color_hide_borders": false },
+          "blocks": [
+            { "type": "caption", "settings": { "caption": "Introducing", "text_size": "regular" } },
+            {
+              "type": "heading",
+              "settings": {
+                "heading": "Your best promotion yet",
+                "title_size": "h4",
+                "line_height": "default",
+                "seo_h_tag": "span"
+              }
+            }
+          ]
+        }
+      ],
+      "settings": {
+        "heading": "Promotion cards",
+        "subheading": "Share your best offers",
+        "section_heading_size": "text-size--regular",
+        "section_heading_layout": "section-heading--left section-heading--one-row",
+        "image_height_desktop": 300,
+        "is_autoheight": true,
+        "image_height_mobile": 200,
+        "text_alignment": "left",
+        "spacing": 12,
+        "border_radius": 0
+      }
+    }
+  ],
+  "disabled_on": {
+    "groups": ["header"]
+  }
+}
+{% endschema %}

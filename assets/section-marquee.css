@@ -1,0 +1,65 @@
+.scrolling-text {
+  color: var(--color-text-main);
+  border: 0;
+  width: 100%;
+  height: 6.25rem;
+  white-space: nowrap;
+  overflow: hidden;
+  box-sizing: border-box;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+}
+.scrolling-text .scrolling-text__image .lazy-image {
+  width: 5rem;
+  height: 5rem;
+  display: flex;
+  align-items: center;
+}
+@media screen and (max-width: 1023px) {
+  .scrolling-text {
+    height: 5rem;
+  }
+  .scrolling-text .scrolling-text__image .lazy-image {
+    width: 3.75rem;
+    height: 3.75rem;
+  }
+}
+@media screen and (max-width: 767px) {
+  .scrolling-text {
+    height: 3.75rem;
+  }
+  .scrolling-text .scrolling-text__image .lazy-image {
+    width: 2.5rem;
+    height: 2.5rem;
+  }
+}
+.scrolling-text.text-size--large {
+  height: 3.75rem;
+}
+.scrolling-text.text-size--large .scrolling-text__image .lazy-image {
+  width: 2.5rem;
+  height: 2.5rem;
+}
+.scrolling-text.text-size--small {
+  height: 2.5rem;
+}
+.scrolling-text.text-size--small .scrolling-text__image .lazy-image {
+  width: 1.375rem;
+  height: 1.375rem;
+}
+.scrolling-text > div {
+  display: flex;
+  align-items: center;
+}
+.scrolling-text span {
+  display: inline-block;
+  direction: ltr;
+}
+html[dir=rtl] .scrolling-text span > * {
+  direction: rtl;
+}
+.scrolling-text a {
+  text-decoration: underline;
+}

@@ -1,0 +1,63 @@
+<div class="product-price" {% if id %} id="product-price-{{ id }}" {% endif %}>
+
+  {%- liquid
+    if settings.show_currency_codes
+      assign iso_code = localization.country.currency.iso_code | prepend: ' ' 
+    endif
+  -%}
+
+  {%- if product_price_varies -%}
+
+    <span class="product-price--original pps">
+      <span class="visually-hidden">{{ 'general.accessibility_labels.price.price' | t }}:</span>
+      {%- liquid
+        assign price = target.price | money | append: iso_code
+        if target.compare_at_price > target.price  or target.compare_at_price_varies
+          echo 'products.grid.on_sale_from_html' | t: price: price 
+        else
+          echo 'products.grid.from_text_html' | t: price: price 
+        endif
+      -%}
+    </span>
+
+  {%- else -%}
+  
+    <span class="product-price--original pps {{ text_size_class }}">
+      <span class="visually-hidden">
+        {%- liquid
+          if target.compare_at_price > target.price 
+            echo 'general.accessibility_labels.price.sale' | t
+          else
+            echo 'general.accessibility_labels.price.price' | t
+          endif
+        -%}:
+      </span>
+      {{ target.price | money | append: iso_code }}
+    </span>
+    
+    <del class="product-price--compare">
+      <span class="visually-hidden">{{ 'general.accessibility_labels.price.regular' | t }}:</span>
+      {%- liquid 
+        if target.compare_at_price > target.price
+          echo target.compare_at_price | money | append: iso_code | prepend: '<span>' | append: '</span>'
+        endif
+      -%}
+    </del>
+  
+    {%- if show_saving and target.compare_at_price > target.price -%}
+      <span class="product-price--saving pps">
+        {%- assign saving = target.compare_at_price | minus: target.price | money | append: iso_code -%}
+        <span>{{ 'products.page.sales_amount_html' | t: amount: saving }}</span>
+      </span>
+    {%- endif -%}
+
+  {%- endif -%}
+
+  <span class="product-price--unit pps text-size--small">
+    {%- if variant.unit_price_measurement -%}
+      <span class="visually-hidden">{{ 'general.accessibility_labels.price.unit' | t }}:</span>
+      {{ variant.unit_price | unit_price_with_measurement: variant.unit_price_measurement }}
+    {%- endif -%}
+  </span>
+
+</div>

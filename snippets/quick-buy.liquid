@@ -1,0 +1,261 @@
+{%- comment -%}
+  Renders the product options along with a quick buy button directly in the product item card.
+
+  Accepts:
+  - product: {Object} the product object.
+  - variant_style: {String} the style of the variant picker (select, radio).
+  - defer_purchase: {Boolean} whether to defer the purchase (useful for extra logic, such as product bundling).
+  - defer_ajax_cart: {Boolean} whether to defer the ajax cart (used only in product sets).
+  - change_variant_images: {Boolean} whether to change the featured thumbnail based on the selected variant.
+  - default_to_first_variant: {Boolean} whether to default to the first available variant.
+  - add_to_cart_price: {Boolean} whether to show the price on the add to cart button.
+  - show_variant_quantities: {String} whether to show the variant quantities. (yes or no).
+  - unavailable_variants: {String} how to handle unavailable variants. (hide, show, disable).
+	- image_sizes: {String} image sizes attribute.
+  - id: {String} unique id (can be section or block id).
+  - has_skeleton: {Boolean} whether to enable the skeleton loader.
+
+  Usage:
+  {% render 'quick-buy', product: product, variants_style: 'select', defer_purchase: false, defer_ajax_cart: false, change_variant_images: false, default_to_first_variant: false, add_to_cart_price: false, show_variant_quantities: 'no', unavailable_variants: 'hide', id: section.id %}
+{%- endcomment -%}
+
+<quick-buy
+  data-add-to-cart-price="{{ add_to_cart_price }}"
+  data-default-to-first-variant="{{ default_to_first_variant }}"
+  data-single-variant="{{ product.has_only_default_variant }}"
+  {% if change_variant_images and settings.product_card_thumbnail_gallery %} data-variant-images-slider {% endif %}
+  data-js-product-component
+>
+
+  {%- liquid
+
+    assign product_form_id = 'product-form-' | append: id
+    assign current_variant = product.selected_or_first_available_variant
+    assign color_label = settings.color_swatches_labels | split: ','
+
+    if product.has_only_default_variant
+      assign default_to_first_variant_setting = true
+    else
+      assign default_to_first_variant_setting = default_to_first_variant
+    endif;
+
+  -%}
+
+  <div id="product-price-quick-buy-{{ id }}" data-js-quick-buy-product-price data-update-block="price-quick-buy" data-update-block-inner style="display:none">
+    {%- render 'product-price', variant: current_variant, target: current_variant -%}
+  </div>
+
+  {%- if defer_purchase -%}
+    <div data-js-quick-buy-product-title style="display:none">
+      {{ product.title | escape }}
+    </div>
+    <div data-js-quick-buy-product-image style="display:none">
+      {{ product.featured_media | image_url }}
+    </div>
+  {%- endif -%}
+
+  <product-variants 
+    data-variants="{{ product.options_with_values.size }}"
+    data-hide-variants="{%- liquid
+      if unavailable_variants == 'disable' 
+        echo 'disable'
+      elsif unavailable_variants == 'show'
+        echo 'true'
+      else
+        echo 'hide'
+      endif
+    -%}"
+    data-url="{{ product.url }}" data-id="{{ id }}" data-helper-id="helper-product-variant"
+    data-style="{{ variants_style }}"
+    data-no-history
+    data-unavailable-variants="{{ unavailable_variants }}"
+    data-buy-button-price="{{ add_to_cart_price }}"
+    {% if has_skeleton %} data-enable-skeleton="true" {% endif %}
+    {% if unavailable_variants == 'hide' %} class="product-variants--hide-unavailable" {% endif %}
+    {% unless default_to_first_variant_setting %} data-variant-required {% endunless %}
+    {% unless product.has_only_default_variant %} data-has-variants {% elsif product.available == false %} data-unavailable {% endunless %}
+    {% if defer_purchase %} data-show-bundle-wording {% endif %}
+  > 
+
+    <div class="product-variants no-js-hidden"
+      {% if product.has_only_default_variant %} style="display:none" {% endif %}
+      {% if product.available == false and unavailable_variants == 'hide' %} style="display:none" {% endif %}
+    >
+
+      <script type="application/json" data-js-variant-data data-update-block="variant-data" data-update-block-inner>
+        {{ current_variant | json }}
+      </script>
+
+      {%- for option in product.options_with_values -%}
+
+        {%- assign option_downcased = option.name | downcase %}
+        
+        <div class="product-variant" data-name="product-{{ option.name | escape | downcase | strip | handleize }}-{{ id }}" data-js-product-variant>
+
+          {%- liquid
+            assign swatch_count = option.values | map: 'swatch' | compact | size
+            if color_label contains option_downcased and show_color_swatches
+              assign is_color = true
+            elsif show_color_swatches and swatch_count > 0
+              assign is_color = true
+            else
+              assign is_color = false
+            endif
+          -%}
+
+          {%- if is_color -%}
+            <span class="product-variant__name text-size--small">{{ 'products.grid.select_variant' | t: variant: option.name }}</span>
+          {%- else -%}
+            {%- capture element_attributes -%}
+              {%- if variants_style == 'select' -%}
+                for="product-{{ option.name | escape | downcase | strip | handleize }}-{{ id }}"
+              {%- endif -%}
+              class="product-variant__name text-size--small {% if variants_style == 'select' and default_to_first_variant_setting == false %}visually-hidden {% endif %}" 
+            {%- endcapture -%}
+
+            {%- if variants_style == 'select' -%}
+              <label {{ element_attributes }}>{{ 'products.grid.select_variant' | t: variant: option.name }}</label>
+            {%- else -%}
+              <span {{ element_attributes }}>{{ 'products.grid.select_variant' | t: variant: option.name }}</span>
+            {%- endif -%}
+
+          {%- endif -%}
+
+          {%- if is_color -%}
+
+            <css-slider data-options='{
+              "selector": ".product-variant__item",
+              "groupCells": true,
+              "navigation": false,
+              "thumbnails": false,
+              "disableTabNavigation": true,
+              "delayDrag": 300
+            }' class="css-slider css-slider--scrollbars-visible css-slider--no-snap">
+              <div class="product-variant__container product-variant__container--radio" data-js-product-variant-container="radio">
+                {%- render 'product-variant-options', type: 'swatch', option: option, product: product, default_to_first_variant: default_to_first_variant, handle_unavailable_variants: unavailable_variants, current_variant: current_variant, reload_product: 'product', id: id -%}
+                <div class="product-variant__item product-variant__item--radio"></div>
+              </div>
+            </css-slider>
+
+            <span class="product-variant__item-text-label text-size--small text-line-height--small text-color--opacity" data-default-text="{{ 'products.grid.color_variants_count' | t: count: option.values.size }}">
+              {%- liquid
+                unless default_to_first_variant_setting
+                  echo 'products.grid.color_variants_count' | t: count: option.values.size
+                else
+                  echo option.selected_value
+                endunless
+              -%}
+            </span>
+
+          {%- elsif variants_style == 'select' -%}
+
+            <select class="product-variant__container product-variant__container--select text-size--small" id="product-{{ option.name | escape | downcase | strip | handleize }}-{{ id }}" data-js-product-variant-container="select">
+              {%- render 'product-variant-options', type: 'select', option: option, product: product, default_to_first_variant: default_to_first_variant_setting, handle_unavailable_variants: unavailable_variants, current_variant: current_variant,  reload_product: 'product', id: id -%}
+            </select>
+
+          {%- else -%}
+
+            <css-slider data-options='{
+              "selector": ".product-variant__item",
+              "groupCells": true,
+              "navigation": false,
+              "thumbnails": false,
+              "disableTabNavigation": true,
+              "delayDrag": 300
+            }' class="css-slider css-slider--scrollbars-visible css-slider--no-snap">
+              <div class="product-variant__container product-variant__container--radio" data-js-product-variant-container="radio">
+                {%- render 'product-variant-options', type: 'radio', option: option, product: product, default_to_first_variant: default_to_first_variant_setting, handle_unavailable_variants: unavailable_variants, current_variant: current_variant, reload_product: 'product', id: id -%}
+                <div class="product-variant__item product-variant__item--radio"></div>
+              </div>
+            </css-slider>
+
+          {%- endif -%}
+
+          {%- if unavailable_variants == 'hide' and variants_style != 'select' or is_color -%}
+            <span class="product-variant__out-of-stock text-size--regular text-color--opacity hide" aria-hidden="true">{{ 'products.page.inventory.no_products' | t }}</span>
+          {%- endif -%}
+
+        </div>
+
+      {%- endfor -%}
+
+    </div>
+
+  </product-variants>
+
+  <div
+    id="add-to-cart-{{ id }}" class="product-form" 
+    {% unless defer_purchase or defer_ajax_cart %} data-js-quick-buy-form {% endunless %}
+    {% if defer_purchase and unavailable_variants == 'hide' and product.available == false %} style="display:none" {% endif %}
+  >
+    
+    {%- form 'product', product, id: product_form_id, class: 'form', novalidate: 'novalidate', data-type: 'add-to-cart-form' -%}
+
+      <input type="hidden" name="id" value="{{ current_variant.id }}">
+
+      <button type="submit" name="add" class="add-to-cart 
+        {% unless defer_add %} button {% if button_style == 'solid' %} button--solid {% else %} button--outline button--outline-hover-solid button--fullwidth {% endif %} button--loader button--move {% endunless %}
+        {% unless current_variant.available %} disabled {% endunless %} 
+        {% unless default_to_first_variant_setting %} disabled {% endunless %}" 
+        data-js-product-add-to-cart
+        {% if defer_add %} title="{{ 'products.grid.choose_variant_first' | t }}" {% endif %}
+      >
+        <span class="button__text" data-js-product-add-to-cart-text>
+          {%- liquid
+            if default_to_first_variant_setting
+              if current_variant.available
+                if defer_purchase
+                  echo 'products.bundles.add_product_to_bundle' | t
+                else
+                  echo 'products.page.add_to_cart_button' | t
+                  if add_to_cart_price and default_to_first_variant == false
+                    if settings.show_currency_codes
+                      assign iso_code = localization.country.currency.iso_code | prepend: ' ' 
+                    endif
+                    echo current_variant.price | money | append: iso_code | prepend: '<span class="element--hide-on-small"> - ' | append: '</span>' 
+                  endif
+                endif
+              else
+                echo 'products.page.inventory.sold_out_variant' | t
+              endif
+            else
+              if product.available
+                echo 'products.grid.choose_variant_first' | t
+              else
+                echo 'products.page.inventory.sold_out_variant' | t
+              endif
+            endif
+          -%}
+        </span>
+        <span class="button__preloader">
+          <svg class="button__preloader-element" viewBox="25 25 50 50"><circle cx="50" cy="50" r="20" fill="none" stroke-width="4" style="fill:none!important"/></svg>
+        </span>
+        {%- if defer_add or defer_add_faux -%}
+          <svg class="defer-checkmark" width="39" height="29" viewBox="0 0 39 29" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M34.5104 1.79071L37.4476 4.72792L14.929 27.2466L11.9918 24.3093L34.5104 1.79071Z" fill="none"/><path d="M17.8662 24.3093L14.929 27.2466L2.20109 14.5186L5.1383 11.5814L17.8662 24.3093Z" fill="none"/><path d="M34.864 1.43716L34.5104 1.0836L34.1569 1.43716L14.929 20.665L5.49186 11.2279L5.1383 10.8743L4.78475 11.2279L1.84754 14.1651L1.49398 14.5186L1.84754 14.8722L11.2847 24.3093L11.6382 24.6629L14.5755 27.6001L14.929 27.9537L15.2826 27.6001L18.2198 24.6629L18.5733 24.3093L37.8012 5.08148L38.1548 4.72792L37.8012 4.37437L34.864 1.43716Z" stroke="var(--color-text-main)" stroke-opacity="1" fill:none /></svg>
+        {%- endif -%}
+      </button>
+
+    {%- endform -%}
+
+  </div>
+
+  {%- if change_variant_images and settings.product_card_thumbnail_gallery == false -%}
+
+    <div style="display:none" data-js-quick-buy-product-images>
+
+      {%- assign variant_images = product.images | where: 'attached_to_variant?', true | map: 'src' -%}
+      {%- if product.media.size > 1 -%}
+          {%- for media in product.media -%}
+            {%- if variant_images contains media.src -%}
+              <template data-media-id="{{ media.id }}">
+                {%- render 'lazy-image', image: media, alt: product.title, ratio: image_aspect_ratio, fit: settings.product_card_aspect_ratio_fit, type: 'background', class: 'product-item__image-figure product-item__image-figure--primary lazy-image--zoom-animation product-item__image-no-slider', sizes: image_sizes, preload: false -%}
+              </template>
+            {%- endif -%}
+        {%- endfor -%}
+      {%- endif -%}   
+
+    </div>
+
+  {%- endif -%}
+
+</quick-buy>

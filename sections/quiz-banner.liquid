@@ -1,0 +1,224 @@
+{%- liquid
+  assign s_id = section.id
+  assign overlay_alpha = section.settings.overlay_opacity | divided_by: 100.0
+-%}
+
+{% style %}
+  .qb-wrapper-{{ s_id }} {
+    position: relative;
+    width: 100%;
+    min-height: {{ section.settings.desktop_height }}px;
+    display: flex;
+    overflow: hidden;
+  }
+  .qb-bg-img-{{ s_id }} {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    z-index: 1;
+  }
+  .qb-bg-img-mobile-{{ s_id }} {
+    display: none;
+  }
+  .qb-overlay-{{ s_id }} {
+    position: absolute;
+    inset: 0;
+    background-color: rgba(0, 0, 0, {{ overlay_alpha }});
+    z-index: 2;
+  }
+  .qb-content-{{ s_id }} {
+    position: relative;
+    z-index: 3;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 40px 20px;
+  }
+  .qb-heading-{{ s_id }} {
+    color: #ffffff;
+    font-size: clamp(29px, 4vw, 36px);
+    font-weight: 300;
+    margin: 0 0 16px 0;
+    line-height: 1.2;
+    font-family: inherit;
+  }
+  .qb-subtext-{{ s_id }} {
+    color: #ffffff;
+    font-size: clamp(14px, 2vw, 16px);
+    font-weight: 400;
+    margin: 0 0 32px 0;
+    max-width: 600px;
+    line-height: 1.5;
+    font-family: inherit;
+  }
+  .qb-btn-{{ s_id }} {
+    display: inline-block;
+    background-color: #ffffff;
+    color: #333333;
+    font-size: 14px;
+    font-weight: 500;
+    text-decoration: none;
+    padding: 12px 32px;
+    border-radius: 50px;
+    transition: transform 0.3s ease, opacity 0.3s ease;
+  }
+  .qb-btn-{{ s_id }}:hover {
+    transform: translateY(-2px);
+    opacity: 0.9;
+  }
+  @media screen and (max-width: 768px) {
+    .qb-wrapper-{{ s_id }} {
+      min-height: {{ section.settings.mobile_height }}px;
+    }
+    .qb-content-{{ s_id }} {
+      justify-content: flex-end;
+      align-items: flex-start;
+      text-align: left;
+      padding: 40px 24px 60px 24px;
+    }
+   
+    .qb-subtext-{{ s_id }} {
+      margin: 0 0 24px 0;
+      width: 70%;
+    }
+    .qb-heading-{{ s_id }} {
+      width: 55%;
+    }
+    {% if section.settings.image_mobile != blank %}
+      .qb-bg-img-desktop-{{ s_id }} {
+        display: none;
+      }
+      .qb-bg-img-mobile-{{ s_id }} {
+        display: block;
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        z-index: 1;
+      }
+    {% endif %}
+  }
+{% endstyle %}
+
+<section class="quiz-banner-{{ s_id }}">
+  <div class="qb-wrapper-{{ s_id }}">
+    {%- liquid
+      assign desktop_classes = 'qb-bg-img-desktop-' | append: s_id | append: ' qb-bg-img-' | append: s_id
+      assign mobile_classes = 'qb-bg-img-mobile-' | append: s_id
+    -%}
+
+    {% if section.settings.image != blank %}
+      {{ section.settings.image | image_url: width: 2000 | image_tag: class: desktop_classes, loading: 'lazy' }}
+    {% else %}
+      {{ 'lifestyle-2' | placeholder_svg_tag: desktop_classes }}
+    {% endif %}
+    
+    {% if section.settings.image_mobile != blank %}
+      {{ section.settings.image_mobile | image_url: width: 800 | image_tag: class: mobile_classes, loading: 'lazy' }}
+    {% endif %}
+
+    <div class="qb-overlay-{{ s_id }}"></div>
+
+    <div class="qb-content-{{ s_id }}">
+      {% if section.settings.heading != blank %}
+        <h2 class="qb-heading-{{ s_id }}">{{ section.settings.heading | newline_to_br }}</h2>
+      {% endif %}
+      
+      {% if section.settings.subtext != blank %}
+        <p class="qb-subtext-{{ s_id }}">{{ section.settings.subtext | newline_to_br }}</p>
+      {% endif %}
+      
+      {% if section.settings.button_label != blank %}
+        <a href="{{ section.settings.button_link }}" class="qb-btn-{{ s_id }}">
+          {{ section.settings.button_label }}
+        </a>
+      {% endif %}
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Quiz Banner",
+  "settings": [
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "Desktop Background Image"
+    },
+    {
+      "type": "image_picker",
+      "id": "image_mobile",
+      "label": "Mobile Background Image"
+    },
+    {
+      "type": "range",
+      "id": "overlay_opacity",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "%",
+      "label": "Overlay Opacity",
+      "default": 30
+    },
+    {
+      "type": "range",
+      "id": "desktop_height",
+      "min": 200,
+      "max": 800,
+      "step": 10,
+      "unit": "px",
+      "label": "Desktop Height",
+      "default": 350
+    },
+    {
+      "type": "range",
+      "id": "mobile_height",
+      "min": 300,
+      "max": 800,
+      "step": 10,
+      "unit": "px",
+      "label": "Mobile Height",
+      "default": 550
+    },
+    {
+      "type": "textarea",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Not sure where to start?"
+    },
+    {
+      "type": "textarea",
+      "id": "subtext",
+      "label": "Subtext",
+      "default": "Take the 2 minute quiz to find product recommendations that suit your needs"
+    },
+    {
+      "type": "text",
+      "id": "button_label",
+      "label": "Button Label",
+      "default": "Start now"
+    },
+    {
+      "type": "url",
+      "id": "button_link",
+      "label": "Button Link"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Quiz Banner"
+    }
+  ]
+}
+{% endschema %}

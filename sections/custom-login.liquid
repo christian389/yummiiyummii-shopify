@@ -1,0 +1,298 @@
+{{ 'section-account.css' | asset_url | stylesheet_tag }}
+
+{% comment %}
+{%- render 'breadcrumb', container: 'compact', vertical_space: 'vertical-space-xsmall', style: 'breadcrumb-main--margin' -%}
+{% endcomment %}
+<div class="custom-login-layout">
+  <div class="custom-container">
+    <div class="col-left">
+      {% if section.settings.background_img %}
+        <div class="canvas" style="
+          background-image: url('https://cdn.shopify.com/s/files/1/0051/3540/1053/files/WhatsApp_Image_2025-05-13_at_21.01.36.jpg?v=1747163149');
+          background-size: cover;
+          background-position: center;
+          background-repeat: no-repeat;
+          min-height: 100%">
+        </div>
+      {% endif %}
+
+      
+    </div>
+    <div class="col-right">
+      <div class="account">
+
+        {%- form 'customer_login' -%}
+
+            <h1 class="heading-size--page-title gutter-bottom--regular">{{ 'customers.login_page.title' | t }}</h1>
+
+            <!-- <hr class="account-divider margin-bottom--large" /> -->
+        
+            <div id="resetSuccess" style="display:none;">
+                {%- liquid
+                    assign message = 'customers.login_page.password_reset.success_message' | t
+                    render 'form-success', message: message
+                -%}
+            </div>
+
+            {%- render 'form-errors', form: form -%}
+
+            <div class="account__form-block ">
+
+                <div class="account__form-row">
+                    <label for="customer_email" class="hidden">{{ 'customers.login_page.form_email_label' | t }}</label>
+                    <input type="email" value="" name="customer[email]" id="customer_email" placeholder="johndoe@gmail.com" {% if form.errors contains "email" %} class="error"{% endif %} autocorrect="off" autocapitalize="off" autofocus>
+                </div>
+                
+                {%- if form.password_needed -%}
+                    <div class="account__form-row">
+                        <label for="customer_password" class="hidden">{{ 'customers.login_page.form_password_label' | t }}</label>
+                        <input type="password" value="" name="customer[password]" id="customer_password" placeholder="***************" {% if form.errors contains "password" %} class="error"{% endif %}>
+                    </div>
+                {%- endif -%}
+
+                {% if form.password_needed %}
+                    <span style="display: block;" class="text-size--small custom-recover">
+                        <a href="#recover" onclick="showRecoverPasswordForm();return false;">
+                            <span class="text-animation--underline-thin">{{ 'customers.login_page.forgot_password_check' | t }}</span>
+                        </a>
+                    </span>
+                {% endif %}
+
+                <div class="form-actions flex-buttons">
+                    {%- render 'button', style: 'solid', label: 'customers.login_page.form_login_button', label_is_translation: true, is_submit: true, type: 'button' -%}
+
+                    <div style="text-align: right;" class="gutter-top--small custom-register">
+                       
+                        <span style="display: block;">
+                            <a href="{{ routes.account_register_url }}">
+                                <span class="text-animation--underline-thin text-weight--bold">{{ 'customers.login_page.new_customer_button' | t }}</span>
+                            </a>
+                        </span>
+                        
+                    </div>
+                </div>
+
+                <div class="b2b-login-section">
+
+                  <div class="b2b-login-desc">
+                    <p>Er du en forhandler?</p>
+                    <p>Klik her for at logge ind på din B2B-konto og få adgang til engrospriser og eksklusive produkter.</p>
+                  </div>
+
+                  <!-- New Sparklayer.io login link -->
+                  <span style="display: block; margin-top: 10px;">
+                      <a href="https://www.yummiiyummii.dk/pages/b2b-login#b2b-apply" class="custom-sparklayer-btn">
+                          <span class="text-animation--underline-thin text-weight--bold">Log ind på din b2b-konto</span>
+                      </a>
+                  </span>
+                </div>
+            </div>
+        {%- endform -%}
+
+        <div id="recover_password" style="display: none;">
+            <h3 class="heading-size--page-title gutter-bottom--regular">{{ 'customers.login_page.password_reset.title' | t }}</h3>
+            <hr class="account-divider margin-bottom--large" />
+            
+            <span class="alert alert--note margin-bottom--large">
+                {{ 'customers.login_page.password_reset.subtitle' | t }}
+            </span>
+
+            {% form 'recover_customer_password', class: 'simple-form' %}
+                {% render 'form-errors', form: form %}
+                {% if form.posted_successfully? %}
+                    {% assign reset_success = true %}
+                {% endif %}
+
+                <div class="account__form-block ">
+                    <div class="account__form-row">
+                        <label for="recover-email" class="hidden">{{ 'customers.login_page.password_reset.email_label' | t }}</label>
+                        <input type="email" value="" name="email" id="recover-email" placeholder="{{ 'customers.login_page.password_reset.email_label' | t }}" autocorrect="off" autocapitalize="off">
+                    </div>
+
+                    <div class="account__form-row form-actions flex-buttons">
+                        {%- render 'button', style: 'solid', label: 'customers.login_page.password_reset.submit_button', label_is_translation: true, is_submit: true, type: 'button' -%}
+                        {%- render 'button', style: 'outline', label: 'customers.login_page.password_reset.cancel_button', label_is_translation: true, attribute: 'onclick="hideRecoverPasswordForm();return false;"' -%}
+                    </div>
+                </div>
+            {% endform %}
+        </div>
+
+        {% if shop.checkout.guest_login %}
+            <h3 class="title h0" style="margin-top: 2em;">{{ 'customers.login_page.guest_check' | t }}</h3>
+            {%- form 'guest_login' -%}
+                {%- render 'button', style: 'solid', label: 'customers.login_page.guest_button', label_is_translation: true, is_submit: true, type: 'button' -%}
+            {%- endform -%}
+        {% endif %}
+    </div>
+    </div>
+  </div>
+</div>
+
+<style>
+
+.b2b-form-message {
+  grid-row-start: 2;
+}
+ 
+  
+  .custom-login-layout .custom-container {
+      /* max-width: 1200px; */
+      width: 100%;
+      margin: 0 auto;
+      display: flex;
+  }
+  .custom-login-layout .custom-container .col-left,
+  .custom-login-layout .custom-container .col-right {
+      flex: 1;
+  }
+  h1.heading-size--page-title.gutter-bottom--regular {
+    font-family: 'Cooper BT';
+    font-weight: normal;
+    font-size: 30px;
+    margin: 0;
+    padding: 0 0 20px;
+}
+
+.col-right {
+    padding: 65px 50px;
+    background: #F1F1F1;
+}
+
+  .custom-login-layout .account__form-block  .account__form-row label {
+    font-family: 'Cooper BT';
+    font-size: 16px;
+    font-weight: 400;
+    padding-bottom: 10px;
+}
+.custom-login-layout .account__form-block  .account__form-row input {
+    background: transparent;
+}
+  .custom-login-layout input {
+      border: 2px solid #828282;
+  }
+  .custom-login-layout input::placeholder {
+    color: #CECECE;
+  }
+
+  .form-actions button {
+    font-size: 16px;
+    font-family: 'Cooperbelt BT';
+    line-height: 26px;
+    width: auto !important;
+    padding: 10px 30px;
+    border-radius: 5px;
+    margin: 0;
+    padding: 0;
+}
+.no-touchevents .button--icon:hover {
+    padding-inline-end: 1.3125rem;
+}
+.flex-buttons {
+    padding: 15px 0;
+}
+.flex-buttons .button--icon {
+    padding: 10px 30px;
+}
+.custom-register {
+    margin: 0;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    margin-left: 20px;
+}
+.custom-register span {
+    font-family: 'Cooperbelt BT';
+    font-size: 16px;
+    line-height: 26px;
+}
+.b2b-login-section {
+    margin-top: 40px;
+    padding-top: 30px;
+    border-top: 1px solid #DFDFDF;
+}
+.b2b-login-desc p {
+    font-family: 'Cooperbelt BT';
+    font-size: 16px;
+    line-height: 26px;
+    padding: 0;
+    margin: 0;
+}
+  .custom-sparklayer-btn {
+    font-family: 'Cooperbelt BT';
+    font-size: 16px;
+    line-height: 26px;
+    padding: 10px 30px;
+    background: white;
+    border-radius: 5px;
+    border: 1px solid black;
+    display: inline-block;
+    margin-top: 20px;
+}
+  .custom-recover {
+    font-family: 'Cooperbelt BT';
+    font-size: 16px;
+    line-height: 26px;
+}
+
+  @media (max-width: 767px) {
+    .custom-login-layout .custom-container {
+        flex-direction: column;
+    }
+    .custom-login-layout .custom-container .canvas {
+        min-height: 150px !important;
+    }
+    .custom-login-layout .col-right {
+        padding: 50px 25px;
+    }
+}
+
+  
+</style>
+
+<script>
+    function showRecoverPasswordForm() {
+        document.getElementById('recover_password').style.display = 'block';
+        document.getElementById('customer_login').style.display='none';
+    }
+
+    function hideRecoverPasswordForm() {
+        document.getElementById('recover_password').style.display = 'none';
+        document.getElementById('customer_login').style.display = 'block';
+    }
+
+    if (window.location.hash == '#recover') { showRecoverPasswordForm() }
+</script>
+
+{% if reset_success %}
+  <style type="text/css">
+    #resetSuccess { 
+      display: block !important;
+      margin-top: 25px;
+    }
+  </style>
+{% endif %}
+
+
+
+
+{% schema %}
+  {
+    "name": "Custom Login",
+    "settings": [
+        {
+          "type": "image_picker",
+          "id": "background_img",
+          "label": "Background Image"
+        }
+    ],
+    "presets": [
+      {
+        "name": "Custom Login Page",
+        "category": "Custom"
+      }
+    ]
+
+
+    
+  }
+{% endschema %}

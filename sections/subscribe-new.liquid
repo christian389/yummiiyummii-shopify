@@ -1,0 +1,307 @@
+{%- liquid
+  assign s_id = section.id
+-%}
+
+{% style %}
+  .section-{{ s_id }} {
+    padding-top: {{ section.settings.padding_top }}px;
+    padding-bottom: {{ section.settings.padding_bottom }}px;
+    background-color: {{ section.settings.background_color }};
+    color: #ffffff;
+  }
+
+  .nl-wrapper-{{ s_id }} {
+    max-width: 750px;
+    margin: 0 auto;
+    padding: 0 20px;
+    text-align: center;
+  }
+
+  /* --- LOGO --- */
+  .nl-logo-{{ s_id }} {
+    display: block;
+    margin: 0 auto 40px auto;
+    max-width: {{ section.settings.logo_width }}px;
+    width: 100%;
+    height: auto;
+  }
+
+  /* --- TEXT --- */
+  .nl-heading-{{ s_id }} {
+    font-size: clamp(28px, 4vw, 36px);
+    font-weight: 300;
+    margin: 0 0 16px 0;
+    line-height: 1.2;
+    color: #ffffff;
+    font-family: inherit;
+  }
+
+  .nl-subtext-{{ s_id }} {
+    font-size: clamp(15px, 2vw, 16px);
+    font-weight: 400;
+    margin: 0 0 32px 0;
+    line-height: 1.5;
+    color: #ffffff;
+    opacity: 0.9;
+  }
+
+  /* --- FORM --- */
+  .nl-form-{{ s_id }} {
+    margin-bottom: 24px;
+  }
+
+  .nl-form-inner-{{ s_id }} {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+  }
+
+  .nl-input-{{ s_id }} {
+    flex: 1;
+    min-width: 250px;
+    max-width: 360px;
+    background: transparent;
+    border: 1px solid #ffffff;
+    border-radius: 40px;
+    padding: 12px 24px;
+    font-size: 15px;
+    color: #ffffff;
+    outline: none;
+    font-family: inherit;
+  }
+
+  .nl-input-{{ s_id }}::placeholder {
+    color: rgba(255, 255, 255, 0.7);
+  }
+
+  .nl-btn-{{ s_id }} {
+    background: #ffffff;
+    color: {{ section.settings.background_color }};
+    border: 1px solid #ffffff;
+    border-radius: 40px;
+    padding: 12px 32px;
+    font-size: 15px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    white-space: nowrap;
+    font-family: inherit;
+  }
+
+  .nl-btn-{{ s_id }}:hover {
+    background: transparent;
+    color: #ffffff;
+  }
+
+  /* --- FOOTER TEXT --- */
+  .nl-footer-{{ s_id }} {
+    font-size: 13px;
+    color: #ffffff;
+    opacity: 0.8;
+    margin: 0;
+    font-weight: 300;
+  }
+
+  /* --- FORM SUCCESS/ERROR MESSAGES --- */
+  .nl-message-{{ s_id }} {
+    margin-bottom: 15px;
+    font-size: 14px;
+    text-align: center;
+  }
+
+  /* --- MOBILE LAYOUT --- */
+  @media screen and (max-width: 768px) {
+    .section-{{ s_id }} {
+      padding-top: {{ section.settings.padding_top_mobile }}px;
+      padding-bottom: {{ section.settings.padding_bottom_mobile }}px;
+    }
+    .nl-wrapper-{{ s_id }} {
+      text-align: left;
+    }
+    .nl-logo-{{ s_id }} {
+      margin: 0 0 32px 0;
+      max-width: {{ section.settings.logo_width_mobile }}px;
+    }
+    .nl-form-inner-{{ s_id }} {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 16px;
+    }
+    .nl-input-{{ s_id }} {
+      width: 100%;
+      max-width: 100%;
+    }
+  }
+{% endstyle %}
+
+<section class="section-{{ s_id }}">
+  <div class="nl-wrapper-{{ s_id }}">
+    
+    {%- liquid
+      assign logo_class = 'nl-logo-' | append: s_id
+      assign form_class = 'nl-form-' | append: s_id
+    -%}
+
+    {% if section.settings.logo != blank %}
+      {{ section.settings.logo | image_url: width: 600 | image_tag: class: logo_class, loading: 'lazy', alt: shop.name }}
+    {% else %}
+      <svg class="nl-logo-{{ s_id }}" viewBox="0 0 300 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <text fill="white" xml:space="preserve" style="white-space: pre" font-family="sans-serif" font-size="64" font-weight="bold" letter-spacing="0em"><tspan x="0" y="70">yummii</tspan></text>
+      </svg>
+    {% endif %}
+
+    <h2 class="nl-heading-{{ s_id }}">{{ section.settings.heading | newline_to_br }}</h2>
+    
+    <p class="nl-subtext-{{ s_id }}">{{ section.settings.subtext | newline_to_br }}</p>
+
+    {% form 'customer', class: form_class %}
+      <input type="hidden" name="contact[tags]" value="newsletter">
+      
+      {%- if form.posted_successfully? -%}
+        <div class="nl-message-{{ s_id }}">Thanks for subscribing!</div>
+      {%- elsif form.errors -%}
+        <div class="nl-message-{{ s_id }}">{{ form.errors.translated_fields['email'] | capitalize }} {{ form.errors.messages['email'] }}</div>
+      {%- endif -%}
+
+      <div class="nl-form-inner-{{ s_id }}">
+        <input 
+          id="NewsletterEmail-{{ s_id }}"
+          type="email"
+          name="contact[email]"
+          class="nl-input-{{ s_id }}"
+          value="{{ form.email }}"
+          aria-required="true"
+          autocorrect="off"
+          autocapitalize="off"
+          autocomplete="email"
+          placeholder="{{ section.settings.input_placeholder }}"
+          required
+        >
+        <button type="submit" class="nl-btn-{{ s_id }}">
+          {{ section.settings.button_label }}
+        </button>
+      </div>
+    {% endform %}
+
+    <p class="nl-footer-{{ s_id }}">{{ section.settings.footer_text }}</p>
+
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Newsletter CTA",
+  "settings": [
+    {
+      "type": "image_picker",
+      "id": "logo",
+      "label": "Logo Image"
+    },
+    {
+      "type": "range",
+      "id": "logo_width",
+      "min": 100,
+      "max": 400,
+      "step": 10,
+      "unit": "px",
+      "label": "Logo Width (Desktop)",
+      "default": 240
+    },
+    {
+      "type": "range",
+      "id": "logo_width_mobile",
+      "min": 100,
+      "max": 350,
+      "step": 10,
+      "unit": "px",
+      "label": "Logo Width (Mobile)",
+      "default": 280
+    },
+    {
+      "type": "textarea",
+      "id": "heading",
+      "label": "Heading",
+      "default": "A calmer everyday routine, in your inbox"
+    },
+    {
+      "type": "textarea",
+      "id": "subtext",
+      "label": "Subtext",
+      "default": "Product tips, lunch inspiration, and practical guides — occasionally."
+    },
+    {
+      "type": "text",
+      "id": "input_placeholder",
+      "label": "Input Placeholder",
+      "default": "Enter your email address"
+    },
+    {
+      "type": "text",
+      "id": "button_label",
+      "label": "Button Label",
+      "default": "Sign up"
+    },
+    {
+      "type": "text",
+      "id": "footer_text",
+      "label": "Footer Text",
+      "default": "No spam, unsubscribe any time."
+    },
+    {
+      "type": "header",
+      "content": "Styling"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background Color",
+      "default": "#8a837a"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 0,
+      "max": 150,
+      "step": 5,
+      "unit": "px",
+      "label": "Desktop Padding Top",
+      "default": 80
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 0,
+      "max": 150,
+      "step": 5,
+      "unit": "px",
+      "label": "Desktop Padding Bottom",
+      "default": 80
+    },
+    {
+      "type": "range",
+      "id": "padding_top_mobile",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "Mobile Padding Top",
+      "default": 60
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom_mobile",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "Mobile Padding Bottom",
+      "default": 60
+    }
+  ],
+  "presets": [
+    {
+      "name": "Newsletter CTA"
+    }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,247 @@
+{% liquid
+  assign column_desktop = block.settings.column_desktop | default: 2 | plus: 0
+  assign image_height_mobile = section.settings.image_height_mobile | default: 200 | plus: 0
+  assign image_height_desktop = section.settings.image_height_desktop | default: 300 | plus: 0
+  assign aspect_ratio = block.settings.image.aspect_ratio
+%}
+
+<div
+  id="element-{{ block.id }}"
+  class="block-flex-item card {% unless section.settings.hide_media %} card--animation {% endunless %} {% if block.settings.hide_on_mobile %} element--hide-on-small{% endif %} js-slider-card"
+  style="
+    --column-desktop: {{ column_desktop }};
+    --image-height-desktop: {{ image_height_desktop }}px;
+    --image-height-mobile: {{ image_height_mobile }}px;
+    --border-radius-cards: {{ section.settings.border_radius }}px;
+    --horizontal-alignment:{{ section.settings.text_alignment | replace: 'text-align--', '' }};
+  "
+  {{ block.shopify_attributes }}
+>
+  {%- if block.settings.button_link != blank -%}
+    <a
+      href="{{ block.settings.button_link }}"
+      {% unless block.settings.open_in_new_window == false %}
+        target="_blank"
+      {% endunless -%}
+      class="card__whole-link"
+    ></a>
+  {%- endif -%}
+
+  {%- unless section.settings.hide_media -%}
+    <div class="card__image">
+      {%- liquid
+        assign video_url = block.settings.video
+        for source in block.settings.video.sources
+          unless source.url contains 'm3u8'
+            assign video_url = source.url
+          endunless
+        endfor
+      -%}
+
+      {%- unless video_url != blank -%}
+        {%- unless block.settings.image == blank -%}
+          {%- liquid
+            assign block_index = section.blocks | find_index: 'id', block.id
+            if section.index == 1 and block_index < 2
+              assign preload = true
+            else
+              assign preload = false
+            endif
+          -%}
+
+          {%- capture sizes -%}
+            sizes="
+              (max-width: 1023px) 
+                {% if section.settings.is_autoheight %}
+                  calc(100vw - 20px)
+                {% else %}
+                  calc({{ image_height_mobile }}px * {{ aspect_ratio }})
+                {% endif %},
+              (max-width: {{ settings.theme_max_width }}px) 
+                calc(({{ settings.theme_max_width }}px - 30px) / 12 * {{ column_desktop }}),
+              calc({{ settings.theme_max_width }}px / 12 * {{ column_desktop }})
+            "
+          {%- endcapture -%}
+
+          {%- render 'lazy-image',
+            image: block.settings.image,
+            sizes: sizes,
+            type: 'background',
+            alt: block.settings.image.alt,
+            aspect_ratio: aspect_ratio,
+            image_alignment: true,
+            id: block.id,
+            class: 'lazy-image--animation lazy-image--to-reveal',
+            preload: preload
+          -%}
+
+        {%- else -%}
+          {{ 'image' | placeholder_svg_tag }}
+        {%- endunless -%}
+
+      {%- else -%}
+        {%- render 'video-component',
+          video_file: block.settings.video,
+          image: block.settings.image,
+          is_background: true,
+          autoplay_video: true,
+          loop_video: true,
+          crop_video: true,
+          id: block.id,
+          class: 'lazy-image--animation'
+        -%}
+      {%- endunless -%}
+
+      <script>
+        window.KrownAssetLoader.loadScript('{{ "component-video.js" | asset_url }}');
+      </script>
+    </div>
+  {%- endunless -%}
+
+  {%- if block.blocks.size > 0 -%}
+    <div
+      class="card__text gutter--{{ section.settings.gutter_size }} {{ section.settings.text_alignment }} spacing--custom remove-empty-space"
+      style="--spacing:{{ section.settings.spacing }}px;"
+    >
+      {% content_for 'blocks' %}
+    </div>
+  {%- endif -%}
+</div>
+
+{%- render 'custom-colors',
+  id: block.id,
+  text: block.settings.color_text_main,
+  background: block.settings.color_background_main,
+  borders: block.settings.color_borders_main,
+  hide_borders: block.settings.color_hide_borders,
+  border_radius: section.settings.border_radius
+-%}
+
+{%- if section.settings.is_autoheight -%}
+  {% style %}
+    @media screen and (max-width: 767px) {
+      {%- if block.settings.video == blank -%}
+        #shopify-section-{{ section.id }} .card__image {
+          padding-top: {%- if block.settings.image != blank -%} {{ 100 | divided_by: aspect_ratio }}% {%- else -%} 100% {%- endif -%};
+        }
+      {%- else -%}
+        #shopify-section-{{ section.id }} video-component {
+          aspect-ratio: 1 / {{ 1 | divided_by: block.settings.video.aspect_ratio }};
+        }
+      {%- endif -%}
+    }
+  {% endstyle %}
+{%- endif -%}
+
+{%- if section.settings.border_radius > 0 -%}
+  {% style %}
+    #element-{{ block.id }} img {
+      border-radius: {{ section.settings.border_radius }}px {{ section.settings.border_radius }}px 0 0;
+    }
+    #element-{{ block.id }} video {
+      border-radius: {{ section.settings.border_radius }}px {{ section.settings.border_radius }}px 0 0;
+    }
+  {% endstyle %}
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "t:sections.local-extra-words.sections.promotion-cards.blocks.name",
+  "tag": null,
+  "blocks": [{ "type": "@app" }, { "type": "@theme" }],
+  "settings": [
+    {
+      "id": "image",
+      "type": "image_picker",
+      "label": "t:sections.gallery.blocks.image.settings.image.label"
+    },
+    {
+      "type": "video",
+      "id": "video",
+      "label": "t:sections.local-extra-words.sections.media-with-text-overlay.blocks.video.label",
+      "info": "t:sections.local-extra-words.sections.media-with-text-overlay.blocks.video.info"
+    },
+    {
+      "type": "url",
+      "id": "button_link",
+      "label": "t:sections.image-with-text.blocks.image.settings.url.label",
+      "info": "t:sections.image-with-text.blocks.image.settings.url.info"
+    },
+    {
+      "type": "checkbox",
+      "id": "open_in_new_window",
+      "visible_if": "{{ block.settings.button_link != blank }}",
+      "label": "t:sections.local-extra-words.sections.announcement-bar.blocks.content.settings.target",
+      "default": false
+    },
+    {
+      "type": "header",
+      "content": "t:theme_blocks.sections.flex-section.grid_design"
+    },
+    {
+      "type": "range",
+      "id": "column_desktop",
+      "min": 2,
+      "max": 12,
+      "step": 1,
+      "label": "t:theme_blocks.grid-text.column_desktop",
+      "default": 2
+    },
+    {
+      "type": "checkbox",
+      "id": "hide_on_mobile",
+      "label": "t:sections.bundle-extra-words.sections.slider.blocks.image.settings.layout.hide_on_mobile",
+      "default": false
+    },
+    {
+      "type": "header",
+      "content": "t:sections.bundle-extra-words.settings_schema.card.settings.design.header"
+    },
+    {
+      "type": "color",
+      "id": "color_background_main",
+      "alpha": true,
+      "label": "t:sections.split-extra-words.settings_schema.colors.settings.background",
+      "default": "rgba(0,0,0,0)"
+    },
+    {
+      "type": "color",
+      "id": "color_text_main",
+      "label": "t:sections.split-extra-words.settings_schema.colors.settings.text",
+      "default": "rgba(0,0,0,0)"
+    },
+    {
+      "type": "color",
+      "id": "color_borders_main",
+      "label": "t:sections.local-extra-words.settings_schema.colors.settings.borders",
+      "default": "rgba(0,0,0,0)"
+    },
+    {
+      "type": "checkbox",
+      "id": "color_hide_borders",
+      "label": "t:sections.local-extra-words.settings_schema.colors.settings.hide_border",
+      "default": false
+    }
+  ],
+  "presets": [
+    {
+      "name": "t:sections.local-extra-words.sections.promotion-cards.blocks.name",
+      "blocks": [
+        {
+          "type": "caption",
+          "settings": {
+            "caption": "Introducing"
+          }
+        },
+        {
+          "type": "heading",
+          "settings": {
+            "heading": "Your best promotion yet",
+            "title_size": "h4"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

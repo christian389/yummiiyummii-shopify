@@ -1,0 +1,29 @@
+{%- assign current_variant = product.selected_or_first_available_variant -%}
+
+<script type="application/json" data-js-variant-data data-update-block="variant-data">
+  {{ current_variant | json }}
+</script>
+
+<input type="hidden" name="id" value="{{ current_variant.id }}">
+
+<span data-update-block="price-quick-buy">
+  {%- render 'product-price', variant: current_variant, target: current_variant -%}
+</span>
+
+<div>
+  {%- for option in product.options_with_values -%}
+    {%- for value in option.values -%}
+      <span
+        data-available="{{ value.available }}"
+        {% if value.product_url %}
+          data-product-url="{{ value.product_url }}"
+        {% endif %}
+        data-option-value-id="{{ value.id }}"
+        data-variant-id="{{ value.variant.id }}"
+        {% if option.selected_value == value %}
+          data-selected
+        {% endif %}
+      ></span>
+    {%- endfor -%}
+  {%- endfor -%}
+</div>

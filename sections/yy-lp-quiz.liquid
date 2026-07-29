@@ -1,0 +1,209 @@
+{% comment %}
+  Yummii Yummii — Landingsside: "Find dit sæt"-quiz (on-page anbefaler)
+  Ét spørgsmål (klassetrin) → viser det anbefalede skole-sæt med pris,
+  "Se sættet" og "Læg i kurv" (udløser upsell-popuppen via data-yylp-add-trigger).
+  Selvstændig, let JS. Ingen afhængigheder ud over yy-landing.js til popuppen.
+{% endcomment %}
+
+{{ 'yy-landing.css' | asset_url | stylesheet_tag }}
+<script src="{{ 'yy-landing.js' | asset_url }}" defer></script>
+
+{% style %}
+  #shopify-section-{{ section.id }} .yy-quiz{
+    max-width:720px; margin:26px auto 0; background:var(--yylp-card,#fff);
+    border:1px solid var(--yylp-border,rgba(0,0,0,.08)); border-radius:20px; padding:26px 22px;
+    box-shadow:0 2px 10px rgba(0,0,0,.05);
+  }
+  #shopify-section-{{ section.id }} .yy-quiz__label{ font-size:17px; font-weight:700; text-align:center; margin:0 0 16px; }
+  #shopify-section-{{ section.id }} .yy-quiz__opts{ display:grid; grid-template-columns:repeat(2,1fr); gap:10px; }
+  #shopify-section-{{ section.id }} .yy-quiz__opt{
+    display:flex; flex-direction:column; gap:2px; align-items:flex-start; text-align:left;
+    background:var(--yylp-soft,#f4f1ea); border:1px solid var(--yylp-border,rgba(0,0,0,.1));
+    border-radius:14px; padding:14px 16px; cursor:pointer; font-size:15px; font-weight:700;
+    transition:border-color .15s ease, transform .05s ease;
+  }
+  #shopify-section-{{ section.id }} .yy-quiz__opt small{ font-weight:500; font-size:12.5px; color:var(--yylp-muted,#8a857c); }
+  #shopify-section-{{ section.id }} .yy-quiz__opt:hover{ border-color:#198754; }
+  #shopify-section-{{ section.id }} .yy-quiz__opt:active{ transform:scale(.99); }
+  #shopify-section-{{ section.id }} .yy-quiz__result{ display:flex; gap:18px; align-items:center; }
+  #shopify-section-{{ section.id }} .yy-quiz__result[hidden]{ display:none; }
+  #shopify-section-{{ section.id }} .yy-quiz__media{
+    flex:0 0 132px; width:132px; aspect-ratio:1/1; border-radius:14px; overflow:hidden;
+    background:var(--yylp-soft,#f2efe8); display:flex; align-items:center; justify-content:center;
+    text-align:center; font-size:12px; color:var(--yylp-muted,#9a958c); padding:10px;
+  }
+  #shopify-section-{{ section.id }} .yy-quiz__media img{ width:100%; height:100%; object-fit:cover; }
+  #shopify-section-{{ section.id }} .yy-quiz__info{ flex:1; min-width:0; }
+  #shopify-section-{{ section.id }} .yy-quiz__rtitle{ margin:0 0 4px; font-size:18px; font-weight:800; }
+  #shopify-section-{{ section.id }} .yy-quiz__rtext{ margin:0 0 8px; font-size:14px; line-height:1.4; }
+  #shopify-section-{{ section.id }} .yy-quiz__price{ font-size:18px; font-weight:800; margin-bottom:10px; }
+  #shopify-section-{{ section.id }} .yy-quiz__price s{ font-weight:500; font-size:14px; color:var(--yylp-muted,#9a958c); margin-left:8px; }
+  #shopify-section-{{ section.id }} .yy-quiz__cta{ display:flex; gap:8px; flex-wrap:wrap; }
+  #shopify-section-{{ section.id }} .yy-quiz__ghost{
+    background:transparent; border:1px solid var(--yylp-border,rgba(0,0,0,.18)); color:inherit;
+    font-weight:600; border-radius:12px; padding:10px 14px; text-decoration:none; font-size:14px; cursor:pointer;
+  }
+  #shopify-section-{{ section.id }} .yy-quiz__restart{
+    display:block; margin:14px auto 0; background:none; border:none; color:var(--yylp-muted,#8a857c);
+    font-size:13px; text-decoration:underline; cursor:pointer;
+  }
+  @media (max-width:560px){
+    #shopify-section-{{ section.id }} .yy-quiz__opts{ grid-template-columns:1fr; }
+    #shopify-section-{{ section.id }} .yy-quiz__result{ flex-direction:column; text-align:center; }
+    #shopify-section-{{ section.id }} .yy-quiz__cta{ justify-content:center; }
+  }
+{% endstyle %}
+
+<div class="yy-lp-root yy-lp-scheme--{{ section.settings.color_scheme }}">
+  <section id="{{ section.settings.anchor_id | default: 'quiz' }}" class="yy-lp-section">
+    <div class="yy-lp-wrap">
+      {%- if section.settings.eyebrow != blank -%}<p class="yy-lp-eyebrow" style="text-align:center">{{ section.settings.eyebrow }}</p>{%- endif -%}
+      {%- if section.settings.heading != blank -%}<h2 class="yy-lp-title">{{ section.settings.heading }}</h2>{%- endif -%}
+      {%- if section.settings.intro != blank -%}<p class="yy-lp-intro">{{ section.settings.intro }}</p>{%- endif -%}
+
+      <div class="yy-quiz" data-yy-quiz>
+        <div class="yy-quiz__q" data-yy-quiz-step>
+          {%- if section.settings.question != blank -%}<p class="yy-quiz__label">{{ section.settings.question }}</p>{%- endif -%}
+          <div class="yy-quiz__opts">
+            {%- for block in section.blocks -%}
+              <button type="button" class="yy-quiz__opt" data-yy-quiz-pick="{{ block.id }}" {{ block.shopify_attributes }}>
+                {{ block.settings.option_label }}
+                {%- if block.settings.option_sub != blank -%}<small>{{ block.settings.option_sub }}</small>{%- endif -%}
+              </button>
+            {%- endfor -%}
+          </div>
+        </div>
+
+        {%- for block in section.blocks -%}
+          <div class="yy-quiz__result" data-yy-quiz-result="{{ block.id }}" hidden>
+            <div class="yy-quiz__media">
+              {%- if block.settings.image != blank -%}
+                {%- assign qh = 264 | times: block.settings.image.height | divided_by: block.settings.image.width -%}
+                <img src="{{ block.settings.image | image_url: width: 264 }}" alt="{{ block.settings.result_title | escape }}" width="264" height="{{ qh }}" loading="lazy">
+              {%- else -%}
+                {{ block.settings.result_title }}
+              {%- endif -%}
+            </div>
+            <div class="yy-quiz__info">
+              {%- if block.settings.result_title != blank -%}<h3 class="yy-quiz__rtitle">{{ block.settings.result_title }}</h3>{%- endif -%}
+              {%- if block.settings.result_text != blank -%}<p class="yy-quiz__rtext">{{ block.settings.result_text }}</p>{%- endif -%}
+              {%- if block.settings.price_text != blank -%}
+                <div class="yy-quiz__price">{{ block.settings.price_text }}{%- if block.settings.compare_text != blank -%}<s>{{ block.settings.compare_text }}</s>{%- endif -%}</div>
+              {%- endif -%}
+              <div class="yy-quiz__cta">
+                <button type="button" class="yy-lp-btn yy-lp-btn--primary"
+                  data-yy2-trigger
+                  data-set-variant="{{ block.settings.variant_id }}"
+                  data-set-name="{{ block.settings.result_title | escape }}"
+                  data-u1-variant="{{ block.settings.u1_variant }}"
+                  data-u1-title="{{ block.settings.u1_title | escape }}"
+                  data-u1-price="{{ block.settings.u1_price }}"
+                  data-u1-compare="{{ block.settings.u1_compare }}"
+                  data-u1-img="{% if block.settings.u1_image != blank %}{{ block.settings.u1_image | image_url: width: 200 }}{% endif %}"
+                  data-u1-note="{{ block.settings.u1_note | escape }}"
+                  data-u2-variant="{{ block.settings.u2_variant }}"
+                  data-u2-title="{{ block.settings.u2_title | escape }}"
+                  data-u2-price="{{ block.settings.u2_price }}"
+                  data-u2-img="{% if block.settings.u2_image != blank %}{{ block.settings.u2_image | image_url: width: 200 }}{% endif %}"
+                  data-u2-note="{{ block.settings.u2_note | escape }}">
+                  {{ section.settings.cta_label | default: 'Læg i kurv' }}
+                </button>
+                {%- if block.settings.product_url != blank -%}
+                  <a class="yy-quiz__ghost" href="{{ block.settings.product_url }}">Se sættet</a>
+                {%- endif -%}
+              </div>
+            </div>
+          </div>
+        {%- endfor -%}
+
+        <button type="button" class="yy-quiz__restart" data-yy-quiz-restart hidden>{{ section.settings.restart_label | default: 'Vælg et andet klassetrin' }}</button>
+      </div>
+    </div>
+  </section>
+</div>
+
+<script>
+  (function(){
+    var root = document.getElementById('shopify-section-{{ section.id }}');
+    if(!root) return;
+    var quiz = root.querySelector('[data-yy-quiz]');
+    if(!quiz) return;
+    var step = quiz.querySelector('[data-yy-quiz-step]');
+    var restart = quiz.querySelector('[data-yy-quiz-restart]');
+    function show(id){
+      step.setAttribute('hidden','');
+      quiz.querySelectorAll('[data-yy-quiz-result]').forEach(function(r){
+        r.hidden = r.getAttribute('data-yy-quiz-result') !== id;
+      });
+      if(restart) restart.hidden = false;
+    }
+    function reset(){
+      step.removeAttribute('hidden');
+      quiz.querySelectorAll('[data-yy-quiz-result]').forEach(function(r){ r.hidden = true; });
+      if(restart) restart.hidden = true;
+    }
+    quiz.addEventListener('click', function(e){
+      var pick = e.target.closest('[data-yy-quiz-pick]');
+      if(pick){ show(pick.getAttribute('data-yy-quiz-pick')); return; }
+      if(e.target.closest('[data-yy-quiz-restart]')){ reset(); }
+    });
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "LP — Find-dit-sæt quiz",
+  "settings": [
+    {
+      "type": "select",
+      "id": "color_scheme",
+      "label": "Farveskema",
+      "options": [ { "value": "cream", "label": "Cremefarvet" }, { "value": "paper", "label": "Papir" }, { "value": "white", "label": "Hvid" }, { "value": "green", "label": "Grøn" } ],
+      "default": "green"
+    },
+    { "type": "text", "id": "anchor_id", "label": "Anker-id", "default": "quiz" },
+    { "type": "text", "id": "eyebrow", "label": "Eyebrow", "default": "Find dit sæt på 30 sekunder" },
+    { "type": "text", "id": "heading", "label": "Overskrift", "default": "Hvilket sæt passer til dit barn?" },
+    { "type": "textarea", "id": "intro", "label": "Introtekst", "default": "Vælg klassetrin, så anbefaler vi det rigtige skole-sæt." },
+    { "type": "text", "id": "question", "label": "Spørgsmål", "default": "Hvilket klassetrin går dit barn i?" },
+    { "type": "text", "id": "cta_label", "label": "Knap — læg i kurv", "default": "Læg i kurv" },
+    { "type": "text", "id": "restart_label", "label": "Knap — start forfra", "default": "Vælg et andet klassetrin" }
+  ],
+  "blocks": [
+    {
+      "type": "option",
+      "name": "Svar / anbefaling",
+      "settings": [
+        { "type": "text", "id": "option_label", "label": "Svar-knap", "default": "0.-3. klasse" },
+        { "type": "text", "id": "option_sub", "label": "Under-tekst på knap", "default": "Indskoling" },
+        { "type": "image_picker", "id": "image", "label": "Billede (anbefaling)" },
+        { "type": "text", "id": "result_title", "label": "Anbefalet sæt (titel)", "default": "Indskoling" },
+        { "type": "textarea", "id": "result_text", "label": "Anbefaling — tekst", "default": "Den lette madkasse til de yngste, med nemt silikonelåg små hænder selv kan åbne." },
+        { "type": "text", "id": "price_text", "label": "Pris", "default": "499 kr" },
+        { "type": "text", "id": "compare_text", "label": "Førpris (overstreget)", "default": "817 kr" },
+        { "type": "text", "id": "variant_id", "label": "Variant-ID (til Læg i kurv)" },
+        { "type": "url", "id": "product_url", "label": "Link til produktside" },
+        { "type": "header", "content": "Upsell 1 (ekstra boks −10%)" },
+        { "type": "text", "id": "u1_variant", "label": "Variant-ID" },
+        { "type": "text", "id": "u1_title", "label": "Titel" },
+        { "type": "text", "id": "u1_price", "label": "Pris (rabatteret)" },
+        { "type": "text", "id": "u1_compare", "label": "Førpris (overstreget)" },
+        { "type": "image_picker", "id": "u1_image", "label": "Billede" },
+        { "type": "text", "id": "u1_note", "label": "Note" },
+        { "type": "header", "content": "Upsell 2 (låg og sugerør)" },
+        { "type": "text", "id": "u2_variant", "label": "Variant-ID" },
+        { "type": "text", "id": "u2_title", "label": "Titel" },
+        { "type": "text", "id": "u2_price", "label": "Pris" },
+        { "type": "image_picker", "id": "u2_image", "label": "Billede" },
+        { "type": "text", "id": "u2_note", "label": "Note" }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "LP — Find-dit-sæt quiz",
+      "blocks": [ { "type": "option" }, { "type": "option" }, { "type": "option" }, { "type": "option" } ]
+    }
+  ]
+}
+{% endschema %}

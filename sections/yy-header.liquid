@@ -1,0 +1,1008 @@
+{% comment %}
+  Yummii Yummii — Header Section
+  File: sections/yy-header.liquid
+  Version: 3.0.0 DK — transparent-over-hero (forside) + centreret nav, mega-menu
+{% endcomment %}
+
+{%- liquid
+  assign menu = linklists[section.settings.menu]
+  assign logo = section.settings.logo
+  assign logo_text = section.settings.logo_text | default: shop.name
+  assign logo_width = section.settings.logo_width
+  assign logo_mob = section.settings.logo_mobile | default: logo
+  assign logo_mob_w = section.settings.logo_mobile_width | default: 100
+  assign show_account = section.settings.show_account
+  assign show_wishlist = section.settings.show_wishlist
+  assign first_link_highlight = section.settings.first_link_highlight
+
+  assign is_transparent = false
+  if template == 'index'
+    assign is_transparent = true
+  endif
+-%}
+
+{{ 'yy-header.css' | asset_url | stylesheet_tag }}
+
+<style>
+  .yy-header {
+    --yy-green:   {{ section.settings.color_accent | default: '#3d7a4f' }};
+    --yy-ink:     {{ section.settings.color_text | default: '#1a1812' }};
+    --yy-cream:   {{ section.settings.color_bg | default: '#f5efe1' }};
+    --yy-taupe:   {{ section.settings.color_nav_bg | default: '#ece5d4' }};
+    --yy-sale:    {{ section.settings.color_sale_pill | default: '#9c6b58' }};
+    --yy-muted:   {{ section.settings.color_muted | default: '#6b6657' }};
+  }
+</style>
+
+{%- liquid
+  assign ann_items = 0
+  if section.settings.announcement_1 != blank
+    assign ann_items = ann_items | plus: 1
+  endif
+  if section.settings.announcement_2 != blank
+    assign ann_items = ann_items | plus: 1
+  endif
+  if section.settings.announcement_3 != blank
+    assign ann_items = ann_items | plus: 1
+  endif
+  if section.settings.announcement_4 != blank
+    assign ann_items = ann_items | plus: 1
+  endif
+  if section.settings.announcement_5 != blank
+    assign ann_items = ann_items | plus: 1
+  endif
+  assign ann_speed = ann_items | times: 5 | plus: 10
+-%}
+
+<header
+  class="yy-header{% if is_transparent %} yy-header--transparent{% elsif section.settings.sticky_header %} yy-header--sticky{% endif %}"
+  id="yy-header"
+  role="banner"
+>
+
+{%- if section.settings.show_announcement and ann_items > 0 -%}
+{%- assign ann_keys = 'announcement_1,announcement_2,announcement_3,announcement_4,announcement_5' | split: ',' -%}
+<div class="yy-announce" style="--ann-bg:{{ section.settings.announcement_bg }};--ann-color:{{ section.settings.announcement_color }};--ann-speed:{{ ann_speed }}s;" aria-label="Meddelelser">
+  <div class="yy-announce__track">
+    {%- comment -%}Pass 1 = synlige items, pass 2 = duplikeret for seamless mobil-loop{%- endcomment -%}
+    {%- for pass in (1..2) -%}
+      {%- for key in ann_keys -%}
+        {%- assign txt = section.settings[key] -%}
+        {%- if txt != blank -%}
+          {%- assign icon_key = key | append: '_icon' -%}
+          {%- assign icon = section.settings[icon_key] -%}
+          {%- assign url_key = key | append: '_url' -%}
+          {%- assign url = section.settings[url_key] -%}
+          <span class="yy-announce__item"{% if pass == 2 %} aria-hidden="true"{% endif %}>
+            {%- if pass == 1 and url != blank -%}<a href="{{ url }}" class="yy-announce__link">{%- endif -%}
+            {%- case icon -%}
+              {%- when 'trustpilot' -%}<span class="yy-trustpilot__stars yy-announce__tp" aria-hidden="true"><span class="yy-trustpilot__star"></span><span class="yy-trustpilot__star"></span><span class="yy-trustpilot__star"></span><span class="yy-trustpilot__star"></span><span class="yy-trustpilot__star"></span></span>
+              {%- when 'truck' -%}<svg class="yy-announce__icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1 4h13v11H1z"/><path d="M14 7h4l3 3v5h-7z"/><circle cx="5.5" cy="18" r="1.6"/><circle cx="17.5" cy="18" r="1.6"/></svg>
+              {%- when 'return' -%}<svg class="yy-announce__icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="1 4 1 10 7 10"/><path d="M3.5 15a9 9 0 1 0 .5-4.5"/></svg>
+              {%- when 'star' -%}<svg class="yy-announce__icon" width="15" height="15" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2l3 6.5 7 .9-5.2 4.9 1.4 7-6.2-3.5-6.2 3.5 1.4-7L2 9.4l7-.9z"/></svg>
+              {%- when 'check' -%}<svg class="yy-announce__icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6L9 17l-5-5"/></svg>
+              {%- when 'leaf' -%}<svg class="yy-announce__icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 21c8 0 14-6 14-14V4h-3C8 4 5 10 5 18v3z"/><path d="M5 21c3-6 6-9 12-12"/></svg>
+              {%- when 'lock' -%}<svg class="yy-announce__icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>
+              {%- when 'shield' -%}<svg class="yy-announce__icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l7 3v5c0 4.5-3 8-7 10-4-2-7-5.5-7-10V6l7-3z"/><path d="M9 12l2 2 4-4"/></svg>
+            {%- endcase -%}
+            <span class="yy-announce__text">{{ txt }}</span>
+            {%- if pass == 1 and url != blank -%}</a>{%- endif -%}
+          </span>
+        {%- endif -%}
+      {%- endfor -%}
+    {%- endfor -%}
+  </div>
+</div>
+{%- endif -%}
+
+  {%- comment -%} ============ MAIN BAR: logo · nav · search · actions ============ {%- endcomment -%}
+  <div class="yy-mainbar">
+    {%- assign logo_fetch_w = logo_width | times: 2 -%}
+    {%- assign logo_mob_fetch_w = logo_mob_w | times: 2 -%}
+    {%- assign logo_hires_w = logo_width | times: 3 -%}
+    {%- assign logo_mob_hires_w = logo_mob_w | times: 3 -%}
+    <div class="yy-mainbar__left">
+      <button class="yy-burger" id="yy-burger" aria-label="Åbn menu" aria-expanded="false" aria-controls="yy-drawer">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/>
+        </svg>
+      </button>
+      <a href="{{ routes.root_url }}" class="yy-logo" aria-label="{{ logo_text }} — hjem">
+        {%- if logo != blank -%}
+          <span class="yy-logo__img yy-logo__img--desktop">
+            <img class="yy-logo__mark" src="{{ logo | image_url: width: logo_hires_w }}" width="{{ logo_width }}" alt="{{ logo_text }}" loading="eager" style="width: {{ logo_width }}px; height: auto; display: block;">
+          </span>
+          <span class="yy-logo__img yy-logo__img--mobile">
+            <img class="yy-logo__mark" src="{{ logo_mob | image_url: width: logo_mob_hires_w }}" width="{{ logo_mob_w }}" alt="{{ logo_text }}" loading="eager" style="width: {{ logo_mob_w }}px; height: auto; display: block;">
+          </span>
+        {%- else -%}
+          {{ logo_text }}
+        {%- endif -%}
+      </a>
+    </div>
+
+    {%- comment -%} Nav + mega-menu (centreret) {%- endcomment -%}
+    <nav class="yy-navbar" aria-label="Primær navigation">
+      <ul class="yy-nav" role="list">
+        {%- for link in menu.links -%}
+          {%- liquid
+            assign mega_block = nil
+            for block in section.blocks
+              if block.type == 'mega_menu' and block.settings.nav_title == link.title
+                assign mega_block = block
+              endif
+            endfor
+            assign has_children = false
+            if link.links.size > 0 or mega_block != nil
+              assign has_children = true
+            endif
+            assign is_first = false
+            if forloop.first and first_link_highlight
+              assign is_first = true
+            endif
+          -%}
+          <li class="yy-nav__item{% if has_children %} yy-has-mega{% endif %}" role="none">
+            {%- if has_children -%}
+              <button
+                class="yy-nav__link{% if is_first %} yy-nav__link--sale{% endif %}"
+                aria-expanded="false"
+                aria-haspopup="true"
+                type="button"
+              >
+                {{ link.title }}
+                <svg class="yy-nav__chevron" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <polyline points="6 9 12 15 18 9"/>
+                </svg>
+              </button>
+            {%- else -%}
+              <a
+                href="{{ link.url }}"
+                class="yy-nav__link{% if is_first %} yy-nav__link--sale{% endif %}"
+                {% if link.current %}aria-current="page"{% endif %}
+              >{{ link.title }}</a>
+            {%- endif -%}
+
+            {%- if has_children -%}
+              <div class="yy-mega" role="region" aria-label="{{ link.title }}">
+                <div class="yy-mega__inner">
+
+                  {%- comment -%} Intro column {%- endcomment -%}
+                  <div class="yy-mega__intro">
+                    {%- if mega_block != nil -%}
+                      <span class="yy-mega__eyebrow">Oversigt</span>
+                      {%- if mega_block.settings.intro_title != blank -%}
+                        <h3 class="yy-mega__title">{{ mega_block.settings.intro_title }}</h3>
+                      {%- else -%}
+                        <h3 class="yy-mega__title">{{ link.title }}</h3>
+                      {%- endif -%}
+                      {%- if mega_block.settings.intro_text != blank -%}
+                        <p class="yy-mega__text">{{ mega_block.settings.intro_text }}</p>
+                      {%- endif -%}
+                    {%- else -%}
+                      <span class="yy-mega__eyebrow">Oversigt</span>
+                      <h3 class="yy-mega__title">{{ link.title }}</h3>
+                    {%- endif -%}
+
+                    {%- if link.links.size > 0 -%}
+                      <ul class="yy-mega__links" role="list">
+                        {%- for sub_link in link.links -%}
+                          <li><a href="{{ sub_link.url }}">{{ sub_link.title }}</a></li>
+                        {%- endfor -%}
+                      </ul>
+                    {%- endif -%}
+                  </div>
+
+                  {%- comment -%} Products column {%- endcomment -%}
+                  {%- if mega_block != nil -%}
+                    {%- liquid
+                      assign has_products = false
+                      if mega_block.settings.product_1 != blank or mega_block.settings.product_2 != blank or mega_block.settings.product_3 != blank or mega_block.settings.product_4 != blank
+                        assign has_products = true
+                      endif
+                    -%}
+                    {%- if has_products -%}
+                      <div class="yy-mega__products">
+                        <div class="yy-mega__products-head">
+                          <span class="yy-mega__col-title">Populære produkter</span>
+                          {%- if mega_block.settings.cta_url != blank -%}
+                            <a class="yy-mega__see-all" href="{{ mega_block.settings.cta_url }}">
+                              {{ mega_block.settings.cta_label | default: 'Se alle' }}
+                              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                <line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/>
+                              </svg>
+                            </a>
+                          {%- endif -%}
+                        </div>
+                        <div class="yy-mega__grid">
+                          {%- if mega_block.settings.product_1 != blank -%}
+                            {%- assign prod = mega_block.settings.product_1 -%}
+                            <a class="yy-card" href="{{ prod.url }}">
+                              <span class="yy-card__media">
+                                {%- if prod.featured_image != blank -%}
+                                  {{ prod.featured_image | image_url: width: 300 | image_tag: loading: 'lazy', alt: prod.title, width: 300 }}
+                                {%- endif -%}
+                                {%- if prod.metafields.custom.badge != blank -%}
+                                  <span class="yy-card__badge">{{ prod.metafields.custom.badge }}</span>
+                                {%- endif -%}
+                              </span>
+                              <span class="yy-card__name">{{ prod.title }}</span>
+                              <span class="yy-card__price">fra {{ prod.price_min | money }}{%- if prod.compare_at_price_min > prod.price_min -%} <span class="yy-card__save">Spar {{ prod.compare_at_price_min | minus: prod.price_min | times: 100 | divided_by: prod.compare_at_price_min }}%</span>{%- endif -%}</span>
+                            </a>
+                          {%- endif -%}
+                          {%- if mega_block.settings.product_2 != blank -%}
+                            {%- assign prod = mega_block.settings.product_2 -%}
+                            <a class="yy-card" href="{{ prod.url }}">
+                              <span class="yy-card__media">
+                                {%- if prod.featured_image != blank -%}
+                                  {{ prod.featured_image | image_url: width: 300 | image_tag: loading: 'lazy', alt: prod.title, width: 300 }}
+                                {%- endif -%}
+                                {%- if prod.metafields.custom.badge != blank -%}
+                                  <span class="yy-card__badge">{{ prod.metafields.custom.badge }}</span>
+                                {%- endif -%}
+                              </span>
+                              <span class="yy-card__name">{{ prod.title }}</span>
+                              <span class="yy-card__price">fra {{ prod.price_min | money }}{%- if prod.compare_at_price_min > prod.price_min -%} <span class="yy-card__save">Spar {{ prod.compare_at_price_min | minus: prod.price_min | times: 100 | divided_by: prod.compare_at_price_min }}%</span>{%- endif -%}</span>
+                            </a>
+                          {%- endif -%}
+                          {%- if mega_block.settings.product_3 != blank -%}
+                            {%- assign prod = mega_block.settings.product_3 -%}
+                            <a class="yy-card" href="{{ prod.url }}">
+                              <span class="yy-card__media">
+                                {%- if prod.featured_image != blank -%}
+                                  {{ prod.featured_image | image_url: width: 300 | image_tag: loading: 'lazy', alt: prod.title, width: 300 }}
+                                {%- endif -%}
+                                {%- if prod.metafields.custom.badge != blank -%}
+                                  <span class="yy-card__badge">{{ prod.metafields.custom.badge }}</span>
+                                {%- endif -%}
+                              </span>
+                              <span class="yy-card__name">{{ prod.title }}</span>
+                              <span class="yy-card__price">fra {{ prod.price_min | money }}{%- if prod.compare_at_price_min > prod.price_min -%} <span class="yy-card__save">Spar {{ prod.compare_at_price_min | minus: prod.price_min | times: 100 | divided_by: prod.compare_at_price_min }}%</span>{%- endif -%}</span>
+                            </a>
+                          {%- endif -%}
+                          {%- if mega_block.settings.product_4 != blank -%}
+                            {%- assign prod = mega_block.settings.product_4 -%}
+                            <a class="yy-card" href="{{ prod.url }}">
+                              <span class="yy-card__media">
+                                {%- if prod.featured_image != blank -%}
+                                  {{ prod.featured_image | image_url: width: 300 | image_tag: loading: 'lazy', alt: prod.title, width: 300 }}
+                                {%- endif -%}
+                                {%- if prod.metafields.custom.badge != blank -%}
+                                  <span class="yy-card__badge">{{ prod.metafields.custom.badge }}</span>
+                                {%- endif -%}
+                              </span>
+                              <span class="yy-card__name">{{ prod.title }}</span>
+                              <span class="yy-card__price">fra {{ prod.price_min | money }}{%- if prod.compare_at_price_min > prod.price_min -%} <span class="yy-card__save">Spar {{ prod.compare_at_price_min | minus: prod.price_min | times: 100 | divided_by: prod.compare_at_price_min }}%</span>{%- endif -%}</span>
+                            </a>
+                          {%- endif -%}
+                        </div>
+                      </div>
+                    {%- endif -%}
+                  {%- endif -%}
+
+                </div>
+              </div>
+            {%- endif -%}
+          </li>
+        {%- endfor -%}
+      </ul>
+    </nav>
+
+    <div class="yy-mainbar__right">
+    <form action="{{ routes.search_url }}" method="get" class="yy-search" role="search">
+      <input
+        type="search"
+        name="q"
+        class="yy-search__input"
+        placeholder="{{ section.settings.search_placeholder }}"
+        aria-label="{{ section.settings.search_placeholder }}"
+        autocomplete="off"
+      >
+      <button type="submit" class="yy-search__btn" aria-label="Søg">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+        </svg>
+      </button>
+    </form>
+
+    <div class="yy-actions">
+      {%- if show_account -%}
+        <a href="{{ routes.account_url }}" class="yy-actions__btn desk" aria-label="Konto">
+          <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/>
+          </svg>
+        </a>
+      {%- endif -%}
+      {%- if show_wishlist -%}
+        <a href="/pages/wishlist" class="yy-actions__btn desk" aria-label="Ønskeliste">
+          <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+          </svg>
+        </a>
+      {%- endif -%}
+      <button type="button" class="yy-actions__btn yy-actions__search-toggle" id="yy-search-toggle" aria-label="Søg" aria-expanded="false">
+        <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+        </svg>
+      </button>
+      <a href="{{ routes.cart_url }}" class="yy-actions__btn yy-actions__cart" aria-label="Kurv — {{ cart.item_count }} varer">
+        <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/>
+        </svg>
+        <span class="yy-actions__badge" data-count="{{ cart.item_count }}" aria-hidden="true">{{ cart.item_count }}</span>
+      </a>
+    </div>
+    </div>
+  </div>
+
+  <div class="yy-mobile-search" id="yy-mobile-search" aria-hidden="true">
+    <form action="{{ routes.search_url }}" method="get" role="search">
+      <input
+        type="search"
+        name="q"
+        class="yy-mobile-search__input"
+        placeholder="{{ section.settings.search_placeholder }}"
+        aria-label="{{ section.settings.search_placeholder }}"
+        autocomplete="off"
+      >
+      <button type="submit" class="yy-mobile-search__btn" aria-label="Søg">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+        </svg>
+      </button>
+    </form>
+  </div>
+
+  {%- comment -%} ============ MOBILE SCRIM + DRAWER ============ {%- endcomment -%}
+  <div class="yy-scrim" id="yy-scrim" aria-hidden="true"></div>
+
+  <aside class="yy-drawer" id="yy-drawer" role="dialog" aria-modal="true" aria-label="Navigation">
+    <div class="yy-drawer__head">
+      <a href="{{ routes.root_url }}" class="yy-logo" aria-label="{{ logo_text }} — hjem" style="font-size:18px;">
+        {%- if logo_mob != blank -%}
+          <img src="{{ logo_mob | image_url: width: logo_mob_hires_w }}" width="{{ logo_mob_w }}" alt="{{ logo_text }}" loading="lazy" style="width: {{ logo_mob_w }}px; height: auto; display: block;">
+        {%- else -%}
+          {{ logo_text }}
+        {%- endif -%}
+      </a>
+      <button class="yy-drawer__close" id="yy-drawer-close" aria-label="Luk menu">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+        </svg>
+      </button>
+    </div>
+
+    <ul class="yy-nav" role="list">
+      {%- for link in menu.links -%}
+        {%- liquid
+          assign drawer_mega_block = nil
+          for block in section.blocks
+            if block.type == 'mega_menu' and block.settings.nav_title == link.title
+              assign drawer_mega_block = block
+            endif
+          endfor
+          assign drawer_has_children = false
+          if link.links.size > 0 or drawer_mega_block != nil
+            assign drawer_has_children = true
+          endif
+          assign drawer_is_first = false
+          if forloop.first and first_link_highlight
+            assign drawer_is_first = true
+          endif
+        -%}
+        <li class="yy-nav__item{% if drawer_has_children %} yy-has-mega{% endif %}">
+          {%- if drawer_has_children -%}
+            <button
+              class="yy-nav__link{% if drawer_is_first %} yy-nav__link--sale{% endif %}"
+              aria-expanded="false"
+              type="button"
+            >
+              {{ link.title }}
+              <svg class="yy-nav__chevron" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <polyline points="6 9 12 15 18 9"/>
+              </svg>
+            </button>
+          {%- else -%}
+            <a
+              href="{{ link.url }}"
+              class="yy-nav__link{% if drawer_is_first %} yy-nav__link--sale{% endif %}"
+              {% if link.current %}aria-current="page"{% endif %}
+            >{{ link.title }}</a>
+          {%- endif -%}
+
+          {%- if drawer_has_children -%}
+            <div class="yy-mega">
+              <div class="yy-mega__inner">
+                {%- comment -%} Intro hidden on mobile via CSS (.yy-drawer .yy-mega__intro { display: none }) {%- endcomment -%}
+                <div class="yy-mega__intro">
+                  {%- if drawer_mega_block != nil and drawer_mega_block.settings.intro_title != blank -%}
+                    <h3 class="yy-mega__title">{{ drawer_mega_block.settings.intro_title }}</h3>
+                  {%- else -%}
+                    <h3 class="yy-mega__title">{{ link.title }}</h3>
+                  {%- endif -%}
+                </div>
+
+                {%- if link.links.size > 0 -%}
+                  <ul class="yy-mega__links" role="list">
+                    {%- for sub_link in link.links -%}
+                      <li><a href="{{ sub_link.url }}">{{ sub_link.title }}</a></li>
+                    {%- endfor -%}
+                  </ul>
+                {%- endif -%}
+
+                {%- if drawer_mega_block != nil -%}
+                  {%- liquid
+                    assign has_drawer_products = false
+                    if drawer_mega_block.settings.product_1 != blank or drawer_mega_block.settings.product_2 != blank or drawer_mega_block.settings.product_3 != blank or drawer_mega_block.settings.product_4 != blank
+                      assign has_drawer_products = true
+                    endif
+                  -%}
+                  {%- if has_drawer_products -%}
+                    <div class="yy-mega__products">
+                      <div class="yy-mega__products-head">
+                        <span class="yy-mega__col-title">Populære produkter</span>
+                      </div>
+                      <div class="yy-mega__grid">
+                        {%- if drawer_mega_block.settings.product_1 != blank -%}
+                          {%- assign dprod = drawer_mega_block.settings.product_1 -%}
+                          <a class="yy-card" href="{{ dprod.url }}">
+                            <span class="yy-card__media">
+                              {%- if dprod.featured_image != blank -%}
+                                {{ dprod.featured_image | image_url: width: 200 | image_tag: loading: 'lazy', alt: dprod.title, width: 200 }}
+                              {%- endif -%}
+                            </span>
+                            <span class="yy-card__name">{{ dprod.title }}</span>
+                            <span class="yy-card__price">fra {{ dprod.price_min | money }}{%- if dprod.compare_at_price_min > dprod.price_min -%} <span class="yy-card__save">Spar {{ dprod.compare_at_price_min | minus: dprod.price_min | times: 100 | divided_by: dprod.compare_at_price_min }}%</span>{%- endif -%}</span>
+                          </a>
+                        {%- endif -%}
+                        {%- if drawer_mega_block.settings.product_2 != blank -%}
+                          {%- assign dprod = drawer_mega_block.settings.product_2 -%}
+                          <a class="yy-card" href="{{ dprod.url }}">
+                            <span class="yy-card__media">
+                              {%- if dprod.featured_image != blank -%}
+                                {{ dprod.featured_image | image_url: width: 200 | image_tag: loading: 'lazy', alt: dprod.title, width: 200 }}
+                              {%- endif -%}
+                            </span>
+                            <span class="yy-card__name">{{ dprod.title }}</span>
+                            <span class="yy-card__price">fra {{ dprod.price_min | money }}{%- if dprod.compare_at_price_min > dprod.price_min -%} <span class="yy-card__save">Spar {{ dprod.compare_at_price_min | minus: dprod.price_min | times: 100 | divided_by: dprod.compare_at_price_min }}%</span>{%- endif -%}</span>
+                          </a>
+                        {%- endif -%}
+                        {%- if drawer_mega_block.settings.product_3 != blank -%}
+                          {%- assign dprod = drawer_mega_block.settings.product_3 -%}
+                          <a class="yy-card" href="{{ dprod.url }}">
+                            <span class="yy-card__media">
+                              {%- if dprod.featured_image != blank -%}
+                                {{ dprod.featured_image | image_url: width: 200 | image_tag: loading: 'lazy', alt: dprod.title, width: 200 }}
+                              {%- endif -%}
+                            </span>
+                            <span class="yy-card__name">{{ dprod.title }}</span>
+                            <span class="yy-card__price">fra {{ dprod.price_min | money }}{%- if dprod.compare_at_price_min > dprod.price_min -%} <span class="yy-card__save">Spar {{ dprod.compare_at_price_min | minus: dprod.price_min | times: 100 | divided_by: dprod.compare_at_price_min }}%</span>{%- endif -%}</span>
+                          </a>
+                        {%- endif -%}
+                        {%- if drawer_mega_block.settings.product_4 != blank -%}
+                          {%- assign dprod = drawer_mega_block.settings.product_4 -%}
+                          <a class="yy-card" href="{{ dprod.url }}">
+                            <span class="yy-card__media">
+                              {%- if dprod.featured_image != blank -%}
+                                {{ dprod.featured_image | image_url: width: 200 | image_tag: loading: 'lazy', alt: dprod.title, width: 200 }}
+                              {%- endif -%}
+                            </span>
+                            <span class="yy-card__name">{{ dprod.title }}</span>
+                            <span class="yy-card__price">fra {{ dprod.price_min | money }}{%- if dprod.compare_at_price_min > dprod.price_min -%} <span class="yy-card__save">Spar {{ dprod.compare_at_price_min | minus: dprod.price_min | times: 100 | divided_by: dprod.compare_at_price_min }}%</span>{%- endif -%}</span>
+                          </a>
+                        {%- endif -%}
+                      </div>
+                    </div>
+                  {%- endif -%}
+                {%- endif -%}
+              </div>
+            </div>
+          {%- endif -%}
+        </li>
+      {%- endfor -%}
+    </ul>
+
+    {%- if section.settings.drawer_promo_title != blank -%}
+    <a class="yy-drawer__promo" href="{{ section.settings.drawer_promo_url | default: '#' }}">
+      {%- if section.settings.drawer_promo_image != blank -%}
+        <span class="yy-drawer__promo-img">
+          <img
+            src="{{ section.settings.drawer_promo_image | image_url: width: 600 }}"
+            srcset="{{ section.settings.drawer_promo_image | image_url: width: 600 }} 1x, {{ section.settings.drawer_promo_image | image_url: width: 1200 }} 2x"
+            alt="{{ section.settings.drawer_promo_title }}"
+            loading="lazy"
+            style="width: 100%; height: 100%; object-fit: cover; display: block;"
+          >
+        </span>
+      {%- endif -%}
+      <span class="yy-drawer__promo-body">
+        {%- if section.settings.drawer_promo_label != blank -%}
+          <span class="yy-drawer__promo-label">{{ section.settings.drawer_promo_label }}</span>
+        {%- endif -%}
+        <span class="yy-drawer__promo-title">{{ section.settings.drawer_promo_title }}</span>
+        {%- if section.settings.drawer_promo_subtitle != blank -%}
+          <span class="yy-drawer__promo-subtitle">{{ section.settings.drawer_promo_subtitle }}</span>
+        {%- endif -%}
+        <span class="yy-drawer__promo-cta">
+          {{ section.settings.drawer_promo_cta | default: 'Se mere' }}
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+        </span>
+      </span>
+    </a>
+    {%- endif -%}
+
+    <div class="yy-drawer__footer">
+      {%- if section.settings.drawer_show_trustpilot -%}
+      <div class="yy-drawer__tp">
+        {%- assign tp_url = section.settings.drawer_trustpilot_url -%}
+        {%- assign tp_text = section.settings.drawer_trustpilot_text | default: '4,5 stjerner på Trustpilot' -%}
+        {%- if tp_url != blank -%}<a href="{{ tp_url }}" class="yy-drawer__tp-link">{%- else -%}<div class="yy-drawer__tp-link">{%- endif -%}
+          <span class="yy-drawer__tp-stars" aria-hidden="true">
+            <span class="yy-drawer__tp-star"></span>
+            <span class="yy-drawer__tp-star"></span>
+            <span class="yy-drawer__tp-star"></span>
+            <span class="yy-drawer__tp-star"></span>
+            <span class="yy-drawer__tp-star"></span>
+          </span>
+          <span class="yy-drawer__tp-text">{{ tp_text }}</span>
+        {%- if tp_url != blank -%}</a>{%- else -%}</div>{%- endif -%}
+      </div>
+      {%- endif -%}
+      {%- if show_account -%}
+        <a href="{{ routes.account_url }}" class="yy-drawer__footer-link" aria-label="Konto">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/>
+          </svg>
+          Konto
+        </a>
+      {%- endif -%}
+      {%- if show_wishlist -%}
+        <a href="/pages/wishlist" class="yy-drawer__footer-link" aria-label="Ønskeliste">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+          </svg>
+          Ønskeliste
+        </a>
+      {%- endif -%}
+    </div>
+  </aside>
+
+</header>
+
+<script src="{{ 'yy-header.js' | asset_url }}" defer></script>
+
+{% style %}
+  .yy-card__save{ display:inline-block; margin-left:6px; background:var(--yy-green,#3d7a4f); color:#fff; font-size:11px; font-weight:700; line-height:1; padding:3px 7px; border-radius:999px; vertical-align:middle; white-space:nowrap; }
+{% endstyle %}
+
+{% schema %}
+{
+  "name": "Header",
+  "class": "yy-header",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Generelt"
+    },
+    {
+      "type": "paragraph",
+      "content": "Forsiden får automatisk en gennemsigtig header ovenpå hero-billedet, som bliver massiv ved scroll. Alle andre sider har altid massiv baggrund."
+    },
+    {
+      "type": "checkbox",
+      "id": "sticky_header",
+      "label": "Sticky header (følger med ved scroll) — kun for ikke-forside",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "Navigation"
+    },
+    {
+      "type": "link_list",
+      "id": "menu",
+      "default": "main-menu",
+      "label": "Navigationsmenu"
+    },
+    {
+      "type": "header",
+      "content": "Logo"
+    },
+    {
+      "type": "image_picker",
+      "id": "logo",
+      "label": "Logo-billede"
+    },
+    {
+      "type": "text",
+      "id": "logo_text",
+      "label": "Logo-tekst (bruges hvis intet billede)",
+      "default": "Yummii Yummii"
+    },
+    {
+      "type": "range",
+      "id": "logo_width",
+      "min": 80,
+      "max": 300,
+      "step": 10,
+      "unit": "px",
+      "label": "Logo-bredde (desktop)",
+      "default": 160
+    },
+    {
+      "type": "image_picker",
+      "id": "logo_mobile",
+      "label": "Mobil-logo (valgfrit — falder tilbage til desktop-logo)"
+    },
+    {
+      "type": "range",
+      "id": "logo_mobile_width",
+      "min": 60,
+      "max": 200,
+      "step": 5,
+      "unit": "px",
+      "label": "Mobil-logo bredde",
+      "default": 100
+    },
+    {
+      "type": "header",
+      "content": "Søgning"
+    },
+    {
+      "type": "text",
+      "id": "search_placeholder",
+      "label": "Søgefelt placeholder",
+      "default": "Søg produkter..."
+    },
+    {
+      "type": "header",
+      "content": "Ikoner"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_account",
+      "label": "Vis konto-ikon",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_wishlist",
+      "label": "Vis ønskeliste-ikon",
+      "default": false
+    },
+    {
+      "type": "header",
+      "content": "Navigation — styling"
+    },
+    {
+      "type": "checkbox",
+      "id": "first_link_highlight",
+      "label": "Fremhæv første nav-link som pill",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "Farver"
+    },
+    {
+      "type": "color",
+      "id": "color_accent",
+      "label": "Accentfarve (grøn)",
+      "default": "#3d7a4f"
+    },
+    {
+      "type": "color",
+      "id": "color_text",
+      "label": "Tekstfarve",
+      "default": "#1a1812"
+    },
+    {
+      "type": "color",
+      "id": "color_bg",
+      "label": "Baggrund (main bar, solid tilstand)",
+      "default": "#f5efe1"
+    },
+    {
+      "type": "color",
+      "id": "color_nav_bg",
+      "label": "Nav/mega-menu baggrund",
+      "default": "#ece5d4"
+    },
+    {
+      "type": "color",
+      "id": "color_sale_pill",
+      "label": "Fremhævet nav-link farve",
+      "default": "#9c6b58"
+    },
+    {
+      "type": "color",
+      "id": "color_muted",
+      "label": "Dæmpet tekst",
+      "default": "#6b6657"
+    },
+    {
+      "type": "header",
+      "content": "Announcement-bar"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_announcement",
+      "label": "Vis announcement-bar",
+      "default": true
+    },
+    {
+      "type": "color",
+      "id": "announcement_bg",
+      "label": "Baggrund",
+      "default": "#1a1812"
+    },
+    {
+      "type": "color",
+      "id": "announcement_color",
+      "label": "Tekstfarve",
+      "default": "#f5efe1"
+    },
+    {
+      "type": "text",
+      "id": "announcement_1",
+      "label": "Besked 1",
+      "default": "Fri fragt ved køb over 600 kr."
+    },
+    {
+      "type": "select",
+      "id": "announcement_1_icon",
+      "label": "Besked 1 — ikon",
+      "options": [
+        { "value": "none", "label": "Ingen" },
+        { "value": "trustpilot", "label": "5 stjerner (Trustpilot)" },
+        { "value": "truck", "label": "Lastbil (fragt)" },
+        { "value": "return", "label": "Retur (pil)" },
+        { "value": "star", "label": "Én stjerne" },
+        { "value": "check", "label": "Flueben" },
+        { "value": "leaf", "label": "Blad" },
+        { "value": "lock", "label": "Lås" },
+        { "value": "shield", "label": "Skjold" }
+      ],
+      "default": "truck"
+    },
+    {
+      "type": "url",
+      "id": "announcement_1_url",
+      "label": "Besked 1 — link (valgfrit)"
+    },
+    {
+      "type": "text",
+      "id": "announcement_2",
+      "label": "Besked 2",
+      "default": "30 dages returret"
+    },
+    {
+      "type": "select",
+      "id": "announcement_2_icon",
+      "label": "Besked 2 — ikon",
+      "options": [
+        { "value": "none", "label": "Ingen" },
+        { "value": "trustpilot", "label": "5 stjerner (Trustpilot)" },
+        { "value": "truck", "label": "Lastbil (fragt)" },
+        { "value": "return", "label": "Retur (pil)" },
+        { "value": "star", "label": "Én stjerne" },
+        { "value": "check", "label": "Flueben" },
+        { "value": "leaf", "label": "Blad" },
+        { "value": "lock", "label": "Lås" },
+        { "value": "shield", "label": "Skjold" }
+      ],
+      "default": "return"
+    },
+    {
+      "type": "url",
+      "id": "announcement_2_url",
+      "label": "Besked 2 — link (valgfrit)"
+    },
+    {
+      "type": "text",
+      "id": "announcement_3",
+      "label": "Besked 3",
+      "default": "4,5 stjerner på Trustpilot"
+    },
+    {
+      "type": "select",
+      "id": "announcement_3_icon",
+      "label": "Besked 3 — ikon",
+      "options": [
+        { "value": "none", "label": "Ingen" },
+        { "value": "trustpilot", "label": "5 stjerner (Trustpilot)" },
+        { "value": "truck", "label": "Lastbil (fragt)" },
+        { "value": "return", "label": "Retur (pil)" },
+        { "value": "star", "label": "Én stjerne" },
+        { "value": "check", "label": "Flueben" },
+        { "value": "leaf", "label": "Blad" },
+        { "value": "lock", "label": "Lås" },
+        { "value": "shield", "label": "Skjold" }
+      ],
+      "default": "trustpilot"
+    },
+    {
+      "type": "url",
+      "id": "announcement_3_url",
+      "label": "Besked 3 — link (valgfrit)"
+    },
+    {
+      "type": "text",
+      "id": "announcement_4",
+      "label": "Besked 4 (valgfrit)"
+    },
+    {
+      "type": "select",
+      "id": "announcement_4_icon",
+      "label": "Besked 4 — ikon",
+      "options": [
+        { "value": "none", "label": "Ingen" },
+        { "value": "trustpilot", "label": "5 stjerner (Trustpilot)" },
+        { "value": "truck", "label": "Lastbil (fragt)" },
+        { "value": "return", "label": "Retur (pil)" },
+        { "value": "star", "label": "Én stjerne" },
+        { "value": "check", "label": "Flueben" },
+        { "value": "leaf", "label": "Blad" },
+        { "value": "lock", "label": "Lås" },
+        { "value": "shield", "label": "Skjold" }
+      ],
+      "default": "none"
+    },
+    {
+      "type": "url",
+      "id": "announcement_4_url",
+      "label": "Besked 4 — link (valgfrit)"
+    },
+    {
+      "type": "text",
+      "id": "announcement_5",
+      "label": "Besked 5 (valgfrit)"
+    },
+    {
+      "type": "select",
+      "id": "announcement_5_icon",
+      "label": "Besked 5 — ikon",
+      "options": [
+        { "value": "none", "label": "Ingen" },
+        { "value": "trustpilot", "label": "5 stjerner (Trustpilot)" },
+        { "value": "truck", "label": "Lastbil (fragt)" },
+        { "value": "return", "label": "Retur (pil)" },
+        { "value": "star", "label": "Én stjerne" },
+        { "value": "check", "label": "Flueben" },
+        { "value": "leaf", "label": "Blad" },
+        { "value": "lock", "label": "Lås" },
+        { "value": "shield", "label": "Skjold" }
+      ],
+      "default": "none"
+    },
+    {
+      "type": "url",
+      "id": "announcement_5_url",
+      "label": "Besked 5 — link (valgfrit)"
+    },
+    {
+      "type": "header",
+      "content": "Mobilmenu — Trustpilot"
+    },
+    {
+      "type": "checkbox",
+      "id": "drawer_show_trustpilot",
+      "label": "Vis Trustpilot i mobilmenu",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "drawer_trustpilot_text",
+      "label": "Trustpilot-tekst",
+      "default": "4,5 stjerner på Trustpilot"
+    },
+    {
+      "type": "url",
+      "id": "drawer_trustpilot_url",
+      "label": "Trustpilot-link (valgfrit)"
+    },
+    {
+      "type": "header",
+      "content": "Mobilmenu — fremhævet kampagne"
+    },
+    {
+      "type": "image_picker",
+      "id": "drawer_promo_image",
+      "label": "Kampagnebillede"
+    },
+    {
+      "type": "text",
+      "id": "drawer_promo_label",
+      "label": "Mærkat (fx 'Nyhed' eller 'Tilbud')"
+    },
+    {
+      "type": "text",
+      "id": "drawer_promo_title",
+      "label": "Overskrift"
+    },
+    {
+      "type": "text",
+      "id": "drawer_promo_subtitle",
+      "label": "Undertekst (valgfrit)"
+    },
+    {
+      "type": "text",
+      "id": "drawer_promo_cta",
+      "label": "Knaptekst",
+      "default": "Se mere"
+    },
+    {
+      "type": "url",
+      "id": "drawer_promo_url",
+      "label": "Link"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "mega_menu",
+      "name": "Mega-menu panel",
+      "settings": [
+        {
+          "type": "text",
+          "id": "nav_title",
+          "label": "Nav-link titel — skal matche præcist",
+          "info": "Skriv nøjagtigt det samme som nav-linket i menuen, fx 'Produkter'"
+        },
+        {
+          "type": "header",
+          "content": "Venstre kolonne"
+        },
+        {
+          "type": "text",
+          "id": "intro_title",
+          "label": "Intro-overskrift"
+        },
+        {
+          "type": "textarea",
+          "id": "intro_text",
+          "label": "Intro-tekst"
+        },
+        {
+          "type": "text",
+          "id": "cta_label",
+          "label": "CTA-tekst",
+          "default": "Se alle"
+        },
+        {
+          "type": "url",
+          "id": "cta_url",
+          "label": "CTA-link"
+        },
+        {
+          "type": "header",
+          "content": "Populære produkter"
+        },
+        {
+          "type": "product",
+          "id": "product_1",
+          "label": "Produkt 1"
+        },
+        {
+          "type": "product",
+          "id": "product_2",
+          "label": "Produkt 2"
+        },
+        {
+          "type": "product",
+          "id": "product_3",
+          "label": "Produkt 3"
+        },
+        {
+          "type": "product",
+          "id": "product_4",
+          "label": "Produkt 4"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Header"
+    }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,263 @@
+{{ 'yy-variations.css' | asset_url | stylesheet_tag }}
+
+{%- liquid
+  assign current_product_id = product.id
+
+  comment
+    Prioriter metafelt — falder tilbage på blocks
+  endcomment
+  assign meta_products = product.metafields.custom.variant_products.value
+  assign use_meta = false
+  if meta_products != blank and meta_products.size > 0
+    assign use_meta = true
+  endif
+
+  assign has_content = use_meta
+  unless has_content
+    for block in section.blocks
+      if block.settings.product != blank
+        assign has_content = true
+      endif
+    endfor
+  endunless
+-%}
+
+{%- if has_content -%}
+<div class="yy-variations" id="yy-variants-{{ section.id }}">
+  <div class="yy-vargroup">
+
+    <div class="yy-vargroup__head">
+      <span class="yy-vargroup__label">{{ section.settings.heading | default: 'Størrelse' }}</span>
+      <span class="yy-vargroup__value" id="yy-var-value-{{ section.id }}">
+        {%- if use_meta -%}
+          {%- for mp in meta_products -%}
+            {%- if mp.id == current_product_id -%}{{ mp.title }}{%- endif -%}
+          {%- endfor -%}
+        {%- else -%}
+          {%- for block in section.blocks -%}
+            {%- assign bp = block.settings.product -%}
+            {%- if bp != blank and bp.id == current_product_id -%}
+              {{ block.settings.custom_label | default: bp.title }}
+            {%- endif -%}
+          {%- endfor -%}
+        {%- endif -%}
+      </span>
+      {%- if section.settings.hint_text != blank -%}
+        <a href="{{ section.settings.hint_url | default: '#' }}" class="yy-vargroup__hint">
+          {{ section.settings.hint_text }}
+        </a>
+      {%- endif -%}
+    </div>
+
+    <div class="yy-vargroup__grid{% if section.settings.grid_columns != 'auto' %} yy-vargroup__grid--{{ section.settings.grid_columns }}{% endif %}">
+
+      {%- if use_meta -%}
+        {%- comment -%} Metafelt-baserede varianter {%- endcomment -%}
+        {%- for mp in meta_products -%}
+          {%- assign mv = mp.selected_or_first_available_variant -%}
+          {%- assign is_current = false -%}
+          {%- if mp.id == current_product_id -%}{%- assign is_current = true -%}{%- endif -%}
+          {%- assign is_soldout = false -%}
+          {%- unless mv.available -%}{%- assign is_soldout = true -%}{%- endunless -%}
+
+          <label class="yy-varbox{% if is_soldout %} yy-varbox--disabled{% endif %}">
+            <input
+              type="radio"
+              name="yy-var-{{ section.id }}"
+              class="yy-varbox__input"
+              value="{{ mp.url }}"
+              data-label="{{ mp.title | escape }}"
+              {% if is_current %}checked{% endif %}
+              {% if is_soldout %}disabled{% endif %}
+            >
+            <span class="yy-varbox__media">
+              {%- if mp.featured_image -%}
+                <img src="{{ mp.featured_image | image_url: width: 400 }}" alt="{{ mp.title | escape }}" width="200" height="200" loading="lazy">
+              {%- endif -%}
+              {%- if is_soldout -%}<span class="yy-varbox__badge yy-varbox__badge--soldout">Udsolgt</span>{%- endif -%}
+            </span>
+            <span class="yy-varbox__body">
+              <span class="yy-varbox__name">{{ mp.title | escape }}</span>
+              {%- if section.settings.show_price -%}
+                <span class="yy-varbox__meta">
+                  {%- if mv.compare_at_price > mv.price -%}<span class="yy-varbox__meta--strike">{{ mv.compare_at_price | money_without_trailing_zeros }}</span>{%- endif -%}
+                  {{ mv.price | money_without_trailing_zeros }}
+                </span>
+              {%- endif -%}
+            </span>
+            <span class="yy-varbox__check" aria-hidden="true"></span>
+          </label>
+        {%- endfor -%}
+
+      {%- else -%}
+        {%- comment -%} Fallback: manuelle blocks {%- endcomment -%}
+        {%- for block in section.blocks -%}
+          {%- assign bp = block.settings.product -%}
+          {%- if bp != blank -%}
+            {%- assign bv = bp.selected_or_first_available_variant -%}
+            {%- assign is_current = false -%}
+            {%- if bp.id == current_product_id -%}{%- assign is_current = true -%}{%- endif -%}
+            {%- assign is_soldout = false -%}
+            {%- unless bv.available -%}{%- assign is_soldout = true -%}{%- endunless -%}
+            {%- assign display_label = block.settings.custom_label | default: bp.title -%}
+
+            <label class="yy-varbox{% if is_soldout %} yy-varbox--disabled{% endif %}" {{ block.shopify_attributes }}>
+              <input
+                type="radio"
+                name="yy-var-{{ section.id }}"
+                class="yy-varbox__input"
+                value="{{ bp.url }}"
+                data-label="{{ display_label | escape }}"
+                {% if is_current %}checked{% endif %}
+                {% if is_soldout %}disabled{% endif %}
+              >
+              <span class="yy-varbox__media">
+                {%- if bp.featured_image -%}
+                  <img src="{{ bp.featured_image | image_url: width: 400 }}" alt="{{ display_label | escape }}" width="200" height="200" loading="lazy">
+                {%- endif -%}
+                {%- if block.settings.badge_text != blank -%}
+                  <span class="yy-varbox__badge{% if block.settings.badge_type == 'sale' %} yy-varbox__badge--sale{% elsif block.settings.badge_type == 'soldout' %} yy-varbox__badge--soldout{% endif %}">{{ block.settings.badge_text }}</span>
+                {%- elsif is_soldout -%}
+                  <span class="yy-varbox__badge yy-varbox__badge--soldout">Udsolgt</span>
+                {%- endif -%}
+              </span>
+              <span class="yy-varbox__body">
+                <span class="yy-varbox__name">{{ display_label | escape }}</span>
+                {%- if section.settings.show_price -%}
+                  <span class="yy-varbox__meta">
+                    {%- if bv.compare_at_price > bv.price -%}<span class="yy-varbox__meta--strike">{{ bv.compare_at_price | money_without_trailing_zeros }}</span>{%- endif -%}
+                    {{ bv.price | money_without_trailing_zeros }}
+                  </span>
+                {%- endif -%}
+              </span>
+              <span class="yy-varbox__check" aria-hidden="true"></span>
+            </label>
+          {%- endif -%}
+        {%- endfor -%}
+      {%- endif -%}
+
+    </div>
+  </div>
+</div>
+
+<script>
+(function () {
+  var section = document.getElementById('yy-variants-{{ section.id }}');
+  if (!section) return;
+  var valueEl = document.getElementById('yy-var-value-{{ section.id }}');
+
+  section.addEventListener('change', function (e) {
+    var input = e.target;
+    if (!input.classList.contains('yy-varbox__input') || input.disabled) return;
+
+    // Sync label
+    if (valueEl) valueEl.textContent = input.dataset.label || '';
+
+    // Navigate to product
+    var url = input.value;
+    if (url) {
+      // Small delay so :checked CSS state shows briefly
+      setTimeout(function () { window.location.href = url; }, 120);
+    }
+  });
+})();
+</script>
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "Produktvarianter",
+  "tag": "div",
+  "class": "yy-product-variants-section",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Udseende"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Overskrift (fx Størrelse, Farve)",
+      "default": "Størrelse"
+    },
+    {
+      "type": "select",
+      "id": "grid_columns",
+      "label": "Kolonner",
+      "options": [
+        { "value": "auto", "label": "Auto (tilpasser sig)" },
+        { "value": "2", "label": "2" },
+        { "value": "3", "label": "3" },
+        { "value": "4", "label": "4" }
+      ],
+      "default": "auto"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_price",
+      "label": "Vis pris på hver variant",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "Størrelsesvejledning (valgfrit)"
+    },
+    {
+      "type": "text",
+      "id": "hint_text",
+      "label": "Link-tekst",
+      "placeholder": "Hvilken passer til mig?"
+    },
+    {
+      "type": "url",
+      "id": "hint_url",
+      "label": "Link URL"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "variant_product",
+      "name": "Variant-produkt",
+      "settings": [
+        {
+          "type": "product",
+          "id": "product",
+          "label": "Produkt"
+        },
+        {
+          "type": "text",
+          "id": "custom_label",
+          "label": "Tilpasset navn (valgfrit)",
+          "placeholder": "Fx '3 rum · Signatur'"
+        },
+        {
+          "type": "header",
+          "content": "Badge (valgfrit)"
+        },
+        {
+          "type": "text",
+          "id": "badge_text",
+          "label": "Badge-tekst",
+          "placeholder": "Fx Populær, Nyhed, −15%"
+        },
+        {
+          "type": "select",
+          "id": "badge_type",
+          "label": "Badge-farve",
+          "options": [
+            { "value": "default", "label": "Grøn (standard)" },
+            { "value": "sale", "label": "Terracotta (rabat)" },
+            { "value": "soldout", "label": "Grå (udsolgt)" }
+          ],
+          "default": "default"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Produktvarianter"
+    }
+  ]
+}
+{% endschema %}

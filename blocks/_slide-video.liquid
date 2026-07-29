@@ -1,0 +1,113 @@
+<div
+  id="element-{{ block.id }}"
+  class="card card--fullwidth {% if section.settings.is_fullwidth %} card--no-radius {% endif %} card--no-borders js-slider-item"
+  {{ block.shopify_attributes }}
+>
+  {%- if block.settings.link != blank -%}
+    <a
+      href="{{ block.settings.link }}"
+      class="card__whole-link card__whole-link--alternate"
+      aria-hidden="true"
+      {% if block.settings.open_in_new_window %}
+        target="_blank"
+      {% endif %}
+    ></a>
+  {%- endif -%}
+
+  {%- if section.settings.is_auto_height -%}
+    <style>
+      #element-{{ block.id }} .card__image {
+        aspect-ratio: 16 / 9;
+      }
+    </style>
+  {%- endif -%}
+
+  <div class="{% if section.settings.is_fullwidth %} container--large gutter-top--xlarge gutter-bottom--xlarge container--large-with-mobile-padding {% endif %} align-content align-content--{{ section.settings.alignment }} card__text-parent">
+    <div
+      class="card__text {% unless section.settings.is_fullwidth %} gutter--xlarge {% endunless %} spacing--custom remove-empty-space"
+      style="--horizontal-alignment:{{ section.settings.alignment | split: ' ' | first | replace: 'horizontal-', '' }}; --spacing:{{ section.settings.spacing }}px; mix-blend-mode: {{ section.settings.text_blend_mode }}"
+    >
+      {% content_for 'blocks' %}
+    </div>
+  </div>
+
+  <div
+    class="
+      card__image card__image--background js-slider-animation
+      {% if block.settings.color_background_main != "rgba(0,0,0,0)" %}
+        card__image--with-overlay card__image--with-overlay--fullopacity
+        lazy-image--revealed
+        {% if section.settings.is_auto_height %} card__image--with-overlay-z-index {% endif %}
+      {% endif %}
+    "
+  >
+    {%- unless block.settings.video == blank -%}
+      {%- render 'video-component',
+        video_file: block.settings.video,
+        image: block.settings.image,
+        loop_video: true,
+        autoplay_video: true,
+        is_background: true,
+        crop_video: true,
+        id: block.id
+      -%}
+
+    {%- else -%}
+      {{ 'image' | placeholder_svg_tag }}
+    {%- endunless -%}
+
+    <script>
+      window.KrownAssetLoader.loadScript('{{ "component-video.js" | asset_url }}');
+    </script>
+
+    {%- render 'custom-colors',
+      id: block.id,
+      text: block.settings.color_text_main,
+      background: block.settings.color_background_main,
+      border_radius: section.settings.border_radius
+    -%}
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "t:sections.local-extra-words.sections.video.name",
+  "tag": null,
+  "blocks": [{ "type": "@app" }, { "type": "@theme" }],
+  "settings": [
+    {
+      "type": "video",
+      "id": "video",
+      "label": "t:video-extra-functions.video_upload.label"
+    },
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "t:sections.gallery.blocks.image.settings.image.label",
+      "info": "t:video-extra-functions.poster.info"
+    },
+    {
+      "type": "header",
+      "content": "t:sections.bundle-extra-words.settings_schema.card.settings.style.header"
+    },
+    {
+      "type": "color",
+      "id": "color_background_main",
+      "alpha": true,
+      "label": "t:sections.local-extra-words.settings_schema.colors.settings.overlay",
+      "default": "rgba(0,0,0,0)"
+    },
+    {
+      "type": "color",
+      "id": "color_text_main",
+      "label": "t:sections.split-extra-words.settings_schema.colors.settings.text",
+      "default": "rgba(0,0,0,0)"
+    }
+  ],
+  "presets": [
+    {
+      "name": "t:sections.local-extra-words.sections.video.name"
+    }
+  ]
+}
+{% endschema %}

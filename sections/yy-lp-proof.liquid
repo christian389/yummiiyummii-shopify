@@ -1,0 +1,57 @@
+{% comment %}Yummii Yummii — Landingsside: Social proof-strip{% endcomment %}
+
+{{ 'yy-landing.css' | asset_url | stylesheet_tag }}
+
+<div class="yy-lp-root yy-lp-scheme--{{ section.settings.color_scheme }}">
+  <div class="yy-lp-proof">
+    <div class="yy-lp-wrap">
+      {%- for block in section.blocks -%}
+        <div class="yy-lp-item {% if block.settings.big %}yy-lp-item--big{% endif %}" {{ block.shopify_attributes }}>
+          {%- if block.settings.show_stars -%}<span class="yy-lp-stars" aria-hidden="true">★★★★★</span>{%- endif -%}
+          <span>{{ block.settings.text }}</span>
+        </div>
+      {%- endfor -%}
+    </div>
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "LP — Proof-strip",
+  "settings": [
+    {
+      "type": "select",
+      "id": "color_scheme",
+      "label": "Farveskema",
+      "options": [
+        { "value": "cream", "label": "Cremefarvet" },
+        { "value": "white", "label": "Hvid" },
+        { "value": "paper", "label": "Papir" }
+      ],
+      "default": "cream"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "item",
+      "name": "Punkt",
+      "settings": [
+        { "type": "text", "id": "text", "label": "Tekst", "default": "+45.000 kunder" },
+        { "type": "checkbox", "id": "show_stars", "label": "Vis stjerner foran", "default": false },
+        { "type": "checkbox", "id": "big", "label": "Vis større", "default": false }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "LP — Proof-strip",
+      "blocks": [
+        { "type": "item", "settings": { "text": "+45.000 kunder", "big": true } },
+        { "type": "item", "settings": { "text": "4,5 på Trustpilot", "show_stars": true } },
+        { "type": "item", "settings": { "text": "Rustfrit stål 18/8" } },
+        { "type": "item", "settings": { "text": "Uden BPA og ftalater" } }
+      ]
+    }
+  ]
+}
+{% endschema %}

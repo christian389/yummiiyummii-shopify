@@ -1,0 +1,794 @@
+{%- liquid
+  assign s_id = section.id
+-%}
+
+{% style %}
+  .section-{{ s_id }} {
+    padding-top: {{ section.settings.padding_top }}px;
+    padding-bottom: {{ section.settings.padding_bottom }}px;
+    background-color: {{ section.settings.background_color }};
+    overflow: hidden;
+  }
+
+  .bestseller-wrapper-{{ s_id }} {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 20px;
+  }
+
+  /* --- TOP ROW: HEADER & TABS --- */
+  .bestseller-top-row-{{ s_id }} {
+    display: flex;
+    align-items: center;
+    gap: clamp(20px, 4vw, 50px); /* Increased gap for better filling */
+    margin-bottom: 30px;
+  }
+
+  .bestseller-header-{{ s_id }} {
+    flex: 0 0 auto;
+    min-width: 180px;
+  }
+
+  .bestseller-title-{{ s_id }} {
+    font-size: clamp(24px, 3vw, 32px);
+    color: {{ section.settings.text_color }};
+    margin: 0 0 10px 0;
+    font-weight: {{ section.settings.heading_weight }} !important; 
+    line-height: 1.2;
+    font-family: inherit;
+  }
+
+  .bestseller-view-all-{{ s_id }} {
+    font-size: 14px;
+    color: {{ section.settings.text_color }};
+    text-decoration: underline;
+    opacity: 0.8;
+    transition: opacity 0.3s;
+  }
+
+  .bestseller-view-all-{{ s_id }}:hover { opacity: 1; }
+
+  /* TABS CONTAINER */
+  .bestseller-tabs-{{ s_id }} {
+    flex: 1;
+    display: flex;
+    gap: clamp(15px, 2.5vw, 40px); /* Spreads tabs out dynamically */
+    overflow-x: auto;
+    padding: 10px 5px;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    -webkit-overflow-scrolling: touch;
+  }
+  .bestseller-tabs-{{ s_id }}::-webkit-scrollbar { display: none; }
+
+  .bestseller-tab-{{ s_id }} {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    flex: 0 0 auto;
+    width: clamp(70px, 8vw, 120px);
+  }
+
+  .bestseller-tab-img-wrap-{{ s_id }} {
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    border-radius: 50%;
+    padding: 4px;
+    border: 1px dashed transparent;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .bestseller-tab-{{ s_id }}:hover .bestseller-tab-img-wrap-{{ s_id }},
+  .bestseller-tab-{{ s_id }}.is-active .bestseller-tab-img-wrap-{{ s_id }} {
+    border-color: #9e9a97;
+  }
+
+  .bestseller-tab-img-wrap-{{ s_id }} img,
+  .bestseller-tab-img-wrap-{{ s_id }} svg {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    object-fit: cover;
+    background-color: #f4f4f4;
+  }
+
+  .bestseller-tab-title-{{ s_id }} {
+    font-size: 13px;
+    color: #9e9a97;
+    text-align: center;
+    white-space: nowrap;
+    transition: all 0.3s ease;
+    font-family: inherit;
+  }
+
+  .bestseller-tab-{{ s_id }}:hover .bestseller-tab-title-{{ s_id }},
+  .bestseller-tab-{{ s_id }}.is-active .bestseller-tab-title-{{ s_id }} {
+    color: #5c5957;
+    font-weight: 600;
+  }
+  
+  .bestseller-tab-title-{{ s_id }}.is-sale { color: #e35a5a !important; }
+
+  /* --- BOTTOM ROW: PRODUCT PANELS --- */
+  .bestseller-panel-{{ s_id }} {
+    display: none;
+    animation: fadeIn 0.4s ease;
+  }
+  .bestseller-panel-{{ s_id }}.is-active {
+    display: block;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .bestseller-products-slider-{{ s_id }} {
+    display: flex;
+    gap: 20px;
+    overflow-x: auto;
+    padding-bottom: 20px;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    scroll-snap-type: x mandatory;
+    scroll-behavior: smooth;
+  }
+  .bestseller-products-slider-{{ s_id }}::-webkit-scrollbar { display: none; }
+
+  /* PRODUCT CARD */
+  .bs-card-{{ s_id }} {
+    flex: 0 0 calc((100% - ((var(--items-desktop) - 1) * 20px)) / var(--items-desktop));
+    min-width: 260px;
+    scroll-snap-align: start;
+    display: flex;
+    flex-direction: column;
+    color: inherit;
+    text-decoration: none;
+  }
+
+  /* INNER IMAGE CAROUSEL (Figma matching) */
+  .bs-card-img-container-{{ s_id }} {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 4 / 5;
+    background-color: #f4f4f4;
+    border-radius: 4px;
+    margin-bottom: 15px;
+    overflow: hidden;
+  }
+
+  .bs-card-img-track-{{ s_id }} {
+    display: flex;
+    width: 100%;
+    height: 100%;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+  .bs-card-img-track-{{ s_id }}::-webkit-scrollbar { display: none; }
+
+  .bs-card-img-slide-{{ s_id }} {
+    flex: 0 0 100%;
+    width: 100%;
+    height: 100%;
+    scroll-snap-align: start;
+    display: block;
+    position: relative;
+  }
+
+  .bs-card-img-slide-{{ s_id }} img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.5s ease;
+  }
+  
+  /* Only zoom if hovering on desktop to prevent mobile tap bugs */
+  @media (hover: hover) {
+    .bs-card-img-container-{{ s_id }}:hover .bs-card-img-slide-{{ s_id }} img {
+      transform: scale(1.04);
+    }
+  }
+
+  /* IMAGE DOTS (Inside Card) */
+  .bs-card-img-dots-{{ s_id }} {
+    position: absolute;
+    bottom: 12px;
+    right: 12px;
+    display: flex;
+    gap: 5px;
+    z-index: 2;
+    pointer-events: none;
+  }
+
+  .bs-card-img-dot-{{ s_id }} {
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background-color: rgba(255, 255, 255, 0.4);
+    border: 1px solid rgba(255, 255, 255, 0.8);
+    transition: all 0.2s ease;
+  }
+
+  .bs-card-img-dot-{{ s_id }}.is-active {
+    background-color: #ffffff;
+    border-color: #ffffff;
+    transform: scale(1.2);
+  }
+
+  /* QUICK ADD BUTTON */
+  .bs-card-add-{{ s_id }} {
+    position: absolute;
+    bottom: 12px;
+    left: 12px;
+    background: #ffffff;
+    border: none;
+    border-radius: 20px;
+    padding: 6px 14px;
+    font-size: 12px;
+    font-weight: 600;
+    color: #333;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    cursor: pointer;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+    transition: transform 0.2s, background 0.2s;
+    z-index: 3;
+  }
+  .bs-card-add-{{ s_id }}:hover {
+    transform: translateY(-2px);
+    background: #f9f9f9;
+  }
+  .bs-card-add-{{ s_id }} svg {
+    width: 14px;
+    height: 14px;
+  }
+  .bs-card-add-{{ s_id }}.is-loading {
+    color: transparent;
+    pointer-events: none;
+  }
+  .bs-card-add-{{ s_id }}.is-loading::after {
+    content: '';
+    position: absolute;
+    width: 12px;
+    height: 12px;
+    border: 2px solid #ccc;
+    border-top-color: #333;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+  }
+  @keyframes spin { 100% { transform: translate(-50%, -50%) rotate(360deg); } }
+
+  /* CARD INFO */
+  .bs-card-rating-{{ s_id }} {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 11px;
+    color: #666;
+    margin-bottom: 6px;
+  }
+  .bs-card-rating-{{ s_id }} svg {
+    width: 10px;
+    height: 10px;
+    color: #f5c518;
+    fill: #f5c518;
+  }
+
+  .bs-card-title-{{ s_id }} {
+    font-size: 14px;
+    font-weight: 600;
+    color: #333;
+    margin: 0 0 6px 0;
+    line-height: 1.3;
+  }
+
+  .bs-card-price-{{ s_id }} {
+    font-size: 14px;
+    color: #666;
+    font-weight: 400;
+  }
+
+  /* MAIN SLIDER PAGINATION DOTS (Desktop Bottom) */
+  .bestseller-main-dots-{{ s_id }} {
+    display: flex;
+    gap: 8px;
+    margin-top: 10px;
+    padding-left: 5px;
+  }
+
+  .bestseller-main-dot-{{ s_id }} {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background-color: #d8d8d8;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+
+  .bestseller-main-dot-{{ s_id }}.is-active {
+    background-color: #5c5957; /* Dark active dot */
+  }
+
+  /* MOBILE LAYOUT */
+  @media screen and (max-width: 900px) {
+    .bestseller-top-row-{{ s_id }} {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 15px;
+    }
+    .bestseller-header-{{ s_id }} {
+      flex: 0 0 auto;
+      width: 100%;
+    }
+    .bestseller-tabs-{{ s_id }} {
+      width: 100%;
+      padding-bottom: 5px;
+      gap: 20px;
+    }
+    .bestseller-tab-{{ s_id }} {
+      width: 80px;
+    }
+    .bs-card-{{ s_id }} {
+      flex: 0 0 calc((100% - ((var(--items-mobile) - 1) * 15px)) / var(--items-mobile));
+      min-width: 180px;
+    }
+    .bestseller-products-slider-{{ s_id }} {
+      gap: 15px;
+    }
+    .bestseller-main-dots-{{ s_id }} {
+      display: none; /* Hide main bottom dots on mobile per request */
+    }
+  }
+{% endstyle %}
+
+<section class="section-{{ s_id }}" style="--items-desktop: {{ section.settings.items_desktop }}; --items-mobile: {{ section.settings.items_mobile }};">
+  <div class="bestseller-wrapper-{{ s_id }}">
+    
+    <!-- TOP ROW: TITLE & TABS -->
+    <div class="bestseller-top-row-{{ s_id }}">
+      <div class="bestseller-header-{{ s_id }}">
+        <div class="bestseller-title-{{ s_id }}">{{ section.settings.title | newline_to_br }}</div>
+        {% if section.settings.link_text != blank %}
+          <a href="{{ section.settings.link_url }}" class="bestseller-view-all-{{ s_id }}">
+            {{ section.settings.link_text }}
+          </a>
+        {% endif %}
+      </div>
+      
+      <div class="bestseller-tabs-{{ s_id }}" role="tablist">
+        {% for block in section.blocks %}
+          {%- liquid 
+            assign coll = collections[block.settings.collection]
+            assign tab_title = block.settings.title | default: coll.title | default: 'Collection'
+            assign tab_image = block.settings.image | default: coll.featured_image
+          -%}
+          
+          <button 
+            class="bestseller-tab-{{ s_id }} {% if forloop.first %}is-active{% endif %}" 
+            role="tab" 
+            aria-selected="{% if forloop.first %}true{% else %}false{% endif %}"
+            data-target="panel-{{ s_id }}-{{ forloop.index }}"
+            {{ block.shopify_attributes }}
+          >
+            <div class="bestseller-tab-img-wrap-{{ s_id }}">
+              {% if tab_image != blank %}
+                {{ tab_image | image_url: width: 150 | image_tag: loading: 'lazy', alt: tab_title }}
+              {% else %}
+                {{ 'collection-1' | placeholder_svg_tag: 'placeholder-svg' }}
+              {% endif %}
+            </div>
+            <span class="bestseller-tab-title-{{ s_id }} {% if block.settings.is_sale %}is-sale{% endif %}">
+              {{ tab_title }}
+            </span>
+          </button>
+        {% endfor %}
+      </div>
+    </div>
+
+    <!-- BOTTOM ROW: PRODUCT PANELS -->
+    <div class="bestseller-panels-wrapper-{{ s_id }}">
+      {% for block in section.blocks %}
+        {% assign coll = collections[block.settings.collection] %}
+        
+        <div 
+          id="panel-{{ s_id }}-{{ forloop.index }}" 
+          class="bestseller-panel-{{ s_id }} {% if forloop.first %}is-active{% endif %}"
+          role="tabpanel"
+        >
+          <!-- Main Product Slider -->
+          <div class="bestseller-products-slider-{{ s_id }}">
+            
+            {%- if coll.products.size > 0 -%}
+              {% for product in coll.products limit: section.settings.products_to_show %}
+                <div class="bs-card-{{ s_id }}">
+                  
+                  <!-- Nested Image Carousel Container -->
+                  <div class="bs-card-img-container-{{ s_id }}">
+                    
+                    <div class="bs-card-img-track-{{ s_id }}" onscroll="updateCardDots(this)">
+                      <!-- Limit to 4 images max for performance -->
+                      {% for image in product.images limit: 4 %}
+                        <a href="{{ product.url }}" class="bs-card-img-slide-{{ s_id }}" tabindex="-1">
+                          {{ image | image_url: width: 600 | image_tag: loading: 'lazy', alt: product.title }}
+                        </a>
+                      {% endfor %}
+                      {% if product.images.size == 0 %}
+                         <a href="{{ product.url }}" class="bs-card-img-slide-{{ s_id }}">
+                           {{ 'product-1' | placeholder_svg_tag: 'placeholder-svg' }}
+                         </a>
+                      {% endif %}
+                    </div>
+                    
+                    <!-- Card Dots (Only show if > 1 image) -->
+                    {% if product.images.size > 1 %}
+                      <div class="bs-card-img-dots-{{ s_id }}">
+                        {% for image in product.images limit: 4 %}
+                          <div class="bs-card-img-dot-{{ s_id }} {% if forloop.first %}is-active{% endif %}"></div>
+                        {% endfor %}
+                      </div>
+                    {% endif %}
+                    
+                    <!-- Quick Add Form -->
+                    {% if product.available %}
+                      <form method="post" action="/cart/add" class="bs-quick-add-form" onsubmit="handleQuickAdd(event, this)">
+                        <input type="hidden" name="id" value="{{ product.selected_or_first_available_variant.id }}">
+                        <button type="submit" class="bs-card-add-{{ s_id }}" aria-label="Tilføj til kurv">
+                          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg>
+                          <span>Tilføj</span>
+                        </button>
+                      </form>
+                    {% else %}
+                      <button class="bs-card-add-{{ s_id }}" disabled style="opacity: 0.7; cursor: not-allowed;">Udsolgt</button>
+                    {% endif %}
+                    
+                  </div>
+                  
+                  <!-- Meta / Info -->
+                  <a href="{{ product.url }}" class="bs-card-info-{{ s_id }}" style="text-decoration:none; color:inherit;">
+                    <div class="bs-card-rating-{{ s_id }}">
+                      <!-- Fake Stars to match design -->
+                      <svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                      <svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                      <svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                      <svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                      <svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                      4.7
+                    </div>
+                    <h3 class="bs-card-title-{{ s_id }}">{{ product.title }}</h3>
+                    
+                    <div class="bs-card-price-{{ s_id }}">
+                      {%- if product.compare_at_price > product.price -%}
+                        <span style="color: #000000ff; margin-right: 6px; font-weight:600;">{{ product.price | money }}</span>
+                        <s style="color: #888; font-size: 0.9em;">{{ product.compare_at_price | money }}</s>
+                      {%- else -%}
+                        <span>{{ product.price | money }}</span>
+                      {%- endif -%}
+                    </div>
+                  </a>
+                </div>
+              {% endfor %}
+            {%- else -%}
+              <!-- Blank State for Theme Editor -->
+              {% for i in (1..5) %}
+                 <div class="bs-card-{{ s_id }}">
+                  <div class="bs-card-img-container-{{ s_id }}">
+                     <div class="bs-card-img-track-{{ s_id }}">
+                         <div class="bs-card-img-slide-{{ s_id }}">
+                            {{ 'product-' | append: i | placeholder_svg_tag: 'placeholder-svg' }}
+                         </div>
+                     </div>
+                  </div>
+                  <div class="bs-card-info-{{ s_id }}">
+                    <h3 class="bs-card-title-{{ s_id }}">Example Product</h3>
+                    <div class="bs-card-price-{{ s_id }}">$41.00</div>
+                  </div>
+                </div>
+              {% endfor %}
+            {%- endif -%}
+
+          </div>
+          
+          <!-- Main Slider Pagination Container (Injected via JS) -->
+          <div class="bestseller-main-dots-{{ s_id }}"></div>
+          
+        </div>
+      {% endfor %}
+    </div>
+
+  </div>
+</section>
+
+<script>
+  // --- INNER PRODUCT CARD IMAGE DOTS ---
+  function updateCardDots(track) {
+    const container = track.parentElement;
+    const dotsContainer = container.querySelector('.bs-card-img-dots-{{ s_id }}');
+    if (!dotsContainer) return;
+    
+    const dots = dotsContainer.querySelectorAll('.bs-card-img-dot-{{ s_id }}');
+    const slideWidth = track.clientWidth;
+    const scrollLeft = track.scrollLeft;
+    const activeIndex = Math.round(scrollLeft / slideWidth);
+    
+    dots.forEach((dot, i) => {
+      dot.classList.toggle('is-active', i === activeIndex);
+    });
+  }
+
+  // --- MAIN LOGIC ---
+  document.addEventListener('DOMContentLoaded', function() {
+    const sId = '{{ s_id }}';
+    const section = document.querySelector(`.section-${sId}`);
+    if (!section) return;
+
+    const tabs = section.querySelectorAll(`.bestseller-tab-${sId}`);
+    const panels = section.querySelectorAll(`.bestseller-panel-${sId}`);
+
+    // --- MAIN SLIDER PAGINATION DOTS LOGIC ---
+    function updateMainDots(panel) {
+      if (!panel.classList.contains('is-active')) return;
+      
+      const slider = panel.querySelector(`.bestseller-products-slider-${sId}`);
+      const dotsContainer = panel.querySelector(`.bestseller-main-dots-${sId}`);
+      if (!slider || !dotsContainer) return;
+
+      const calculateDots = () => {
+        const scrollW = slider.scrollWidth;
+        const clientW = slider.clientWidth;
+        // Avoid calculation errors on hidden elements
+        if(clientW === 0) return; 
+        
+        const totalPages = Math.ceil(scrollW / clientW);
+
+        // Render dots if count is different
+        if (dotsContainer.children.length !== totalPages) {
+          dotsContainer.innerHTML = '';
+          for (let i = 0; i < totalPages; i++) {
+            const dot = document.createElement('button');
+            dot.className = `bestseller-main-dot-${sId} ${i === 0 ? 'is-active' : ''}`;
+            dot.setAttribute('aria-label', `Page ${i + 1}`);
+            dot.onclick = () => {
+              slider.scrollTo({ left: i * clientW, behavior: 'smooth' });
+            };
+            dotsContainer.appendChild(dot);
+          }
+        }
+
+        // Update active dot based on scroll position
+        const activeIndex = Math.round(slider.scrollLeft / clientW);
+        Array.from(dotsContainer.children).forEach((dot, i) => {
+          dot.classList.toggle('is-active', i === activeIndex);
+        });
+      };
+
+      // Run on load, on scroll, and on resize
+      calculateDots();
+      slider.addEventListener('scroll', calculateDots, { passive: true });
+      window.addEventListener('resize', calculateDots, { passive: true });
+    }
+
+    // Initialize dots for the initially active panel
+    panels.forEach(p => {
+      if(p.classList.contains('is-active')) updateMainDots(p);
+    });
+
+    // --- TAB SWITCHING LOGIC ---
+    tabs.forEach(tab => {
+      tab.addEventListener('click', () => {
+        // Remove active class from all
+        tabs.forEach(t => {
+          t.classList.remove('is-active');
+          t.setAttribute('aria-selected', 'false');
+        });
+        panels.forEach(p => p.classList.remove('is-active'));
+
+        // Add active class to clicked
+        tab.classList.add('is-active');
+        tab.setAttribute('aria-selected', 'true');
+        
+        const targetId = tab.getAttribute('data-target');
+        const targetPanel = document.getElementById(targetId);
+        if (targetPanel) {
+          targetPanel.classList.add('is-active');
+          
+          // Re-calculate dots for the newly visible panel
+          setTimeout(() => updateMainDots(targetPanel), 50); 
+        }
+      });
+    });
+  });
+
+  // --- AJAX ADD TO CART LOGIC ---
+  function handleQuickAdd(event, form) {
+    event.preventDefault();
+    const btn = form.querySelector('button');
+    const span = btn.querySelector('span');
+    
+    btn.classList.add('is-loading');
+
+    fetch(window.Shopify.routes.root + 'cart/add.js', {
+      method: 'POST',
+      body: new FormData(form)
+    })
+    .then(response => response.json())
+    .then(data => {
+      btn.classList.remove('is-loading');
+      span.innerText = 'Added!';
+      
+      document.dispatchEvent(new CustomEvent('cart:updated', { detail: { cart: data }}));
+      document.dispatchEvent(new CustomEvent('cart:build')); 
+      document.dispatchEvent(new CustomEvent('ajaxProduct:added'));
+      
+      setTimeout(() => span.innerText = 'Add', 2000);
+    })
+    .catch((error) => {
+      console.error('Error:', error);
+      btn.classList.remove('is-loading');
+      span.innerText = 'Error';
+    });
+  }
+</script>
+
+{% schema %}
+{
+  "name": "Tabbed Best Sellers",
+  "settings": [
+    {
+      "type": "textarea",
+      "id": "title",
+      "label": "Heading",
+      "default": "Try our\nbest sellers",
+      "info": "Use enter/return to create a line break"
+    },
+    {
+      "type": "select",
+      "id": "heading_weight",
+      "label": "Heading Font Weight",
+      "options": [
+        { "value": "300", "label": "Light" },
+        { "value": "400", "label": "Normal" },
+        { "value": "500", "label": "Medium" },
+        { "value": "600", "label": "Semi-Bold" },
+        { "value": "700", "label": "Bold" }
+      ],
+      "default": "300"
+    },
+    {
+      "type": "text",
+      "id": "link_text",
+      "label": "Link Text",
+      "default": "View all"
+    },
+    {
+      "type": "url",
+      "id": "link_url",
+      "label": "Link URL"
+    },
+    {
+      "type": "header",
+      "content": "Product Layout"
+    },
+    {
+      "type": "range",
+      "id": "products_to_show",
+      "min": 4,
+      "max": 12,
+      "step": 1,
+      "label": "Max products per tab",
+      "default": 8
+    },
+    {
+      "type": "range",
+      "id": "items_desktop",
+      "min": 2,
+      "max": 5,
+      "step": 0.5,
+      "label": "Products visible on Desktop",
+      "info": "Decimal allows next card to peek out",
+      "default": 4.5
+    },
+    {
+      "type": "range",
+      "id": "items_mobile",
+      "min": 1,
+      "max": 3,
+      "step": 0.5,
+      "label": "Products visible on Mobile",
+      "default": 1.5
+    },
+    {
+      "type": "header",
+      "content": "Styling"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Header Text Color",
+      "default": "#7a7571"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background Color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "Padding Top",
+      "default": 40
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "Padding Bottom",
+      "default": 40
+    }
+  ],
+  "blocks": [
+    {
+      "type": "tab",
+      "name": "Collection Tab",
+      "settings": [
+        {
+          "type": "collection",
+          "id": "collection",
+          "label": "Select Collection"
+        },
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Tab Circle Image",
+          "info": "Leave blank to use Collection image"
+        },
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Tab Circle Title",
+          "info": "Leave blank to use Collection title"
+        },
+        {
+          "type": "checkbox",
+          "id": "is_sale",
+          "label": "Make Text Red (For Sales)",
+          "default": false
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Tabbed Best Sellers",
+      "blocks": [
+        { "type": "tab" },
+        { "type": "tab" },
+        { "type": "tab" }
+      ]
+    }
+  ]
+}
+{% endschema %}

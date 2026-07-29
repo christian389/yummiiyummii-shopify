@@ -1,0 +1,557 @@
+{%- liquid
+  assign s_id = section.id
+-%}
+
+{% style %}
+  .section-{{ s_id }} {
+    padding-top: {{ section.settings.padding_top }}px;
+    padding-bottom: {{ section.settings.padding_bottom }}px;
+    background-color: {{ section.settings.background_color }};
+    overflow: hidden;
+  }
+
+  .tp-wrapper-{{ s_id }} {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 20px;
+  }
+
+  /* --- HEADER --- */
+  .tp-header-{{ s_id }} {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 40px;
+  }
+
+  .tp-heading-col-{{ s_id }} {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .tp-title-{{ s_id }} {
+    font-size: clamp(28px, 3.5vw, 36px);
+    color: {{ section.settings.text_color }};
+    margin: 0;
+    font-weight: 300; 
+    line-height: 1.2;
+    font-family: inherit;
+  }
+
+  .tp-title-{{ s_id }} strong,
+  .tp-title-{{ s_id }} b {
+    font-weight: 600;
+  }
+
+  .tp-subtitle-{{ s_id }} {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 13px;
+    font-weight: 700;
+    color: #1a1a1a;
+  }
+
+  .tp-subtitle-{{ s_id }} svg {
+    width: 16px;
+    height: 16px;
+  }
+  
+  .tp-trustpilot-logo {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-weight: 600;
+  }
+
+  /* BUTTONS */
+  .tp-view-all-{{ s_id }} {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid #c4c4c4;
+    border-radius: 30px;
+    padding: 8px 24px;
+    font-size: 14px;
+    color: {{ section.settings.text_color }};
+    text-decoration: none;
+    transition: all 0.3s ease;
+    background: transparent;
+    font-weight: 500;
+  }
+  .tp-view-all-{{ s_id }}:hover {
+    border-color: {{ section.settings.text_color }};
+    background: {{ section.settings.text_color }};
+    color: #ffffff;
+  }
+
+  .tp-view-all-desktop-{{ s_id }} {
+    display: inline-flex;
+  }
+  .tp-view-all-mobile-{{ s_id }} {
+    display: none;
+    margin-top: 20px;
+  }
+
+  /* --- SLIDER (Desktop) --- */
+  .tp-slider-{{ s_id }} {
+    display: flex;
+    gap: 20px;
+    overflow-x: auto;
+    padding-bottom: 20px;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    scroll-snap-type: x mandatory;
+    scroll-behavior: smooth;
+    align-items: stretch;
+  }
+  .tp-slider-{{ s_id }}::-webkit-scrollbar { display: none; }
+
+  /* --- SLIDE / CARD --- */
+  .tp-slide-{{ s_id }} {
+    flex: 0 0 calc((100% - ((var(--items-desktop) - 1) * 20px)) / var(--items-desktop));
+    min-width: 280px;
+    scroll-snap-align: start;
+    background: #ffffff;
+    border-radius: 4px;
+    padding: 24px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.04);
+    display: flex;
+    flex-direction: column;
+    height: auto;
+  }
+
+  /* Card Layout Elements */
+  .tp-card-avatar-mobile-{{ s_id }} {
+    display: none;
+  }
+  
+  .tp-card-content-{{ s_id }} {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    height: 100%;
+  }
+
+  .tp-stars-{{ s_id }} {
+    display: flex;
+    gap: 3px;
+    margin-bottom: 16px;
+  }
+  .tp-stars-{{ s_id }} svg {
+    width: 14px;
+    height: 14px;
+    fill: #f5c518; 
+  }
+
+  .tp-review-text-{{ s_id }} {
+    font-size: 15px;
+    color: #4a4a4a;
+    line-height: 1.5;
+    margin: 0 0 24px 0;
+    font-weight: 300;
+    flex-grow: 1;
+  }
+
+  .tp-author-row-{{ s_id }} {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .tp-avatar-{{ s_id }} {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    object-fit: cover;
+    background: #f0f0f0;
+    flex-shrink: 0;
+  }
+
+  .tp-avatar-placeholder-{{ s_id }} {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: #f0f0f0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+  .tp-avatar-placeholder-{{ s_id }} svg {
+    width: 20px;
+    height: 20px;
+    fill: #a0a0a0;
+  }
+
+  .tp-author-info-{{ s_id }} {
+    font-size: 12px;
+    color: #666;
+    line-height: 1.4;
+    margin: 0;
+  }
+  .tp-author-info-{{ s_id }} strong {
+    color: #333;
+    font-weight: 600;
+  }
+
+  /* --- PAGINATION DOTS --- */
+  .tp-dots-{{ s_id }} {
+    display: flex;
+    gap: 8px;
+    margin-top: 10px;
+  }
+
+  .tp-dot-{{ s_id }} {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background-color: #d8d8d8;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+
+  .tp-dot-{{ s_id }}.is-active {
+    background-color: #5c5957; 
+  }
+
+  /* --- MOBILE LAYOUT: Vertical Stack --- */
+  @media screen and (max-width: 900px) {
+    .tp-header-{{ s_id }} {
+      flex-direction: column;
+      margin-bottom: 24px;
+    }
+    .tp-view-all-desktop-{{ s_id }} {
+      display: none;
+    }
+    .tp-view-all-mobile-{{ s_id }} {
+      display: inline-flex;
+    }
+
+    /* Convert horizontal slider to vertical stack */
+    .tp-slider-{{ s_id }} {
+      flex-direction: column;
+      overflow-x: visible;
+      scroll-snap-type: none;
+      gap: 0;
+      padding-bottom: 0;
+    }
+
+    .tp-slide-{{ s_id }} {
+      flex: none;
+      min-width: unset;
+      width: 100%;
+      scroll-snap-align: none;
+      border-radius: 0;
+      box-shadow: none;
+      padding: 20px 0;
+      border-bottom: 1px solid #e8e8e8;
+      flex-direction: row;
+      gap: 16px;
+      background: transparent;
+    }
+
+    .tp-slide-{{ s_id }}:last-child {
+      border-bottom: none;
+    }
+    
+    /* Reveal Mobile Avatar, Hide Desktop Avatar */
+    .tp-card-avatar-mobile-{{ s_id }} {
+      display: block;
+      flex-shrink: 0;
+    }
+    .tp-author-row-{{ s_id }} .tp-avatar-{{ s_id }},
+    .tp-author-row-{{ s_id }} .tp-avatar-placeholder-{{ s_id }} {
+      display: none;
+    }
+
+    .tp-stars-{{ s_id }} {
+      margin-bottom: 10px;
+    }
+    .tp-review-text-{{ s_id }} {
+      font-size: 14px;
+      margin-bottom: 12px;
+      flex-grow: 0;
+    }
+
+    /* Hide pagination dots on mobile */
+    .tp-dots-{{ s_id }} {
+      display: none !important;
+    }
+  }
+{% endstyle %}
+
+<section class="section-{{ s_id }}" style="--items-desktop: {{ section.settings.items_desktop }}; --items-mobile: {{ section.settings.items_mobile }};">
+  <div class="tp-wrapper-{{ s_id }}">
+    
+    <!-- HEADER -->
+    <div class="tp-header-{{ s_id }}">
+      <div class="tp-heading-col-{{ s_id }}">
+        <h2 class="tp-title-{{ s_id }}">{{ section.settings.title }}</h2>
+        <div class="tp-subtitle-{{ s_id }}">
+          Excellent {{ section.settings.score }} out of 5 
+          <span class="tp-trustpilot-logo">
+            <svg viewBox="0 0 24 24" fill="#00b67a" style="width:18px;height:18px;"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+            Trustpilot
+          </span>
+        </div>
+      </div>
+
+      {% if section.settings.button_label != blank %}
+        <a href="{{ section.settings.button_link }}" target="_blank" class="tp-view-all-{{ s_id }} tp-view-all-desktop-{{ s_id }}">
+          {{ section.settings.button_label }}
+        </a>
+      {% endif %}
+    </div>
+
+    <!-- SLIDER -->
+    <div class="tp-slider-{{ s_id }}" id="tp-slider-{{ s_id }}">
+      {% for block in section.blocks %}
+        <div class="tp-slide-{{ s_id }}" {{ block.shopify_attributes }}>
+          
+          {%- assign avatar_class = 'tp-avatar-' | append: s_id -%}
+          
+          <!-- Avatar (Mobile placement - hidden on desktop) -->
+          <div class="tp-card-avatar-mobile-{{ s_id }}">
+            {% if block.settings.avatar != blank %}
+              {{ block.settings.avatar | image_url: width: 88 | image_tag: class: avatar_class, loading: 'lazy' }}
+            {% else %}
+              <div class="tp-avatar-placeholder-{{ s_id }}">
+                <svg viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+              </div>
+            {% endif %}
+          </div>
+
+          <!-- Main Content -->
+          <div class="tp-card-content-{{ s_id }}">
+            <div class="tp-stars-{{ s_id }}">
+              {% for i in (1..block.settings.rating) %}
+                <svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+              {% endfor %}
+            </div>
+            
+            <p class="tp-review-text-{{ s_id }}">"{{ block.settings.review_text | newline_to_br }}"</p>
+            
+            <div class="tp-author-row-{{ s_id }}">
+              <!-- Avatar (Desktop placement - hidden on mobile) -->
+              {% if block.settings.avatar != blank %}
+                {{ block.settings.avatar | image_url: width: 88 | image_tag: class: avatar_class, loading: 'lazy' }}
+              {% else %}
+                <div class="tp-avatar-placeholder-{{ s_id }}">
+                  <svg viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+                </div>
+              {% endif %}
+              
+              <p class="tp-author-info-{{ s_id }}">
+                <strong>&mdash; {{ block.settings.author_name }}</strong> - Anmeldelse fra Trustpilot
+              </p>
+            </div>
+          </div>
+
+        </div>
+      {% endfor %}
+    </div>
+
+    <!-- PAGINATION DOTS -->
+    <div class="tp-dots-{{ s_id }}" id="tp-dots-{{ s_id }}"></div>
+
+    <!-- MOBILE BUTTON -->
+    {% if section.settings.button_label != blank %}
+      <a href="{{ section.settings.button_link }}" target="_blank" class="tp-view-all-{{ s_id }} tp-view-all-mobile-{{ s_id }}">
+        {{ section.settings.button_label }}
+      </a>
+    {% endif %}
+
+  </div>
+</section>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const sId = '{{ s_id }}';
+    const slider = document.getElementById(`tp-slider-${sId}`);
+    const dotsContainer = document.getElementById(`tp-dots-${sId}`);
+    
+    if (!slider || !dotsContainer) return;
+
+    const syncDots = () => {
+      const scrollW = slider.scrollWidth;
+      const clientW = slider.clientWidth;
+      if(clientW === 0) return; 
+
+      /* Skip dots logic on mobile (vertical layout) */
+      if (window.innerWidth <= 900) {
+        dotsContainer.style.display = 'none';
+        return;
+      }
+
+      const slides = slider.querySelectorAll(`.tp-slide-${sId}`);
+      if(slides.length === 0) return;
+
+      const slideWidth = slides[0].clientWidth + parseInt(window.getComputedStyle(slider).gap || 20);
+      const activeIndex = Math.round(slider.scrollLeft / slideWidth);
+      
+      const maxScrollLeft = scrollW - clientW;
+      const totalPages = Math.ceil(maxScrollLeft / slideWidth) + 1;
+
+      if (dotsContainer.children.length !== totalPages && totalPages > 1) {
+        dotsContainer.innerHTML = '';
+        for (let i = 0; i < totalPages; i++) {
+          const dot = document.createElement('button');
+          dot.className = `tp-dot-${sId} ${i === 0 ? 'is-active' : ''}`;
+          dot.setAttribute('aria-label', `Page ${i + 1}`);
+          dot.onclick = () => {
+            slider.scrollTo({ left: i * slideWidth, behavior: 'smooth' });
+          };
+          dotsContainer.appendChild(dot);
+        }
+      }
+
+      dotsContainer.style.display = totalPages <= 1 ? 'none' : 'flex';
+
+      Array.from(dotsContainer.children).forEach((dot, i) => {
+        dot.classList.toggle('is-active', i === activeIndex);
+      });
+    };
+
+    syncDots();
+    slider.addEventListener('scroll', syncDots, { passive: true });
+    window.addEventListener('resize', syncDots, { passive: true });
+  });
+</script>
+
+{% schema %}
+{
+  "name": "Trustpilot Reviews",
+  "settings": [
+    {
+      "type": "textarea",
+      "id": "title",
+      "label": "Heading",
+      "default": "Rated <strong>\"excellent\"</strong> on Trustpilot"
+    },
+    {
+      "type": "text",
+      "id": "score",
+      "label": "Rating Score",
+      "default": "4.8"
+    },
+    {
+      "type": "text",
+      "id": "button_label",
+      "label": "Button Label",
+      "default": "View all"
+    },
+    {
+      "type": "url",
+      "id": "button_link",
+      "label": "Button Link"
+    },
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "range",
+      "id": "items_desktop",
+      "min": 2,
+      "max": 10,
+      "step": 0.5,
+      "label": "Cards visible on Desktop",
+      "default": 3.5
+    },
+    {
+      "type": "range",
+      "id": "items_mobile",
+      "min": 1,
+      "max": 10,
+      "step": 0.5,
+      "label": "Cards visible on Mobile",
+      "default": 1.5
+    },
+    {
+      "type": "header",
+      "content": "Styling"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background Color",
+      "default": "#f9f9f9"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text Color",
+      "default": "#333333"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "Padding Top",
+      "default": 60
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "Padding Bottom",
+      "default": 60
+    }
+  ],
+  "blocks": [
+    {
+      "type": "review",
+      "name": "Review Card",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "avatar",
+          "label": "Author Avatar (Optional)"
+        },
+        {
+          "type": "range",
+          "id": "rating",
+          "min": 1,
+          "max": 5,
+          "step": 1,
+          "label": "Star Rating",
+          "default": 5
+        },
+        {
+          "type": "textarea",
+          "id": "review_text",
+          "label": "Review Text",
+          "default": "Fantastisk oplevelse! Hurtig levering og produktet levede helt op til forventningerne. Vil helt sikkert købe her igen."
+        },
+        {
+          "type": "text",
+          "id": "author_name",
+          "label": "Author Name",
+          "default": "Lars"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Trustpilot Reviews",
+      "blocks": [
+        { "type": "review" },
+        { "type": "review" },
+        { "type": "review" },
+        { "type": "review" }
+      ]
+    }
+  ]
+}
+{% endschema %}

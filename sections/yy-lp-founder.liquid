@@ -1,0 +1,52 @@
+{% comment %}Yummii Yummii — Landingsside: Bento-boksens historie{% endcomment %}
+
+{{ 'yy-landing.css' | asset_url | stylesheet_tag }}
+
+<div class="yy-lp-root yy-lp-scheme--{{ section.settings.color_scheme }}">
+  <section class="yy-lp-section yy-lp-founder">
+    <div class="yy-lp-wrap">
+      <div class="yy-lp-ph {% if section.settings.image == blank %}yy-lp-ph--empty{% endif %}">
+        {%- if section.settings.image != blank -%}
+          {%- assign founder_h = 900 | times: section.settings.image.height | divided_by: section.settings.image.width -%}
+          <img src="{{ section.settings.image | image_url: width: 900 }}" alt="{{ section.settings.image.alt | escape }}" width="900" height="{{ founder_h }}" loading="lazy">
+        {%- else -%}
+          Billede relateret til bento-boksens historie
+        {%- endif -%}
+      </div>
+      <div>
+        {%- if section.settings.eyebrow != blank -%}<p class="yy-lp-eyebrow">{{ section.settings.eyebrow }}</p>{%- endif -%}
+        {%- if section.settings.heading != blank -%}<h2>{{ section.settings.heading }}</h2>{%- endif -%}
+        {%- if section.settings.body != blank -%}{{ section.settings.body }}{%- endif -%}
+        {%- if section.settings.signature != blank -%}<p class="yy-lp-sign">{{ section.settings.signature }}</p>{%- endif -%}
+      </div>
+    </div>
+  </section>
+</div>
+
+{% schema %}
+{
+  "name": "LP — Bento-historie",
+  "settings": [
+    {
+      "type": "select",
+      "id": "color_scheme",
+      "label": "Farveskema",
+      "options": [
+        { "value": "cream", "label": "Cremefarvet" }, { "value": "paper", "label": "Papir" }, { "value": "dark", "label": "Mørk" }, { "value": "green", "label": "Grøn" }
+      ],
+      "default": "cream"
+    },
+    { "type": "image_picker", "id": "image", "label": "Billede" },
+    { "type": "text", "id": "eyebrow", "label": "Eyebrow", "default": "En tusindårig historie" },
+    { "type": "text", "id": "heading", "label": "Overskrift", "default": "Fra tørret ris i Kamakura til stål i dag" },
+    {
+      "type": "richtext",
+      "id": "body",
+      "label": "Brødtekst",
+      "default": "<p>Ordet «bento» kommer oprindeligt fra kinesisk slang for noget praktisk og bekvemt. Men selve idéen er endnu ældre: allerede i 700-tallet bar japanerne tørret ris med sig som madpakke.</p><p>Det 20. århundredes bento-bølge blev i høj grad drevet af billig engangsplast. Vi ser vores rustfri stål som en videreførelse af den oprindelige idé — en madkasse skabt til at holde, ikke kastes.</p>"
+    },
+    { "type": "text", "id": "signature", "label": "Signatur", "default": "— Med respekt for en tradition der er over tusind år gammel" }
+  ],
+  "presets": [ { "name": "LP — Bento-historie" } ]
+}
+{% endschema %}

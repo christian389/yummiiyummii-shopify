@@ -1,0 +1,396 @@
+{%- liquid
+  assign s_id = section.id
+-%}
+
+{% style %}
+  .section-{{ s_id }} {
+    background-color: {{ section.settings.background_color }};
+    color: {{ section.settings.text_color }};
+    padding-top: {{ section.settings.padding_top }}px;
+    padding-bottom: {{ section.settings.padding_bottom }}px;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+  }
+
+  .tb-marquee-{{ s_id }} {
+    display: flex;
+    width: 100%;
+    align-items: center;
+    position: relative;
+  }
+
+  .tb-track-{{ s_id }} {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  /*  gap: {{ section.settings.gap_desktop }}px; */
+    gap: 15%;
+    width: 100%;
+  }
+
+  .tb-item-{{ s_id }} {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    white-space: nowrap;
+    font-size: {{ section.settings.font_size }}px;
+    font-weight: {{ section.settings.font_weight }};
+    font-family: inherit;
+    line-height: 1;
+  }
+
+  .tb-icon-{{ s_id }} {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    height: 20px;
+  }
+
+  .tb-icon-{{ s_id }} svg {
+    width: 100%;
+    height: 100%;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.25;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  .tb-icon-{{ s_id }} img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+  }
+
+  .tb-track-clone-{{ s_id }} {
+    display: none; 
+  }
+
+  @media screen and (max-width: 768px) {
+    .section-{{ s_id }} {
+      padding-top: {{ section.settings.padding_top_mobile }}px;
+      padding-bottom: {{ section.settings.padding_bottom_mobile }}px;
+    }
+    
+    .tb-marquee-{{ s_id }} {
+      flex-wrap: nowrap;
+      justify-content: flex-start;
+    }
+
+    .tb-track-{{ s_id }} {
+      width: max-content;
+      flex-shrink: 0;
+      justify-content: flex-start;
+      gap: {{ section.settings.gap_mobile }}px;
+      padding-right: {{ section.settings.gap_mobile }}px;
+      animation: marquee-{{ s_id }} {{ section.settings.speed_mobile }}s linear infinite;
+    }
+
+    .tb-track-clone-{{ s_id }} {
+      display: flex;
+    }
+  }
+
+  @keyframes marquee-{{ s_id }} {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(-100%); }
+  }
+{% endstyle %}
+
+<section class="section-{{ s_id }}">
+  <div class="tb-marquee-{{ s_id }}">
+    
+    <div class="tb-track-{{ s_id }}">
+      {% for block in section.blocks %}
+        <div class="tb-item-{{ s_id }}" {{ block.shopify_attributes }}>
+          <div class="tb-icon-{{ s_id }}">
+            {% if block.settings.custom_icon != blank %}
+              {{ block.settings.custom_icon | image_url: width: 40 | image_tag: loading: 'lazy' }}
+            {% else %}
+              {% case block.settings.icon_type %}
+                {% when 'truck' %}
+                  <svg viewBox="0 0 24 24">
+                    <path d="M5 15H3V6H14V15H12"/>
+                    <path d="M14 6H17.5L21 9.5V15H18"/>
+                    <circle cx="8.5" cy="15.5" r="3.5"/>
+                    <circle cx="15.5" cy="15.5" r="2.5"/>
+                    <path d="M14 10H21"/>
+                  </svg>
+                {% when 'returns' %}
+                  <svg viewBox="0 0 24 24">
+                    <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/>
+                    <path d="M3 3v5h5"/>
+                  </svg>
+                {% when 'package' %}
+                  <svg viewBox="0 0 24 24">
+                    <polygon points="12 3 2 8 12 13 22 8 12 3"/>
+                    <polyline points="2 16 12 21 22 16"/>
+                    <polyline points="2 12 12 17 22 12"/>
+                    <line x1="12" y1="13" x2="12" y2="21"/>
+                  </svg>
+                {% when 'tree' %}
+                  <svg viewBox="0 0 24 24">
+                    <path d="M12 22v-8"/>
+                    <path d="M12 14c-4.418 0-8-3.582-8-8 0-4.418 3.582-8 8-8s8 3.582 8 8c0 4.418-3.582 8-8 8z"/>
+                  </svg>
+                {% when 'leaf' %}
+                  <svg viewBox="0 0 24 24">
+                    <path d="M11 20A7 7 0 0 1 4 13C4 7.477 8.477 3 14 3C19.523 3 20 4 20 4C20 4 19.523 4.477 14 10"/>
+                    <path d="M11 20C11 20 12.5 16 17 12"/>
+                    <path d="M11 20V23"/>
+                  </svg>
+                {% when 'check' %}
+                  <svg viewBox="0 0 24 24">
+                    <path d="M20 6L9 17l-5-5"/>
+                  </svg>
+              {% endcase %}
+            {% endif %}
+          </div>
+          <span class="tb-text-{{ s_id }}">{{ block.settings.text }}</span>
+        </div>
+      {% endfor %}
+    </div>
+
+    <div class="tb-track-{{ s_id }} tb-track-clone-{{ s_id }}" aria-hidden="true">
+      {% for block in section.blocks %}
+        <div class="tb-item-{{ s_id }}">
+          <div class="tb-icon-{{ s_id }}">
+            {% if block.settings.custom_icon != blank %}
+              {{ block.settings.custom_icon | image_url: width: 40 | image_tag: loading: 'lazy' }}
+            {% else %}
+              {% case block.settings.icon_type %}
+                {% when 'truck' %}
+                  <svg viewBox="0 0 24 24">
+                    <path d="M5 15H3V6H14V15H12"/>
+                    <path d="M14 6H17.5L21 9.5V15H18"/>
+                    <circle cx="8.5" cy="15.5" r="3.5"/>
+                    <circle cx="15.5" cy="15.5" r="2.5"/>
+                    <path d="M14 10H21"/>
+                  </svg>
+                {% when 'returns' %}
+                  <svg viewBox="0 0 24 24">
+                    <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/>
+                    <path d="M3 3v5h5"/>
+                  </svg>
+                {% when 'package' %}
+                  <svg viewBox="0 0 24 24">
+                    <polygon points="12 3 2 8 12 13 22 8 12 3"/>
+                    <polyline points="2 16 12 21 22 16"/>
+                    <polyline points="2 12 12 17 22 12"/>
+                    <line x1="12" y1="13" x2="12" y2="21"/>
+                  </svg>
+                {% when 'tree' %}
+                  <svg viewBox="0 0 24 24">
+                    <path d="M12 22v-8"/>
+                    <path d="M12 14c-4.418 0-8-3.582-8-8 0-4.418 3.582-8 8-8s8 3.582 8 8c0 4.418-3.582 8-8 8z"/>
+                  </svg>
+                {% when 'leaf' %}
+                  <svg viewBox="0 0 24 24">
+                    <path d="M11 20A7 7 0 0 1 4 13C4 7.477 8.477 3 14 3C19.523 3 20 4 20 4C20 4 19.523 4.477 14 10"/>
+                    <path d="M11 20C11 20 12.5 16 17 12"/>
+                    <path d="M11 20V23"/>
+                  </svg>
+                {% when 'check' %}
+                  <svg viewBox="0 0 24 24">
+                    <path d="M20 6L9 17l-5-5"/>
+                  </svg>
+              {% endcase %}
+            {% endif %}
+          </div>
+          <span class="tb-text-{{ s_id }}">{{ block.settings.text }}</span>
+        </div>
+      {% endfor %}
+    </div>
+
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Trust Policy Bar",
+  "settings": [
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background Color",
+      "default": "#6e675e"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text & Icon Color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "range",
+      "id": "font_size",
+      "min": 10,
+      "max": 20,
+      "step": 1,
+      "unit": "px",
+      "label": "Font Size",
+      "default": 13
+    },
+    {
+      "type": "select",
+      "id": "font_weight",
+      "label": "Font Weight",
+      "options": [
+        { "value": "300", "label": "Light" },
+        { "value": "400", "label": "Normal" },
+        { "value": "500", "label": "Medium" }
+      ],
+      "default": "300"
+    },
+    {
+      "type": "header",
+      "content": "Desktop Settings"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 0,
+      "max": 40,
+      "step": 2,
+      "unit": "px",
+      "label": "Padding Top",
+      "default": 14
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 0,
+      "max": 40,
+      "step": 2,
+      "unit": "px",
+      "label": "Padding Bottom",
+      "default": 14
+    },
+    {
+      "type": "range",
+      "id": "gap_desktop",
+      "min": 10,
+      "max": 100,
+      "step": 5,
+      "unit": "px",
+      "label": "Spacing Between Items",
+      "default": 60
+    },
+    {
+      "type": "header",
+      "content": "Mobile Settings (Marquee)"
+    },
+    {
+      "type": "range",
+      "id": "padding_top_mobile",
+      "min": 0,
+      "max": 40,
+      "step": 2,
+      "unit": "px",
+      "label": "Padding Top",
+      "default": 12
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom_mobile",
+      "min": 0,
+      "max": 40,
+      "step": 2,
+      "unit": "px",
+      "label": "Padding Bottom",
+      "default": 12
+    },
+    {
+      "type": "range",
+      "id": "gap_mobile",
+      "min": 10,
+      "max": 60,
+      "step": 2,
+      "unit": "px",
+      "label": "Spacing Between Items",
+      "default": 30
+    },
+    {
+      "type": "range",
+      "id": "speed_mobile",
+      "min": 5,
+      "max": 40,
+      "step": 1,
+      "unit": "s",
+      "label": "Marquee Animation Speed",
+      "default": 15
+    }
+  ],
+  "blocks": [
+    {
+      "type": "trust_item",
+      "name": "Trust Item",
+      "settings": [
+        {
+          "type": "select",
+          "id": "icon_type",
+          "label": "Icon Style",
+          "options": [
+            { "value": "truck", "label": "Truck / Shipping" },
+            { "value": "returns", "label": "Arrows / Returns" },
+            { "value": "package", "label": "Package / Box" },
+            { "value": "tree", "label": "Tree / Plant" },
+            { "value": "leaf", "label": "Leaf" },
+            { "value": "check", "label": "Checkmark" }
+          ],
+          "default": "truck"
+        },
+        {
+          "type": "image_picker",
+          "id": "custom_icon",
+          "label": "Custom Icon Image",
+          "info": "Overrides the icon style above. PNG/SVG recommended."
+        },
+        {
+          "type": "text",
+          "id": "text",
+          "label": "Text",
+          "default": "Free shipping over $49"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Trust Policy Bar",
+      "blocks": [
+        {
+          "type": "trust_item",
+          "settings": {
+            "icon_type": "truck",
+            "text": "Free shipping over $49"
+          }
+        },
+        {
+          "type": "trust_item",
+          "settings": {
+            "icon_type": "returns",
+            "text": "Hassle-free returns"
+          }
+        },
+        {
+          "type": "trust_item",
+          "settings": {
+            "icon_type": "package",
+            "text": "Sustainable packaging"
+          }
+        },
+        {
+          "type": "trust_item",
+          "settings": {
+            "icon_type": "tree",
+            "text": "Carbon neutral shipping"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

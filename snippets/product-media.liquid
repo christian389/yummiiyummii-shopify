@@ -1,0 +1,108 @@
+{% comment %}
+  Renders the product media (used in product page galleries).
+  
+  Accepts:
+  - media: {Object} the media object (product.media).
+  - aspect_ratio: {String} image aspect ratio (needs to be a valid width/height ratio).
+  - fit: {Boolean} whether the image should be cropped to fit the container.
+  - enable_zoom: {Boolean} enable image zoom.
+  - loop: {Boolean} enables video loop.
+  - index: {Integer} index of the media in the list (can be forloop.index).
+  
+  Usage:
+  {% render 'product-media', media: media, aspect_ratio: '1', fit: true, enable_zoom: true, loop: true, index: forloop.index %}
+{% endcomment %}
+
+{%- liquid
+  unless fallback
+    assign media_type = media.media_type
+  else
+    assign media_type = 'image'
+    assign media = settings.product_card_fallback_image
+  endunless
+-%}
+
+<div 
+  id="FeaturedMedia-{{ section.id }}-{{ media.id }}" 
+  class="product-gallery-item element--border-radius {% if section.settings.show_border %} element--has-border--body element--has-border--thin {% endif %} element--border-radius"
+  data-product-media-type="{{ media_type }}{% if media_type == 'external_video' %}-{{ media.host }}{% endif %}"
+  data-product-single-media-wrapper
+  data-media-id="{{ media.id }}"
+  data-video
+  tabindex="0"
+  data-index="{{ index }}"
+  {%- if media_type == 'external_video' -%} 
+    data-video-id="{{ media.external_id }}" 
+    data-video-host="{{ media.host }}"
+  {%- endif -%}
+  {%- if media_type == 'image' and enable_zoom -%} data-image-zoom {%- endif -%}
+  {%- if media_type == 'image' -%} data-ratio="{{ aspect_ratio }}" style="padding-top: {{ 100 | divided_by: aspect_ratio }}%" {%- endif -%}
+>
+
+  {%- if desktop_width contains 'one-half' -%}
+    {%- if layout contains 'one-col' -%}
+      {%- capture sizes -%}
+        sizes="(max-width: 767px) {{ mobile_width }}vw, (max-width: {{ settings.theme_max_width }}px) 50vw, {{ settings.theme_max_width | divided_by: 2 }}px"
+      {%- endcapture -%}
+    {%- else -%}
+      {%- capture sizes -%}
+        sizes="(max-width: 767px) {{ mobile_width }}vw, (max-width: 1024px) 50vw, {%- if section.settings.enhance_first_image and index == 0 -%} (max-width: {{ settings.theme_max_width }}px) 50vw, {{ settings.theme_max_width | divided_by: 2 }}px {%- else -%} (max-width: {{ settings.theme_max_width }}px) 25vw, {{ settings.theme_max_width | divided_by: 4 }}px {%- endif -%}"
+      {%- endcapture -%}
+    {%- endif -%}
+  {%- else -%}
+    {%- if layout contains 'one-col' -%}
+      {%- capture sizes -%}
+        sizes="(max-width: 767px) {{ mobile_width }}vw, (max-width: 1024px) 60vw, (max-width: {{ settings.theme_max_width }}px) 66vw, {{ settings.theme_max_width | divided_by: 1.5 }}px"
+      {%- endcapture -%}
+    {%- else -%}
+      {%- capture sizes -%}
+        sizes="(max-width: 767px) {{ mobile_width }}vw, (max-width: 1024px) 60vw, {%- if section.settings.enhance_first_image and index == 0 -%} (max-width: {{ settings.theme_max_width }}px) 66vw, {{ settings.theme_max_width | divided_by: 1.5 }}px {%- else -%} (max-width: {{ settings.theme_max_width }}px) 33vw, {{ settings.theme_max_width | divided_by: 3 }}px {%- endif -%}"
+      {%- endcapture -%}
+    {%- endif -%}
+  {%- endif -%}
+
+  {%- if media_type == 'image' -%}
+
+    {%- liquid
+
+      if index == 0 
+        assign preload = true
+      endif
+      if layout contains 'scroll'
+        assign image_class = 'apply-gallery-animation lazy-image--to-reveal'
+      else
+        assign image_class = 'apply-gallery-animation'
+      endif
+      
+      render 'lazy-image', image: media, id: image_id, fit: fit, ratio: aspect_ratio, sizes: sizes, preload: preload, type: 'background', class: image_class
+
+    -%}
+
+    {%- if enable_zoom -%}
+      <product-image-zoom class="product-gallery-item__zoom" data-image="{{ media | image_url }}" aria-hidden="true" tabindex="-1">
+        {%- render 'theme-symbols', icon: 'zoom-in' -%}
+      </product-image-zoom>
+    {% endif %}
+
+  {%- else -%}
+
+      <div class="product-gallery-item__media" style="padding-top: {{ 100 | divided_by: aspect_ratio }}%">
+
+      {%- if media_type == 'video' -%}
+
+        {%- render 'video-component', video_file: media, image: media.preview_image, loop_video: loop, autoplay_video: autoplay, is_background: true, crop_video: video_fit, id: image_id, title: media.alt, class: 'apply-gallery-animation', sizes: sizes -%}  
+
+      {%- elsif media_type == 'external_video' -%}
+
+        {%- render 'video-component', video_url_id: media.external_id, video_url_type: media.host, image: media.preview_image, loop_video: loop, autoplay_video: autoplay, is_background: true, crop_video: video_fit, id: image_id, title: media.alt, class: 'apply-gallery-animation', sizes: sizes -%}
+
+      {%- elsif media_type == 'model' -%}
+        <product-model>
+          {{ media | media_tag: image_size: "2048x", toggleable: true, class: 'apply-gallery-animation' }}
+        </product-model>
+      {%- endif -%}
+    </div>
+  
+  {%- endif -%}
+
+</div>

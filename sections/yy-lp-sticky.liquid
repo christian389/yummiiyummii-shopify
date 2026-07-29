@@ -1,0 +1,48 @@
+{% comment %}Yummii Yummii — Landingsside: Sticky bund-bar{% endcomment %}
+
+{{ 'yy-landing.css' | asset_url | stylesheet_tag }}
+<script src="{{ 'yy-landing.js' | asset_url }}" defer></script>
+
+{%- liquid
+  assign bundle_product = section.settings.bundle_product
+  assign price = ''
+  assign was_price = ''
+  if bundle_product != blank
+    assign bv = bundle_product.selected_or_first_available_variant
+    assign price = bv.price | money_without_trailing_zeros
+    if bv.compare_at_price and bv.compare_at_price > bv.price
+      assign was_price = bv.compare_at_price | money_without_trailing_zeros
+    endif
+  endif
+-%}
+
+<style>body{ padding-bottom:78px; }</style>
+
+<div class="yy-lp-root yy-lp-scheme--white">
+  <div class="yy-lp-sticky">
+    <div class="yy-lp-wrap">
+      <div class="yy-lp-info">
+        {{ section.settings.label | default: 'Startsættet' }}<br>
+        <b>{{ price }}</b>{%- if was_price != blank -%}<span>{{ was_price }}</span>{%- endif -%}
+      </div>
+      <a href="{{ section.settings.cta_url | default: '#kob' }}" class="yy-lp-btn yy-lp-btn--primary" data-yylp-anchor>
+        {{ section.settings.cta_label | default: 'Køb nu' }}
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+      </a>
+    </div>
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "LP — Sticky bar",
+  "settings": [
+    { "type": "paragraph", "content": "Placér kun én gang på siden — vises altid fast i bunden." },
+    { "type": "product", "id": "bundle_product", "label": "Bundleprodukt (for pris)" },
+    { "type": "text", "id": "label", "label": "Tekst", "default": "Startsættet" },
+    { "type": "text", "id": "cta_label", "label": "Knaptekst", "default": "Køb nu" },
+    { "type": "url", "id": "cta_url", "label": "Knaplink (default: #kob)" }
+  ],
+  "presets": [ { "name": "LP — Sticky bar" } ]
+}
+{% endschema %}

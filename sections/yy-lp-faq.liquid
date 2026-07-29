@@ -1,0 +1,57 @@
+{% comment %}Yummii Yummii — Landingsside: FAQ{% endcomment %}
+
+{{ 'yy-landing.css' | asset_url | stylesheet_tag }}
+
+<div class="yy-lp-root yy-lp-scheme--{{ section.settings.color_scheme }}">
+  <section class="yy-lp-section">
+    <div class="yy-lp-wrap">
+      {%- if section.settings.heading != blank -%}<h2 class="yy-lp-title">{{ section.settings.heading }}</h2>{%- endif -%}
+      <div class="yy-lp-faq">
+        {%- for block in section.blocks -%}
+          <details {% if block.settings.open_by_default %}open{% endif %} {{ block.shopify_attributes }}>
+            <summary>{{ block.settings.question }}</summary>
+            <p>{{ block.settings.answer }}</p>
+          </details>
+        {%- endfor -%}
+      </div>
+    </div>
+  </section>
+</div>
+
+{% schema %}
+{
+  "name": "LP — FAQ",
+  "settings": [
+    {
+      "type": "select",
+      "id": "color_scheme",
+      "label": "Farveskema",
+      "options": [ { "value": "paper", "label": "Papir" }, { "value": "white", "label": "Hvid" }, { "value": "cream", "label": "Cremefarvet" } ],
+      "default": "paper"
+    },
+    { "type": "text", "id": "heading", "label": "Overskrift", "default": "Ofte stillede spørgsmål" }
+  ],
+  "blocks": [
+    {
+      "type": "faq_item",
+      "name": "Spørgsmål",
+      "settings": [
+        { "type": "text", "id": "question", "label": "Spørgsmål", "default": "Hvad er der i startsættet?" },
+        { "type": "textarea", "id": "answer", "label": "Svar", "default": "1 × Bento Medium madkasse og 1 × Bento Small madkasse. Begge i rustfrit stål." },
+        { "type": "checkbox", "id": "open_by_default", "label": "Åben som standard", "default": false }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "LP — FAQ",
+      "blocks": [
+        { "type": "faq_item", "settings": { "question": "Hvad er der i startsættet?", "answer": "1 × Bento Medium madkasse med 3-rums skillevæg og 1 × Bento Small madkasse til snacks.", "open_by_default": true } },
+        { "type": "faq_item", "settings": { "question": "Kan de komme i opvaskemaskinen?", "answer": "Ja. Begge madkasser tåler opvaskemaskine og bevarer udseendet år efter år." } },
+        { "type": "faq_item", "settings": { "question": "Hvad hvis jeg fortryder?", "answer": "Du har 30 dages returret og fuld pengene-tilbage-garanti." } },
+        { "type": "faq_item", "settings": { "question": "Hvorfor rustfrit stål frem for plast?", "answer": "Stål afgiver ikke mikroplast eller hormonforstyrrende stoffer, og det holder mange gange længere." } }
+      ]
+    }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,587 @@
+{{ 'yy-cart.css' | asset_url | stylesheet_tag }}
+<script src="{{ 'yy-cart.js' | asset_url }}" defer></script>
+
+<style>
+  #yy-cart-overlay {
+    --yy-green:   {{ section.settings.color_accent | default: '#3d7a4f' }};
+    --yy-cream:   {{ section.settings.color_bg | default: '#f7f2e7' }};
+    --yy-foot-bg: {{ section.settings.color_foot_bg | default: '#f7f2e7' }};
+    --yy-ink:     {{ section.settings.color_text | default: '#1a1812' }};
+    --yy-muted:   {{ section.settings.color_muted | default: '#6b6657' }};
+    --yy-sale:    {{ section.settings.color_sale | default: '#9c6b58' }};
+  }
+</style>
+
+{%- comment -%} Hidden config element read by JS {%- endcomment -%}
+<div
+  id="yy-cart-drawer"
+  data-threshold="{{ section.settings.free_shipping_threshold }}"
+  data-root="{{ routes.root_url }}"
+  style="display:none"
+></div>
+
+{%- comment -%} Bundle-map: produkt-id → inkluderede produkter {%- endcomment -%}
+<script id="yy-bundle-map" type="application/json">
+{
+  {%- assign bm_first = true -%}
+  {%- for item in cart.items -%}
+    {%- assign bi = item.product.metafields.custom.bundle_includes.value -%}
+    {%- if bi != blank -%}
+      {%- unless bm_first -%},{%- endunless -%}
+      {%- assign bm_first = false -%}
+      "{{ item.product_id }}": [
+        {%- for p in bi -%}
+          {"title":{{ p.title | json }},"image":"{{ p.featured_image | image_url: width: 120 }}","price":{{ p.selected_or_first_available_variant.price }}}{%- unless forloop.last -%},{%- endunless -%}
+        {%- endfor -%}
+      ]
+    {%- endif -%}
+  {%- endfor -%}
+}
+</script>
+
+<div class="yy-cart-overlay" id="yy-cart-overlay" data-section-id="{{ section.id }}">
+  <div class="yy-cart-scrim" id="yy-cart-scrim"></div>
+
+  <aside class="yy-cart" id="yy-cart">
+
+    <!-- ===================== HEADER ===================== -->
+    <div class="yy-cart__head">
+      <div class="yy-cart__headrow">
+        <h2 class="yy-cart__title">Din kurv <span class="yy-cart__count" id="yy-cart-count"></span></h2>
+        <button class="yy-cart__close" id="yy-cart-close" aria-label="Luk kurv">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <line x1="18" y1="6" x2="6" y2="18"/>
+            <line x1="6" y1="6" x2="18" y2="18"/>
+          </svg>
+        </button>
+      </div>
+      <p class="yy-cart__ship" id="yy-cart-ship"></p>
+      <div class="yy-cart__progress">
+        <span class="yy-cart__progress-fill" id="yy-cart-progress-fill" style="width:0%"></span>
+      </div>
+
+      {%- if section.settings.show_review and section.settings.review_text != blank -%}
+      <div class="yy-cart__review-bar" id="yy-review-bar">
+        <button type="button" class="yy-cart__review-bar-btn" id="yy-review-bar-btn" aria-expanded="false">
+          <span class="yy-cart__review-stars-xs">
+            {%- for i in (1..section.settings.review_rating) -%}★{%- endfor -%}
+          </span>
+          <span class="yy-cart__review-excerpt">"{{ section.settings.review_text | truncate: 38, '' }}"</span>
+          <span class="yy-cart__review-more">...se mere</span>
+          <span class="yy-cart__review-close">Luk ↑</span>
+        </button>
+        <div class="yy-cart__review-panel" id="yy-review-panel" hidden>
+          <p class="yy-cart__review-quote">"{{ section.settings.review_text }}"</p>
+          <div class="yy-cart__review-meta">
+            <span class="yy-cart__review-author">{{ section.settings.review_author }}</span>
+            {%- if section.settings.review_product_label != blank -%}
+              <span class="yy-cart__review-sep">·</span>
+              <span class="yy-cart__review-product">{{ section.settings.review_product_label }}</span>
+            {%- endif -%}
+          </div>
+        </div>
+      </div>
+      {%- endif -%}
+    </div>
+
+    <!-- ===================== BODY ===================== -->
+    <div class="yy-cart__body">
+
+      <!-- Line items — rendered by JS -->
+      <ul class="yy-cart__items" id="yy-cart-items"></ul>
+
+      <!-- ---- Upsell carousel (fra crosssell metafelt + fallback blocks) ---- -->
+      {%- liquid
+        assign cart_ids = ','
+        for item in cart.items
+          assign cart_ids = cart_ids | append: item.product_id | append: ','
+        endfor
+
+        assign upsell_shown = ','
+        assign has_upsells = false
+
+        for item in cart.items
+          assign crosssells = item.product.metafields.custom.crosssell_products.value
+          if crosssells != blank
+            for cp in crosssells
+              assign cp_check = ',' | append: cp.id | append: ','
+              unless cart_ids contains cp_check or upsell_shown contains cp_check
+                assign has_upsells = true
+              endunless
+            endfor
+          endif
+        endfor
+
+        assign upsell_blocks = section.blocks | where: 'type', 'upsell'
+        if upsell_blocks.size > 0
+          assign has_upsells = true
+        endif
+      -%}
+
+      {%- comment -%} Altid render containeren — JS opdaterer indholdet dynamisk {%- endcomment -%}
+        <div class="yy-cart-upsell" id="yy-cart-upsell"{% unless has_upsells %} style="display:none"{% endunless %}>
+          <div class="yy-cart-upsell__head">
+            <span>{{ section.settings.upsell_heading | default: 'Shop tilbehør' }}</span>
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>
+          </div>
+          <div class="yy-cart-upsell__track" id="yy-upsell-track" style="margin:0 -24px;padding:0 24px 6px;">
+
+            {%- comment -%} Crosssell metafelt-produkter {%- endcomment -%}
+            {%- assign upsell_shown = ',' -%}
+            {%- for item in cart.items -%}
+              {%- assign crosssells = item.product.metafields.custom.crosssell_products.value -%}
+              {%- if crosssells != blank -%}
+                {%- for cp in crosssells -%}
+                  {%- assign cp_check = ',' | append: cp.id | append: ',' -%}
+                  {%- unless cart_ids contains cp_check or upsell_shown contains cp_check -%}
+                    {%- assign cv = cp.selected_or_first_available_variant -%}
+                    {%- if cv.available -%}
+                    <div class="yy-upsell-card">
+                      <a href="{{ cp.url }}" class="yy-upsell-card__media-link" tabindex="-1" aria-hidden="true">
+                        <div class="yy-upsell-card__media">
+                          {%- if cp.featured_image -%}
+                            <img src="{{ cp.featured_image | image_url: width: 176 }}" alt="{{ cp.title | escape }}" width="88" height="88" loading="lazy">
+                          {%- endif -%}
+                        </div>
+                      </a>
+                      <div class="yy-upsell-card__info">
+                        <a href="{{ cp.url }}" class="yy-upsell-card__name">{{ cp.title | escape }}</a>
+                        <div class="yy-upsell-card__row">
+                          <span class="yy-upsell-card__price">{{ cv.price | money_without_trailing_zeros }}</span>
+                          <button class="yy-upsell-card__add" data-upsell-variant="{{ cv.id }}" aria-label="Tilføj {{ cp.title | escape }} til kurv">Tilføj</button>
+                        </div>
+                      </div>
+                    </div>
+                    {%- assign upsell_shown = upsell_shown | append: cp.id | append: ',' -%}
+                    {%- endif -%}
+                  {%- endunless -%}
+                {%- endfor -%}
+              {%- endif -%}
+            {%- endfor -%}
+
+            {%- comment -%} Fallback: manuelle upsell-blocks {%- endcomment -%}
+            {%- for block in upsell_blocks -%}
+              {%- assign bp = block.settings.product -%}
+              {%- if bp != blank -%}
+                {%- assign bp_check = ',' | append: bp.id | append: ',' -%}
+                {%- unless cart_ids contains bp_check or upsell_shown contains bp_check -%}
+                  {%- assign bv = bp.selected_or_first_available_variant -%}
+                  {%- if bv.available -%}
+                  <div class="yy-upsell-card" {{ block.shopify_attributes }}>
+                    <a href="{{ bp.url }}" class="yy-upsell-card__media-link" tabindex="-1" aria-hidden="true">
+                      <div class="yy-upsell-card__media">
+                        {%- if bp.featured_image -%}
+                          <img src="{{ bp.featured_image | image_url: width: 176 }}" alt="{{ bp.title | escape }}" width="88" height="88" loading="lazy">
+                        {%- endif -%}
+                      </div>
+                    </a>
+                    <div class="yy-upsell-card__info">
+                      <a href="{{ bp.url }}" class="yy-upsell-card__name">{{ bp.title | escape }}</a>
+                      {%- if block.settings.subtitle != blank -%}
+                        <div class="yy-upsell-card__sub">{{ block.settings.subtitle | escape }}</div>
+                      {%- endif -%}
+                      <div class="yy-upsell-card__row">
+                        <span class="yy-upsell-card__price">{{ bv.price | money_without_trailing_zeros }}</span>
+                        <button class="yy-upsell-card__add" data-upsell-variant="{{ bv.id }}" aria-label="Tilføj {{ bp.title | escape }} til kurv">Tilføj</button>
+                      </div>
+                    </div>
+                  </div>
+                  {%- assign upsell_shown = upsell_shown | append: bp.id | append: ',' -%}
+                  {%- endif -%}
+                {%- endunless -%}
+              {%- endif -%}
+            {%- endfor -%}
+
+          </div>
+        </div>
+
+      <!-- ---- Empty state ---- -->
+      <div class="yy-cart-empty">
+        <div class="yy-cart-empty__title">Din kurv er tom</div>
+        <p class="yy-cart-empty__sub">{{ section.settings.empty_subtitle | escape }}</p>
+
+        {%- assign empty_link_blocks = section.blocks | where: 'type', 'empty_link' -%}
+        {%- for block in empty_link_blocks -%}
+          <a
+            class="yy-cart-empty__link"
+            href="{{ block.settings.url | default: '#' }}"
+            {{ block.shopify_attributes }}
+          >
+            {%- if block.settings.image != blank -%}
+              <img
+                src="{{ block.settings.image | image_url: width: 112 }}"
+                alt="{{ block.settings.image.alt | default: block.settings.label | escape }}"
+                width="56"
+                height="56"
+                loading="lazy"
+              />
+            {%- else -%}
+              <span style="width:56px;height:56px;border-radius:8px;background:#e7e0cf;display:block;"></span>
+            {%- endif -%}
+            <span>{{ block.settings.label | escape }}</span>
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <polyline points="9 18 15 12 9 6"/>
+            </svg>
+          </a>
+        {%- endfor -%}
+      </div>
+
+    </div><!-- /.yy-cart__body -->
+
+    <!-- ===================== FOOTER ===================== -->
+    <div class="yy-cart__foot">
+
+      <div class="yy-cart__line">
+        <span>Subtotal</span>
+        <div class="yy-cart__subtotal-group">
+          <strong id="yy-cart-subtotal">—</strong>
+          <span class="yy-cart__savings-badge" id="yy-cart-savings" style="display:none"></span>
+        </div>
+      </div>
+      <div class="yy-cart__line yy-cart__line--muted">
+        <span>Fragt</span>
+        <span id="yy-cart-shipping">Beregnes ved kassen</span>
+      </div>
+
+      <!-- Rabatkode — altid collapsible -->
+      <div class="yy-cart__discount-wrap" id="yy-discount-wrap">
+        <button type="button" class="yy-cart__discount-toggle" id="yy-discount-toggle" aria-expanded="false" aria-controls="yy-discount-collapse">
+          Har du en rabatkode?
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
+        </button>
+        <div class="yy-cart__discount-collapse" id="yy-discount-collapse">
+          <form class="yy-cart__discount-form" id="yy-discount-form" novalidate>
+            <input
+              type="text"
+              class="yy-cart__discount-input"
+              id="yy-discount-input"
+              placeholder="Rabatkode"
+              autocomplete="off"
+              autocapitalize="characters"
+            >
+            <button type="submit" class="yy-cart__discount-btn">Anvend</button>
+          </form>
+          <div class="yy-cart__discount-msg" id="yy-discount-msg"></div>
+        </div>
+      </div>
+
+      <a
+        href="{{ routes.checkout_url }}"
+        class="yy-cart__checkout"
+        id="yy-cart-checkout"
+      >
+        <span id="yy-cart-checkout-label">Gå til kassen</span>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <line x1="5" y1="12" x2="19" y2="12"/>
+          <polyline points="12 5 19 12 12 19"/>
+        </svg>
+      </a>
+
+      <!-- Payment icons -->
+      {%- if section.settings.show_payments -%}
+        <div class="yy-cart__payments">
+          {%- if section.settings.show_visa -%}
+            {%- if section.settings.payment_icon_visa != blank -%}
+              <span class="yy-pay yy-pay--img">{{ section.settings.payment_icon_visa | image_url: width: 84 | image_tag: loading: 'lazy', alt: 'VISA', width: 42, height: 28 }}</span>
+            {%- else -%}
+              <span class="yy-pay" style="color:#1a1f71;font-style:italic;">VISA</span>
+            {%- endif -%}
+          {%- endif -%}
+          {%- if section.settings.show_mastercard -%}
+            {%- if section.settings.payment_icon_mastercard != blank -%}
+              <span class="yy-pay yy-pay--img">{{ section.settings.payment_icon_mastercard | image_url: width: 84 | image_tag: loading: 'lazy', alt: 'Mastercard', width: 42, height: 28 }}</span>
+            {%- else -%}
+              <span class="yy-pay" style="color:#eb001b;">MC</span>
+            {%- endif -%}
+          {%- endif -%}
+          {%- if section.settings.show_mobilepay -%}
+            {%- if section.settings.payment_icon_mobilepay != blank -%}
+              <span class="yy-pay yy-pay--img">{{ section.settings.payment_icon_mobilepay | image_url: width: 84 | image_tag: loading: 'lazy', alt: 'MobilePay', width: 42, height: 28 }}</span>
+            {%- else -%}
+              <span class="yy-pay" style="background:#5a78ff;color:#fff;border-color:#5a78ff;">MobilePay</span>
+            {%- endif -%}
+          {%- endif -%}
+          {%- if section.settings.show_klarna -%}
+            {%- if section.settings.payment_icon_klarna != blank -%}
+              <span class="yy-pay yy-pay--img">{{ section.settings.payment_icon_klarna | image_url: width: 84 | image_tag: loading: 'lazy', alt: 'Klarna', width: 42, height: 28 }}</span>
+            {%- else -%}
+              <span class="yy-pay" style="background:#ffb3c7;border-color:#ffb3c7;color:#1a1812;">Klarna</span>
+            {%- endif -%}
+          {%- endif -%}
+          {%- if section.settings.show_anyday -%}
+            {%- if section.settings.payment_icon_anyday != blank -%}
+              <span class="yy-pay yy-pay--img">{{ section.settings.payment_icon_anyday | image_url: width: 84 | image_tag: loading: 'lazy', alt: 'Anyday', width: 42, height: 28 }}</span>
+            {%- else -%}
+              <span class="yy-pay">Anyday</span>
+            {%- endif -%}
+          {%- endif -%}
+          {%- if section.settings.show_bring -%}
+            {%- if section.settings.payment_icon_bring != blank -%}
+              <span class="yy-pay yy-pay--img">{{ section.settings.payment_icon_bring | image_url: width: 84 | image_tag: loading: 'lazy', alt: 'Bring', width: 42, height: 28 }}</span>
+            {%- else -%}
+              <span class="yy-pay" style="color:#e4002b;font-weight:800;">Bring</span>
+            {%- endif -%}
+          {%- endif -%}
+        </div>
+      {%- endif -%}
+
+
+      <!-- Trust bar -->
+      <div class="yy-cart__trust">
+        <span class="yy-cart__trust-item">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <polyline points="1 4 1 10 7 10"/>
+            <path d="M3.51 15a9 9 0 1 0 .49-4.5"/>
+          </svg>
+          30 dages returret
+        </span>
+        <span class="yy-trustpilot__stars" aria-label="5 stjerner på Trustpilot">
+          <span class="yy-trustpilot__star" aria-hidden="true"></span>
+          <span class="yy-trustpilot__star" aria-hidden="true"></span>
+          <span class="yy-trustpilot__star" aria-hidden="true"></span>
+          <span class="yy-trustpilot__star" aria-hidden="true"></span>
+          <span class="yy-trustpilot__star" aria-hidden="true"></span>
+        </span>
+      </div>
+
+    </div><!-- /.yy-cart__foot -->
+
+  </aside>
+</div><!-- /.yy-cart-overlay -->
+
+{% schema %}
+{
+  "name": "Kurv-drawer",
+  "settings": [
+    {
+      "type": "number",
+      "id": "free_shipping_threshold",
+      "label": "Gratis fragt fra (kr)",
+      "default": 400
+    },
+    {
+      "type": "text",
+      "id": "upsell_heading",
+      "label": "Upsell-sektion overskrift",
+      "default": "Shop tilbehør"
+    },
+    {
+      "type": "text",
+      "id": "empty_subtitle",
+      "label": "Tom kurv — undertitel",
+      "default": "Ved du ikke, hvor du skal starte?"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_payments",
+      "label": "Vis betalingsikoner",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_visa",
+      "label": "Vis VISA",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_mastercard",
+      "label": "Vis Mastercard",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_mobilepay",
+      "label": "Vis MobilePay",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_klarna",
+      "label": "Vis Klarna",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_anyday",
+      "label": "Vis Anyday",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_bring",
+      "label": "Vis Bring",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "Farver"
+    },
+    {
+      "type": "color",
+      "id": "color_accent",
+      "label": "Accentfarve (grøn)",
+      "default": "#3d7a4f"
+    },
+    {
+      "type": "color",
+      "id": "color_bg",
+      "label": "Baggrund (body)",
+      "default": "#f7f2e7"
+    },
+    {
+      "type": "color",
+      "id": "color_foot_bg",
+      "label": "Baggrund (total-sektion)",
+      "default": "#f7f2e7"
+    },
+    {
+      "type": "color",
+      "id": "color_text",
+      "label": "Tekstfarve",
+      "default": "#1a1812"
+    },
+    {
+      "type": "color",
+      "id": "color_muted",
+      "label": "Dæmpet tekst",
+      "default": "#6b6657"
+    },
+    {
+      "type": "color",
+      "id": "color_sale",
+      "label": "Rabat-farve (badge + gammel pris)",
+      "default": "#9c6b58"
+    },
+    {
+      "type": "header",
+      "content": "Anmeldelse (Judgeme / manuel)"
+    },
+    {
+      "type": "paragraph",
+      "content": "Indsæt en featured anmeldelse fra Judgeme eller skriv den manuelt. Hent tekst og navn direkte fra judge.me dashboardet."
+    },
+    {
+      "type": "checkbox",
+      "id": "show_review",
+      "label": "Vis anmeldelse i kurven",
+      "default": true
+    },
+    {
+      "type": "range",
+      "id": "review_rating",
+      "label": "Stjerner",
+      "min": 1,
+      "max": 5,
+      "step": 1,
+      "default": 5
+    },
+    {
+      "type": "textarea",
+      "id": "review_text",
+      "label": "Anmeldelse (citat)",
+      "default": "Fantastisk kvalitet! Mine børn elsker madkasserne, og de holder perfekt i skolen dag efter dag."
+    },
+    {
+      "type": "text",
+      "id": "review_author",
+      "label": "Navn",
+      "default": "Maria K."
+    },
+    {
+      "type": "text",
+      "id": "review_product_label",
+      "label": "Produkt-label under navn",
+      "default": "Bento Signatur · 3 rum"
+    },
+    {
+      "type": "url",
+      "id": "review_link",
+      "label": "Link til alle anmeldelser (valgfrit)"
+    },
+    {
+      "type": "header",
+      "content": "Betalingsikoner — upload billeder"
+    },
+    {
+      "type": "paragraph",
+      "content": "Upload logoer nedenfor. Bruges i stedet for tekst-fallback. Anbefalet størrelse: 84×56px, transparent baggrund (PNG)."
+    },
+    {
+      "type": "image_picker",
+      "id": "payment_icon_visa",
+      "label": "VISA logo"
+    },
+    {
+      "type": "image_picker",
+      "id": "payment_icon_mastercard",
+      "label": "Mastercard logo"
+    },
+    {
+      "type": "image_picker",
+      "id": "payment_icon_mobilepay",
+      "label": "MobilePay logo"
+    },
+    {
+      "type": "image_picker",
+      "id": "payment_icon_klarna",
+      "label": "Klarna logo"
+    },
+    {
+      "type": "image_picker",
+      "id": "payment_icon_anyday",
+      "label": "Anyday logo"
+    },
+    {
+      "type": "image_picker",
+      "id": "payment_icon_bring",
+      "label": "Bring logo"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "upsell",
+      "name": "Upsell-produkt",
+      "settings": [
+        {
+          "type": "product",
+          "id": "product",
+          "label": "Produkt"
+        },
+        {
+          "type": "text",
+          "id": "subtitle",
+          "label": "Undertitel",
+          "placeholder": "Skridsikker bagside · 3 størrelser"
+        }
+      ]
+    },
+    {
+      "type": "empty_link",
+      "name": "Tom kurv — kategori-link",
+      "settings": [
+        {
+          "type": "text",
+          "id": "label",
+          "label": "Label"
+        },
+        {
+          "type": "url",
+          "id": "url",
+          "label": "Link"
+        },
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Billede"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Kurv-drawer"
+    }
+  ]
+}
+{% endschema %}

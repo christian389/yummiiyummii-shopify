@@ -1,0 +1,71 @@
+{%- if block.settings.text != blank -%}
+  <div class="rte {{ block.settings.text_size }} text-line-height--{{  block.settings.line_height }} remove-empty-space">
+    {{ block.settings.text }}
+  </div>
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "t:sections.rich-text.blocks.text.name",
+  "settings": [
+    {
+      "type": "richtext",
+      "id": "text",
+      "label": "t:sections.rich-text.blocks.text.settings.text.label",
+      "default": "<p>Use this text to share information about your brand with your customers. Describe a product, share announcements or welcome customers to your store.</p>"
+    },
+    {
+      "type": "select",
+      "id": "text_size",
+      "label": "t:sections.local-extra-words.sections.product-card.blocks.text.settings.size.label",
+      "options": [
+        {
+          "value": "text-size--small",
+          "label": "t:sections.local-extra-words.sections.media-with-text-overlay.settings.option__1"
+        },
+        {
+          "value": "text-size--regular",
+          "label": "t:sections.image-with-text.settings.text_width.options__1.label"
+        },
+        {
+          "value": "text-size--large",
+          "label": "t:sections.rich-text.blocks.heading.settings.heading_size.options__1.label"
+        },
+        {
+          "value": "text-size--larger",
+          "label": "t:sections.rich-text.blocks.heading.settings.heading_size.options__2.label"
+        }
+      ],
+      "default": "text-size--regular"
+    },
+    {
+      "type": "select",
+      "id": "line_height",
+      "label": "t:sections.split-extra-words.settings_schema.typography.settings.line_height",
+      "options": [
+        {
+          "value": "default",
+          "label": "t:theme_blocks.heading.settings.option_1"
+        },
+        {
+          "value": "small",
+          "label": "t:sections.local-extra-words.sections.popups.blocks.settings.size.option_1"
+        },
+        {
+          "value": "medium",
+          "label": "t:sections.image-with-text.settings.text_width.options__1.label"
+        }
+      ],
+      "default": "default"
+    }
+  ],
+  "presets": [
+    {
+      "name": "t:sections.rich-text.blocks.text.name",
+      "settings": {
+        "text": "<p>Use this text to share information about your brand with your customers. Describe a product, share announcements or welcome customers to your store.</p>"
+      }
+    }
+  ]
+}
+{% endschema %}

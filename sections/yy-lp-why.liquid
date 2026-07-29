@@ -1,0 +1,98 @@
+{% comment %}Yummii Yummii — Landingsside: Why (fakta om mikroplast/kemi){% endcomment %}
+
+{{ 'yy-landing.css' | asset_url | stylesheet_tag }}
+
+<div class="yy-lp-root yy-lp-scheme--{{ section.settings.color_scheme }}">
+  <section class="yy-lp-section">
+    <div class="yy-lp-wrap">
+      {%- if section.settings.heading != blank -%}<h2 class="yy-lp-title">{{ section.settings.heading }}</h2>{%- endif -%}
+      {%- if section.settings.intro != blank -%}<p class="yy-lp-intro">{{ section.settings.intro }}</p>{%- endif -%}
+
+      <div class="yy-lp-why-grid">
+        {%- for block in section.blocks -%}
+          <div class="yy-lp-why-card" {{ block.shopify_attributes }}>
+            <div class="yy-lp-ic" aria-hidden="true">
+              {%- case block.settings.icon -%}
+                {%- when 'drop' -%}
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2.5s7 8.2 7 12.7a7 7 0 0 1-14 0c0-4.5 7-12.7 7-12.7z"/></svg>
+                {%- when 'flame' -%}
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2.5c-1.6 3.4-5 5.4-5 9.4a5 5 0 0 0 10 0c0-1.5-.7-2.4-1.5-3.2.3 1.6-.8 2.4-1.6 1.6.9-1.6-.7-3.4-1.9-7.8z"/></svg>
+                {%- when 'scale' -%}
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v18M9 21h6M5 8h14"/><path d="M5 8l-3 6a3 3 0 0 0 6 0l-3-6z"/><path d="M19 8l-3 6a3 3 0 0 0 6 0l-3-6z"/></svg>
+                {%- when 'refresh' -%}
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-3-6.7"/><path d="M21 4v5h-5"/></svg>
+                {%- when 'family' -%}
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="7" r="3"/><circle cx="17" cy="9" r="2.2"/><path d="M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6"/><path d="M15.5 14.5c2.5.3 4.5 2.4 4.5 5.5"/></svg>
+                {%- when 'leaf' -%}
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M5 21c8 0 14-6 14-14V4h-3C8 4 5 10 5 18v3z"/><path d="M5 21c3-6 6-9 12-12"/></svg>
+                {%- when 'heart' -%}
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M20.8 8.6c0 4.5-8.8 10.4-8.8 10.4S3.2 13.1 3.2 8.6a4.6 4.6 0 0 1 8.8-1.9 4.6 4.6 0 0 1 8.8 1.9z"/></svg>
+                {%- when 'star' -%}
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l3 6.5 7 .9-5.2 4.9 1.4 7-6.2-3.5-6.2 3.5 1.4-7L2 9.4l7-.9z"/></svg>
+                {%- else -%}
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l7 3v5c0 4.5-3 8-7 10-4-2-7-5.5-7-10V6l7-3z"/><path d="M9 12l2 2 4-4"/></svg>
+              {%- endcase -%}
+            </div>
+            <h3>{{ block.settings.title }}</h3>
+            <p>{{ block.settings.text }}</p>
+            {%- if block.settings.source != blank -%}<p class="yy-lp-why-source">{{ block.settings.source }}</p>{%- endif -%}
+          </div>
+        {%- endfor -%}
+      </div>
+    </div>
+  </section>
+</div>
+
+{% schema %}
+{
+  "name": "LP — Why",
+  "settings": [
+    {
+      "type": "select",
+      "id": "color_scheme",
+      "label": "Farveskema",
+      "options": [
+        { "value": "paper", "label": "Papir" }, { "value": "white", "label": "Hvid" }, { "value": "cream", "label": "Cremefarvet" }
+      ],
+      "default": "paper"
+    },
+    { "type": "text", "id": "heading", "label": "Overskrift", "default": "Derfor starter du her" },
+    { "type": "textarea", "id": "intro", "label": "Introtekst", "default": "Det ved vi om plast, mikroplast og kemi i mad — og hvorfor vi valgte rustfrit stål." }
+  ],
+  "blocks": [
+    {
+      "type": "card",
+      "name": "Faktakort",
+      "settings": [
+        {
+          "type": "select",
+          "id": "icon",
+          "label": "Ikon",
+          "options": [
+            { "value": "drop", "label": "Dråbe (blod/krop)" },
+            { "value": "flame", "label": "Flamme (varme)" },
+            { "value": "scale", "label": "Vægt (regelværk)" },
+            { "value": "shield", "label": "Skjold" }, { "value": "refresh", "label": "Genbrug" },
+            { "value": "family", "label": "Familie" }, { "value": "leaf", "label": "Blad" },
+            { "value": "heart", "label": "Hjerte" }, { "value": "star", "label": "Stjerne" }
+          ],
+          "default": "scale"
+        },
+        { "type": "text", "id": "title", "label": "Titel", "default": "Et kreditkort om ugen" },
+        { "type": "textarea", "id": "text", "label": "Tekst", "default": "Vi spiser i gennemsnit op til 5 gram mikroplast om ugen — det svarer til vægten af et helt kreditkort." },
+        { "type": "text", "id": "source", "label": "Kilde (valgfrit)", "default": "Kilde: WWF" }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "LP — Why",
+      "blocks": [
+        { "type": "card", "settings": { "icon": "scale", "title": "Et kreditkort om ugen", "text": "Vi spiser i gennemsnit op til 5 gram mikroplast om ugen — det svarer til vægten af et helt kreditkort.", "source": "Kilde: WWF" } },
+        { "type": "card", "settings": { "icon": "drop", "title": "Allerede i vores blod", "text": "Mikroplast er påvist i blodet hos omkring 80 % af de testede i en større undersøgelse.", "source": "Kilde: Greenpeace" } },
+        { "type": "card", "settings": { "icon": "heart", "title": "Det rammer de mindste", "text": "Mikroplast er fundet i 75 % af testede modermælksprøver — eksponering fra dag ét.", "source": "Kilde: Videnskab.dk / Greenpeace" } }
+      ]
+    }
+  ]
+}
+{% endschema %}
