@@ -2,15 +2,15 @@
   Guide -- See also links + related products (playbook section 10, minus
   the CTA band which is its own section: guide-cta.liquid).
 
-  Reads article.metafields.custom.see_also_links (metaobject list, "Guide
-  Related Link": title, url) and article.metafields.custom.related_products
+  Reads article.metafields.guide.see_also_links (metaobject list, "Guide
+  Related Link": title, url) and article.metafields.guide.related_products
   (product list). Either subgroup renders independently and is skipped if
   empty.
 {% endcomment %}
 
 {%- liquid
-  assign see_also = article.metafields.custom.see_also_links.value
-  assign related_products = article.metafields.custom.related_products.value
+  assign see_also = article.metafields.guide.see_also_links.value
+  assign related_products = article.metafields.guide.related_products.value
   assign has_any = false
   if see_also.size > 0 or related_products.size > 0
     assign has_any = true

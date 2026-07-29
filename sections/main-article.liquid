@@ -21,7 +21,16 @@
             <div class="grid grid--layout grid-2 grid-lap-1 gutter-top--regular remove-empty-space">
               <div class="blog-item__meta">
                 {%- if block.settings.blog_show_date -%}
-                  <span class="blog-item__date text-size--small">{{ article.published_at | date: date_format }}</span>
+                  {%- liquid
+                    assign guide_last_updated = article.metafields.guide.last_updated.value
+                  -%}
+                  <span class="blog-item__date text-size--small">
+                    {%- if guide_last_updated != blank -%}
+                      {{ guide_last_updated | date: date_format }}
+                    {%- else -%}
+                      {{ article.published_at | date: date_format }}
+                    {%- endif -%}
+                  </span>
                 {%- endif -%}
 
                 {%- if block.settings.blog_show_author -%}

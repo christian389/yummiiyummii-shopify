@@ -1,7 +1,7 @@
 {% comment %}
   Guide -- FAQ accordion (playbook section 9).
 
-  Reads article.metafields.custom.faq_items (metaobject list, "Guide FAQ
+  Reads article.metafields.guide.faq_items (metaobject list, "Guide FAQ
   Item": question, answer). Renders nothing if empty. Mounts on the same
   toggle-tab/toggle-group web component as sections/content-toggles.liquid
   (component-toggle.js/css) rather than shipping new accordion JS.
@@ -13,7 +13,7 @@
 {% endcomment %}
 
 {%- liquid
-  assign faq_items = article.metafields.custom.faq_items.value
+  assign faq_items = article.metafields.guide.faq_items.value
 -%}
 
 {%- if faq_items and faq_items.size > 0 -%}

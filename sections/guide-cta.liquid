@@ -1,16 +1,16 @@
 {% comment %}
   Guide -- Footer CTA band (the CTA half of playbook section 10).
 
-  Reads article.metafields.custom.footer_cta_heading (single line text) and
-  article.metafields.custom.footer_cta_link (URL). Falls back to the
+  Reads article.metafields.guide.cta_heading (single line text) and
+  article.metafields.guide.cta_url (URL). Falls back to the
   section's own settings when either metafield is blank, so the CTA still
   renders (with a sensible generic message) even before a guide's
   metafields are filled in.
 {% endcomment %}
 
 {%- liquid
-  assign cta_heading = article.metafields.custom.footer_cta_heading.value | default: section.settings.fallback_heading
-  assign cta_link = article.metafields.custom.footer_cta_link.value | default: section.settings.fallback_link
+  assign cta_heading = article.metafields.guide.cta_heading.value | default: section.settings.fallback_heading
+  assign cta_link = article.metafields.guide.cta_url.value | default: section.settings.fallback_link
 -%}
 
 {%- if cta_heading != blank and cta_link != blank -%}

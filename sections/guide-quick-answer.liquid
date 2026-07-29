@@ -1,12 +1,12 @@
 {% comment %}
   Guide -- Quick answer callout (playbook section 2).
-  Reads article.metafields.custom.quick_answer (multi-line text). Renders
+  Reads article.metafields.guide.quick_answer (multi-line text). Renders
   nothing if the article has no quick answer set, so a guide can be
   published incrementally without a broken empty box.
 {% endcomment %}
 
 {%- liquid
-  assign quick_answer = article.metafields.custom.quick_answer.value
+  assign quick_answer = article.metafields.guide.quick_answer.value
 -%}
 
 {%- if quick_answer != blank -%}

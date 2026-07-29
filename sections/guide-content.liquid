@@ -5,17 +5,17 @@
   independently and is skipped entirely if its metafield is empty, so a
   guide can ship with only some of the three filled in.
 
-  Assumed metafields (confirm handles against the live metaobject
-  definitions before relying on this):
-  - in_depth_topic_sections -> Guide Topic Section: heading, body, image, link_label, link
-  - audience_use_case_cards -> Guide Audience Card: image, title, body, link_label, link
-  - practical_use_care_cards -> Guide Care Card: title, body
+  Metafields (namespace: guide) -- inner metaobject field handles below are
+  still assumed/unconfirmed:
+  - topic_sections -> Guide Topic Section: heading, body, image, link_label, link
+  - audience_cards -> Guide Audience Card: image, title, body, link_label, link
+  - care_cards -> Guide Care Card: title, body
 {% endcomment %}
 
 {%- liquid
-  assign topics = article.metafields.custom.in_depth_topic_sections.value
-  assign audience_cards = article.metafields.custom.audience_use_case_cards.value
-  assign care_cards = article.metafields.custom.practical_use_care_cards.value
+  assign topics = article.metafields.guide.topic_sections.value
+  assign audience_cards = article.metafields.guide.audience_cards.value
+  assign care_cards = article.metafields.guide.care_cards.value
   assign has_any = false
   if topics.size > 0 or audience_cards.size > 0 or care_cards.size > 0
     assign has_any = true

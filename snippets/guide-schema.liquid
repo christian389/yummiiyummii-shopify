@@ -8,7 +8,7 @@
   produce. Renders nothing if the guide has no FAQ items, so it never
   outputs an empty/invalid FAQPage block.
 
-  Assumes article.metafields.custom.faq_items is a metaobject list with
+  Assumes article.metafields.guide.faq_items is a metaobject list with
   "question" and "answer" fields (Guide FAQ Item definition) -- confirm the
   exact handles against Settings > Custom data > Metaobjects before relying
   on this in production; adjust the assign below if they differ.
@@ -18,7 +18,7 @@
 {% endcomment %}
 
 {%- liquid
-  assign faq_items = article.metafields.custom.faq_items.value
+  assign faq_items = article.metafields.guide.faq_items.value
 -%}
 
 {%- if faq_items and faq_items.size > 0 -%}

@@ -1,9 +1,9 @@
 {% comment %}
   Guide -- Comparison table (playbook section 4).
 
-  Reads article.metafields.custom.comparison_table_options (metaobject list,
+  Reads article.metafields.guide.comparison_options (metaobject list,
   "Guide Comparison Option" -- one entry per column) and
-  article.metafields.custom.comparison_table_caveat (single line text).
+  article.metafields.guide.comparison_caveat (single line text).
   Renders nothing if no options are set.
 
   Row order/labels are driven by a known-field map (Danish labels) with a
@@ -15,8 +15,8 @@
 {% endcomment %}
 
 {%- liquid
-  assign options = article.metafields.custom.comparison_table_options.value
-  assign caveat = article.metafields.custom.comparison_table_caveat.value
+  assign options = article.metafields.guide.comparison_options.value
+  assign caveat = article.metafields.guide.comparison_caveat.value
   assign known_row_keys = 'material,best_for,holds_temperature,dishwasher_safe,oven_microwave,leak_proof,chemical_free,warranty' | split: ','
 -%}
 
