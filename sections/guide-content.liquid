@@ -35,6 +35,7 @@
             if topic_id == blank
               assign topic_id = 'emne-' | append: forloop.index
             endif
+            assign topic_is_reversed = forloop.index0 | modulo: 2
           -%}
           <section
             class="guide-topic"
@@ -43,7 +44,7 @@
               data-guide-toc-label="{{ topic_heading | escape }}"
             {% endif %}
           >
-            <div class="guide-topic__grid {% if forloop.index0 | modulo: 2 == 1 %}guide-topic__grid--reverse{% endif %}">
+            <div class="guide-topic__grid {% if topic_is_reversed == 1 %}guide-topic__grid--reverse{% endif %}">
               <div>
                 {%- if topic_heading != blank -%}
                   <h2 class="guide-heading">{{ topic_heading | escape }}</h2>
