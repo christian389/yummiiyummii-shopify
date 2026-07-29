@@ -29,7 +29,11 @@
           }
         }
       },
-      "block_order": ["featured-image", "title", "content"],
+      "block_order": [
+        "featured-image",
+        "title",
+        "content"
+      ],
       "settings": {}
     },
     "quick-answer": {
@@ -88,7 +92,12 @@
           }
         }
       },
-      "block_order": ["badge-1", "badge-2", "badge-3", "badge-4"],
+      "block_order": [
+        "badge-1",
+        "badge-2",
+        "badge-3",
+        "badge-4"
+      ],
       "settings": {}
     },
     "related-products": {
