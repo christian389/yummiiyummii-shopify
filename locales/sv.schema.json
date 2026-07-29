@@ -3695,5 +3695,137 @@
     "search_form": {
       "name": "Sökformulär"
     }
+  },
+  "guide": {
+    "quick_answer": {
+      "name": "Guide: Quick answer",
+      "settings": {
+        "label": {
+          "label": "Eyebrow label"
+        }
+      }
+    },
+    "toc": {
+      "name": "Guide: Table of contents",
+      "settings": {
+        "heading": {
+          "label": "Heading"
+        }
+      }
+    },
+    "comparison_table": {
+      "name": "Guide: Comparison table",
+      "settings": {
+        "heading": {
+          "label": "Heading"
+        },
+        "subheading": {
+          "label": "Intro text"
+        },
+        "criteria_label": {
+          "label": "\"Criteria\" column label"
+        },
+        "link_row_label": {
+          "label": "Link row label"
+        }
+      }
+    },
+    "content": {
+      "name": "Guide: In-depth content",
+      "settings": {
+        "default_link_label": {
+          "label": "Default \"read more\" link label"
+        },
+        "audience_header": {
+          "content": "Audience / use-case cards"
+        },
+        "audience_heading": {
+          "label": "Heading"
+        },
+        "audience_intro": {
+          "label": "Intro text"
+        },
+        "care_header": {
+          "content": "Practical use / care cards"
+        },
+        "care_heading": {
+          "label": "Heading"
+        },
+        "care_intro": {
+          "label": "Intro text"
+        }
+      }
+    },
+    "faq": {
+      "name": "Guide: FAQ",
+      "settings": {
+        "heading": {
+          "label": "Heading"
+        }
+      }
+    },
+    "trust": {
+      "name": "Guide: Trust badges",
+      "settings": {
+        "heading": {
+          "label": "Heading"
+        },
+        "intro": {
+          "label": "Intro text"
+        }
+      },
+      "blocks": {
+        "badge": {
+          "name": "Badge",
+          "settings": {
+            "shape": {
+              "label": "Shape",
+              "options": {
+                "circle": "Circle",
+                "square": "Square",
+                "diamond": "Diamond"
+              }
+            },
+            "title": {
+              "label": "Title"
+            },
+            "caption": {
+              "label": "Caption"
+            }
+          }
+        }
+      }
+    },
+    "related_products": {
+      "name": "Guide: Related products",
+      "settings": {
+        "products_heading": {
+          "label": "Products heading"
+        },
+        "product_link_label": {
+          "label": "Product link label"
+        },
+        "see_also_heading": {
+          "label": "\"See also\" heading"
+        }
+      }
+    },
+    "cta": {
+      "name": "Guide: CTA banner",
+      "settings": {
+        "fallback_heading": {
+          "label": "Fallback heading"
+        },
+        "subheading": {
+          "label": "Subheading"
+        },
+        "fallback_link": {
+          "label": "Fallback link"
+        },
+        "link_label": {
+          "label": "Link label"
+        }
+      }
+    }
   }
 }

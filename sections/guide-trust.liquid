@@ -1,0 +1,135 @@
+{% comment %}
+  Guide -- Trust & sender / E-E-A-T badges (playbook section 8).
+  Not metaobject-driven -- no article metafield backs this, since the
+  credibility badges are brand-standard rather than per-guide facts. Normal
+  repeatable section blocks, preset with the 4 reference badges.
+{% endcomment %}
+
+{%- if section.blocks.size > 0 -%}
+  {{ 'guide.css' | asset_url | stylesheet_tag }}
+
+  <div class="guide">
+    <div
+      class="guide-section"
+      id="tillid"
+      data-guide-toc-label="{{ section.settings.heading | escape }}"
+    >
+      <div class="guide-trust">
+        <h2 class="guide-heading">{{ section.settings.heading | escape }}</h2>
+        {%- if section.settings.intro != blank -%}
+          <p class="guide-intro">{{ section.settings.intro | escape }}</p>
+        {%- endif -%}
+
+        <div class="guide-trust__grid">
+          {%- for block in section.blocks -%}
+            <div class="guide-trust__badge" {{ block.shopify_attributes }}>
+              <div class="guide-card__shape guide-card__shape--{{ block.settings.shape }}" aria-hidden="true"></div>
+              {%- if block.settings.title != blank -%}
+                <div class="guide-trust__title">{{ block.settings.title | escape }}</div>
+              {%- endif -%}
+              {%- if block.settings.caption != blank -%}
+                <div class="guide-trust__caption">{{ block.settings.caption | escape }}</div>
+              {%- endif -%}
+            </div>
+          {%- endfor -%}
+        </div>
+      </div>
+    </div>
+  </div>
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "t:guide.trust.name",
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "t:guide.trust.settings.heading.label",
+      "default": "Derfor kan du stole på det"
+    },
+    {
+      "type": "text",
+      "id": "intro",
+      "label": "t:guide.trust.settings.intro.label"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "badge",
+      "name": "t:guide.trust.blocks.badge.name",
+      "settings": [
+        {
+          "type": "select",
+          "id": "shape",
+          "label": "t:guide.trust.blocks.badge.settings.shape.label",
+          "options": [
+            {
+              "value": "circle",
+              "label": "t:guide.trust.blocks.badge.settings.shape.options.circle"
+            },
+            {
+              "value": "square",
+              "label": "t:guide.trust.blocks.badge.settings.shape.options.square"
+            },
+            {
+              "value": "diamond",
+              "label": "t:guide.trust.blocks.badge.settings.shape.options.diamond"
+            }
+          ],
+          "default": "circle"
+        },
+        {
+          "type": "text",
+          "id": "title",
+          "label": "t:guide.trust.blocks.badge.settings.title.label"
+        },
+        {
+          "type": "text",
+          "id": "caption",
+          "label": "t:guide.trust.blocks.badge.settings.caption.label"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "t:guide.trust.name",
+      "blocks": [
+        {
+          "type": "badge",
+          "settings": {
+            "shape": "circle",
+            "title": "Fødevaregodkendt i EU",
+            "caption": "Testet efter EU-forordning 1935/2004."
+          }
+        },
+        {
+          "type": "badge",
+          "settings": {
+            "shape": "square",
+            "title": "Fri for BPA og ftalater",
+            "caption": "Ingen mikroplastik i kontakt med maden."
+          }
+        },
+        {
+          "type": "badge",
+          "settings": {
+            "shape": "diamond",
+            "title": "10 års garanti på stål",
+            "caption": "Gælder materiale- og fabrikationsfejl."
+          }
+        },
+        {
+          "type": "badge",
+          "settings": {
+            "shape": "circle",
+            "title": "4,5 på Trustpilot",
+            "caption": "Baseret på over 1.200 anmeldelser."
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

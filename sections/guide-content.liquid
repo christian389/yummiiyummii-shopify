@@ -1,0 +1,219 @@
+{% comment %}
+  Guide -- consolidated "in-depth content" section (playbook sections 5-7):
+  in-depth topic sections, audience/use-case cards, and practical use/care
+  cards, each pulled from its own article metafield. Every subgroup renders
+  independently and is skipped entirely if its metafield is empty, so a
+  guide can ship with only some of the three filled in.
+
+  Assumed metafields (confirm handles against the live metaobject
+  definitions before relying on this):
+  - in_depth_topic_sections -> Guide Topic Section: heading, body, image, link_label, link
+  - audience_use_case_cards -> Guide Audience Card: image, title, body, link_label, link
+  - practical_use_care_cards -> Guide Care Card: title, body
+{% endcomment %}
+
+{%- liquid
+  assign topics = article.metafields.custom.in_depth_topic_sections.value
+  assign audience_cards = article.metafields.custom.audience_use_case_cards.value
+  assign care_cards = article.metafields.custom.practical_use_care_cards.value
+  assign has_any = false
+  if topics.size > 0 or audience_cards.size > 0 or care_cards.size > 0
+    assign has_any = true
+  endif
+-%}
+
+{%- if has_any -%}
+  {{ 'guide.css' | asset_url | stylesheet_tag }}
+
+  <div class="guide">
+    {%- if topics.size > 0 -%}
+      <div class="guide-section">
+        {%- for topic in topics -%}
+          {%- liquid
+            assign topic_heading = topic.fields.heading.value
+            assign topic_id = topic_heading | handleize
+            if topic_id == blank
+              assign topic_id = 'emne-' | append: forloop.index
+            endif
+          -%}
+          <section
+            class="guide-topic"
+            id="{{ topic_id }}"
+            {% if topic_heading != blank %}
+              data-guide-toc-label="{{ topic_heading | escape }}"
+            {% endif %}
+          >
+            <div class="guide-topic__grid {% if forloop.index0 | modulo: 2 == 1 %}guide-topic__grid--reverse{% endif %}">
+              <div>
+                {%- if topic_heading != blank -%}
+                  <h2 class="guide-heading">{{ topic_heading | escape }}</h2>
+                {%- endif -%}
+                {%- if topic.fields.body.value != blank -%}
+                  <div class="rte">{{ topic.fields.body.value }}</div>
+                {%- endif -%}
+                {%- if topic.fields.link.value != blank -%}
+                  <a class="guide-topic__link" href="{{ topic.fields.link.value }}">
+                    {{- topic.fields.link_label.value | default: section.settings.default_link_label | escape -}}
+                  </a>
+                {%- endif -%}
+              </div>
+
+              {%- if topic.fields.image.value != blank -%}
+                <div class="guide-topic__image">
+                  {%- render 'lazy-image',
+                    image: topic.fields.image.value,
+                    alt: topic_heading,
+                    ratio: '1.33333',
+                    sizes: '(max-width: 749px) 100vw, 50vw',
+                    class: 'lazy-image--to-reveal'
+                  -%}
+                </div>
+              {%- endif -%}
+            </div>
+          </section>
+        {%- endfor -%}
+      </div>
+    {%- endif -%}
+
+    {%- if audience_cards.size > 0 -%}
+      <div
+        class="guide-section"
+        id="maalgruppe"
+        {% if section.settings.audience_heading != blank %}
+          data-guide-toc-label="{{ section.settings.audience_heading | escape }}"
+        {% endif %}
+      >
+        {%- if section.settings.audience_heading != blank -%}
+          <h2 class="guide-heading">{{ section.settings.audience_heading | escape }}</h2>
+        {%- endif -%}
+        {%- if section.settings.audience_intro != blank -%}
+          <p class="guide-intro">{{ section.settings.audience_intro | escape }}</p>
+        {%- endif -%}
+
+        <div class="guide-card-grid">
+          {%- for card in audience_cards -%}
+            {%- assign card_tag = 'div' -%}
+            {%- if card.fields.link.value != blank -%}
+              {%- assign card_tag = 'a' -%}
+            {%- endif -%}
+            <{{ card_tag }}
+              class="guide-card"
+              {% if card_tag == 'a' %}href="{{ card.fields.link.value }}"{% endif %}
+            >
+              {%- if card.fields.image.value != blank -%}
+                <div class="guide-card__image">
+                  {%- render 'lazy-image',
+                    image: card.fields.image.value,
+                    alt: card.fields.title.value,
+                    ratio: '1.5',
+                    sizes: '(max-width: 749px) 100vw, 33vw'
+                  -%}
+                </div>
+              {%- endif -%}
+              {%- if card.fields.title.value != blank -%}
+                <h3 class="guide-card__title">{{ card.fields.title.value | escape }}</h3>
+              {%- endif -%}
+              {%- if card.fields.body.value != blank -%}
+                <p class="guide-card__body">{{ card.fields.body.value | escape }}</p>
+              {%- endif -%}
+              {%- if card.fields.link.value != blank and card.fields.link_label.value != blank -%}
+                <span class="guide-card__link">{{ card.fields.link_label.value | escape }}</span>
+              {%- endif -%}
+            </{{ card_tag }}>
+          {%- endfor -%}
+        </div>
+      </div>
+    {%- endif -%}
+
+    {%- if care_cards.size > 0 -%}
+      <div
+        class="guide-section"
+        id="rengoering"
+        {% if section.settings.care_heading != blank %}
+          data-guide-toc-label="{{ section.settings.care_heading | escape }}"
+        {% endif %}
+      >
+        {%- if section.settings.care_heading != blank -%}
+          <h2 class="guide-heading">{{ section.settings.care_heading | escape }}</h2>
+        {%- endif -%}
+        {%- if section.settings.care_intro != blank -%}
+          <p class="guide-intro">{{ section.settings.care_intro | escape }}</p>
+        {%- endif -%}
+
+        <div class="guide-card-grid">
+          {%- for card in care_cards -%}
+            {%- liquid
+              assign shape_index = forloop.index0 | modulo: 3
+              case shape_index
+                when 0
+                  assign shape_class = 'guide-card__shape--square'
+                when 1
+                  assign shape_class = 'guide-card__shape--circle'
+                else
+                  assign shape_class = 'guide-card__shape--diamond'
+              endcase
+            -%}
+            <div class="guide-card">
+              <div class="guide-card__shape {{ shape_class }}" aria-hidden="true"></div>
+              {%- if card.fields.title.value != blank -%}
+                <h3 class="guide-card__title">{{ card.fields.title.value | escape }}</h3>
+              {%- endif -%}
+              {%- if card.fields.body.value != blank -%}
+                <div class="guide-card__body">{{ card.fields.body.value }}</div>
+              {%- endif -%}
+            </div>
+          {%- endfor -%}
+        </div>
+      </div>
+    {%- endif -%}
+  </div>
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "t:guide.content.name",
+  "settings": [
+    {
+      "type": "text",
+      "id": "default_link_label",
+      "label": "t:guide.content.settings.default_link_label.label",
+      "default": "Se sortimentet"
+    },
+    {
+      "type": "header",
+      "content": "t:guide.content.settings.audience_header.content"
+    },
+    {
+      "type": "text",
+      "id": "audience_heading",
+      "label": "t:guide.content.settings.audience_heading.label",
+      "default": "Find den rette til dig"
+    },
+    {
+      "type": "text",
+      "id": "audience_intro",
+      "label": "t:guide.content.settings.audience_intro.label"
+    },
+    {
+      "type": "header",
+      "content": "t:guide.content.settings.care_header.content"
+    },
+    {
+      "type": "text",
+      "id": "care_heading",
+      "label": "t:guide.content.settings.care_heading.label",
+      "default": "Rengøring og praktisk brug"
+    },
+    {
+      "type": "text",
+      "id": "care_intro",
+      "label": "t:guide.content.settings.care_intro.label"
+    }
+  ],
+  "presets": [
+    {
+      "name": "t:guide.content.name"
+    }
+  ]
+}
+{% endschema %}

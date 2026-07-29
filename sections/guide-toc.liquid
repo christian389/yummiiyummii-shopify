@@ -1,0 +1,40 @@
+{% comment %}
+  Guide -- Table of contents (playbook section 3).
+  Renders an empty shell; assets/guide-toc.js builds the jump-link list
+  client-side from whichever [data-guide-toc-label] elements are present
+  further down the article (comparison table, in-depth topics/cards, FAQ).
+  This keeps the TOC correct automatically when a merchant reorders or
+  removes a guide section in the theme editor -- no manual link list to
+  maintain. Hides itself if no headings are found.
+{% endcomment %}
+
+{{ 'guide.css' | asset_url | stylesheet_tag }}
+<script src="{{ 'guide-toc.js' | asset_url }}" defer></script>
+
+<div class="guide">
+  <div class="guide-section">
+    <nav class="guide-toc" aria-label="{{ section.settings.heading | escape }}" data-guide-toc hidden>
+      <p class="guide-toc__heading">{{ section.settings.heading | escape }}</p>
+      <ul class="guide-toc__list" data-guide-toc-list></ul>
+    </nav>
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "t:guide.toc.name",
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "t:guide.toc.settings.heading.label",
+      "default": "Indhold"
+    }
+  ],
+  "presets": [
+    {
+      "name": "t:guide.toc.name"
+    }
+  ]
+}
+{% endschema %}

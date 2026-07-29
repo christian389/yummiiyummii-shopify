@@ -1,0 +1,155 @@
+{% comment %}
+  Guide -- Comparison table (playbook section 4).
+
+  Reads article.metafields.custom.comparison_table_options (metaobject list,
+  "Guide Comparison Option" -- one entry per column) and
+  article.metafields.custom.comparison_table_caveat (single line text).
+  Renders nothing if no options are set.
+
+  Row order/labels are driven by a known-field map (Danish labels) with a
+  humanized fallback for any field handle not in the map, so the table
+  degrades gracefully if the live metaobject definition's exact handles
+  differ slightly from the ones assumed here -- confirm against
+  Settings > Custom data > Metaobjects and adjust `known_row_keys` below
+  if needed.
+{% endcomment %}
+
+{%- liquid
+  assign options = article.metafields.custom.comparison_table_options.value
+  assign caveat = article.metafields.custom.comparison_table_caveat.value
+  assign known_row_keys = 'material,best_for,holds_temperature,dishwasher_safe,oven_microwave,leak_proof,chemical_free,warranty' | split: ','
+-%}
+
+{%- if options and options.size > 0 -%}
+  {{ 'guide.css' | asset_url | stylesheet_tag }}
+
+  <div class="guide">
+    <div
+      class="guide-section"
+      id="sammenligning"
+      data-guide-toc-label="{{ section.settings.heading | escape }}"
+    >
+      <h2 class="guide-heading">{{ section.settings.heading | escape }}</h2>
+      {%- if section.settings.subheading != blank -%}
+        <p class="guide-intro">{{ section.settings.subheading | escape }}</p>
+      {%- endif -%}
+
+      <div class="guide-table-wrap">
+        <table class="guide-table">
+          <thead>
+            <tr>
+              <th scope="col">{{ section.settings.criteria_label | escape }}</th>
+              {%- for option in options -%}
+                <th scope="col">{{ option.fields.name.value | escape }}</th>
+              {%- endfor -%}
+            </tr>
+          </thead>
+          <tbody>
+            {%- for row_key in known_row_keys -%}
+              {%- liquid
+                assign row_has_data = false
+                for option in options
+                  assign row_value = option.fields[row_key].value
+                  if row_value != blank
+                    assign row_has_data = true
+                  endif
+                endfor
+              -%}
+
+              {%- if row_has_data -%}
+                {%- case row_key -%}
+                  {%- when 'material' -%}
+                    {%- assign row_label = 'Materiale' -%}
+                  {%- when 'best_for' -%}
+                    {%- assign row_label = 'Bedst til' -%}
+                  {%- when 'holds_temperature' -%}
+                    {%- assign row_label = 'Holder temperatur' -%}
+                  {%- when 'dishwasher_safe' -%}
+                    {%- assign row_label = 'Opvaskemaskine' -%}
+                  {%- when 'oven_microwave' -%}
+                    {%- assign row_label = 'Ovn og mikroovn' -%}
+                  {%- when 'leak_proof' -%}
+                    {%- assign row_label = 'Lækagesikker' -%}
+                  {%- when 'chemical_free' -%}
+                    {%- assign row_label = 'Kemifri' -%}
+                  {%- when 'warranty' -%}
+                    {%- assign row_label = 'Garanti' -%}
+                  {%- else -%}
+                    {%- assign row_label = row_key | replace: '_', ' ' | capitalize -%}
+                {%- endcase -%}
+
+                <tr>
+                  <th scope="row">{{ row_label }}</th>
+                  {%- for option in options -%}
+                    <td>{{ option.fields[row_key].value }}</td>
+                  {%- endfor -%}
+                </tr>
+              {%- endif -%}
+            {%- endfor -%}
+
+            {%- liquid
+              assign any_link = false
+              for option in options
+                if option.fields.link.value != blank
+                  assign any_link = true
+                endif
+              endfor
+            -%}
+            {%- if any_link -%}
+              <tr>
+                <th scope="row">{{ section.settings.link_row_label | escape }}</th>
+                {%- for option in options -%}
+                  <td>
+                    {%- if option.fields.link.value != blank -%}
+                      <a href="{{ option.fields.link.value }}">{{ section.settings.link_row_label | escape }}</a>
+                    {%- endif -%}
+                  </td>
+                {%- endfor -%}
+              </tr>
+            {%- endif -%}
+          </tbody>
+        </table>
+      </div>
+
+      {%- if caveat != blank -%}
+        <p class="guide-table__caveat">{{ caveat | escape }}</p>
+      {%- endif -%}
+    </div>
+  </div>
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "t:guide.comparison_table.name",
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "t:guide.comparison_table.settings.heading.label",
+      "default": "Sammenligning"
+    },
+    {
+      "type": "text",
+      "id": "subheading",
+      "label": "t:guide.comparison_table.settings.subheading.label"
+    },
+    {
+      "type": "text",
+      "id": "criteria_label",
+      "label": "t:guide.comparison_table.settings.criteria_label.label",
+      "default": "Kriterium"
+    },
+    {
+      "type": "text",
+      "id": "link_row_label",
+      "label": "t:guide.comparison_table.settings.link_row_label.label",
+      "default": "Se sortimentet"
+    }
+  ],
+  "presets": [
+    {
+      "name": "t:guide.comparison_table.name"
+    }
+  ]
+}
+{% endschema %}

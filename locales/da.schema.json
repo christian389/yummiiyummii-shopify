@@ -3695,5 +3695,137 @@
     "search_form": {
       "name": "Søgeformular"
     }
+  },
+  "guide": {
+    "quick_answer": {
+      "name": "Guide: Hurtigt svar",
+      "settings": {
+        "label": {
+          "label": "Label"
+        }
+      }
+    },
+    "toc": {
+      "name": "Guide: Indholdsfortegnelse",
+      "settings": {
+        "heading": {
+          "label": "Overskrift"
+        }
+      }
+    },
+    "comparison_table": {
+      "name": "Guide: Sammenligningstabel",
+      "settings": {
+        "heading": {
+          "label": "Overskrift"
+        },
+        "subheading": {
+          "label": "Introtekst"
+        },
+        "criteria_label": {
+          "label": "Label for \"Kriterium\"-kolonnen"
+        },
+        "link_row_label": {
+          "label": "Label for link-rækken"
+        }
+      }
+    },
+    "content": {
+      "name": "Guide: Uddybende indhold",
+      "settings": {
+        "default_link_label": {
+          "label": "Standard-label for \"læs mere\"-link"
+        },
+        "audience_header": {
+          "content": "Målgruppe-kort"
+        },
+        "audience_heading": {
+          "label": "Overskrift"
+        },
+        "audience_intro": {
+          "label": "Introtekst"
+        },
+        "care_header": {
+          "content": "Praktisk brug / plejekort"
+        },
+        "care_heading": {
+          "label": "Overskrift"
+        },
+        "care_intro": {
+          "label": "Introtekst"
+        }
+      }
+    },
+    "faq": {
+      "name": "Guide: FAQ",
+      "settings": {
+        "heading": {
+          "label": "Overskrift"
+        }
+      }
+    },
+    "trust": {
+      "name": "Guide: Tillidsmærker",
+      "settings": {
+        "heading": {
+          "label": "Overskrift"
+        },
+        "intro": {
+          "label": "Introtekst"
+        }
+      },
+      "blocks": {
+        "badge": {
+          "name": "Mærke",
+          "settings": {
+            "shape": {
+              "label": "Form",
+              "options": {
+                "circle": "Cirkel",
+                "square": "Kvadrat",
+                "diamond": "Diamant"
+              }
+            },
+            "title": {
+              "label": "Titel"
+            },
+            "caption": {
+              "label": "Tekst"
+            }
+          }
+        }
+      }
+    },
+    "related_products": {
+      "name": "Guide: Relaterede produkter",
+      "settings": {
+        "products_heading": {
+          "label": "Overskrift for produkter"
+        },
+        "product_link_label": {
+          "label": "Label for produktlink"
+        },
+        "see_also_heading": {
+          "label": "Overskrift for \"Se også\""
+        }
+      }
+    },
+    "cta": {
+      "name": "Guide: CTA-banner",
+      "settings": {
+        "fallback_heading": {
+          "label": "Reserve-overskrift"
+        },
+        "subheading": {
+          "label": "Underoverskrift"
+        },
+        "fallback_link": {
+          "label": "Reserve-link"
+        },
+        "link_label": {
+          "label": "Label for link"
+        }
+      }
+    }
   }
 }

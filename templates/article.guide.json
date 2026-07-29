@@ -1,0 +1,114 @@
+{
+  "sections": {
+    "main-article": {
+      "type": "main-article",
+      "blocks": {
+        "featured-image": {
+          "type": "featured_image",
+          "settings": {
+            "aspect_ratio": "1.33333",
+            "image_border_radius": 16
+          }
+        },
+        "title": {
+          "type": "title",
+          "settings": {
+            "blog_show_date": true,
+            "blog_show_author": false,
+            "blog_show_comments": false,
+            "blog_show_title_tags": false
+          }
+        },
+        "content": {
+          "type": "content",
+          "disabled": true,
+          "settings": {
+            "has_social_buttons": false,
+            "blog_show_content_tags": false,
+            "blog_show_content_back": false
+          }
+        }
+      },
+      "block_order": ["featured-image", "title", "content"],
+      "settings": {}
+    },
+    "quick-answer": {
+      "type": "guide-quick-answer",
+      "settings": {}
+    },
+    "toc": {
+      "type": "guide-toc",
+      "settings": {}
+    },
+    "comparison-table": {
+      "type": "guide-comparison-table",
+      "settings": {}
+    },
+    "content": {
+      "type": "guide-content",
+      "settings": {}
+    },
+    "faq": {
+      "type": "guide-faq",
+      "settings": {}
+    },
+    "trust": {
+      "type": "guide-trust",
+      "blocks": {
+        "badge-1": {
+          "type": "badge",
+          "settings": {
+            "shape": "circle",
+            "title": "Fødevaregodkendt i EU",
+            "caption": "Testet efter EU-forordning 1935/2004."
+          }
+        },
+        "badge-2": {
+          "type": "badge",
+          "settings": {
+            "shape": "square",
+            "title": "Fri for BPA og ftalater",
+            "caption": "Ingen mikroplastik i kontakt med maden."
+          }
+        },
+        "badge-3": {
+          "type": "badge",
+          "settings": {
+            "shape": "diamond",
+            "title": "10 års garanti på stål",
+            "caption": "Gælder materiale- og fabrikationsfejl."
+          }
+        },
+        "badge-4": {
+          "type": "badge",
+          "settings": {
+            "shape": "circle",
+            "title": "4,5 på Trustpilot",
+            "caption": "Baseret på over 1.200 anmeldelser."
+          }
+        }
+      },
+      "block_order": ["badge-1", "badge-2", "badge-3", "badge-4"],
+      "settings": {}
+    },
+    "related-products": {
+      "type": "guide-related-products",
+      "settings": {}
+    },
+    "cta": {
+      "type": "guide-cta",
+      "settings": {}
+    }
+  },
+  "order": [
+    "main-article",
+    "quick-answer",
+    "toc",
+    "comparison-table",
+    "content",
+    "faq",
+    "trust",
+    "related-products",
+    "cta"
+  ]
+}

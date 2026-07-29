@@ -1,0 +1,57 @@
+{% comment %}
+  Renders FAQPage JSON-LD for a Guide article.
+
+  Article + BreadcrumbList structured data already emit automatically for
+  every article page via snippets/microdata-schema.liquid ({{ article |
+  structured_data }} + a hand-built BreadcrumbList) -- this snippet only
+  covers FAQPage, which Shopify's native structured_data filter does not
+  produce. Renders nothing if the guide has no FAQ items, so it never
+  outputs an empty/invalid FAQPage block.
+
+  Assumes article.metafields.custom.faq_items is a metaobject list with
+  "question" and "answer" fields (Guide FAQ Item definition) -- confirm the
+  exact handles against Settings > Custom data > Metaobjects before relying
+  on this in production; adjust the assign below if they differ.
+
+  Usage:
+  {% render 'guide-schema' %}
+{% endcomment %}
+
+{%- liquid
+  assign faq_items = article.metafields.custom.faq_items.value
+-%}
+
+{%- if faq_items and faq_items.size > 0 -%}
+  {%- liquid
+    assign rendered_count = 0
+  -%}
+  {%- capture faq_json -%}
+    {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      "mainEntity": [
+        {%- for item in faq_items -%}
+          {%- liquid
+            assign question = item.fields.question.value
+            assign answer = item.fields.answer.value | strip_html | strip_newlines
+          -%}
+          {%- if question != blank and answer != blank -%}
+            {%- if rendered_count > 0 -%},{%- endif -%}
+            {
+              "@type": "Question",
+              "name": {{ question | strip_html | strip_newlines | json }},
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": {{ answer | json }}
+              }
+            }
+            {%- assign rendered_count = rendered_count | plus: 1 -%}
+          {%- endif -%}
+        {%- endfor -%}
+      ]
+    }
+  {%- endcapture -%}
+  {%- if rendered_count > 0 -%}
+    <script type="application/ld+json">{{ faq_json }}</script>
+  {%- endif -%}
+{%- endif -%}

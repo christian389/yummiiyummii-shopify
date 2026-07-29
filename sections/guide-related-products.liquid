@@ -1,0 +1,107 @@
+{% comment %}
+  Guide -- See also links + related products (playbook section 10, minus
+  the CTA band which is its own section: guide-cta.liquid).
+
+  Reads article.metafields.custom.see_also_links (metaobject list, "Guide
+  Related Link": title, url) and article.metafields.custom.related_products
+  (product list). Either subgroup renders independently and is skipped if
+  empty.
+{% endcomment %}
+
+{%- liquid
+  assign see_also = article.metafields.custom.see_also_links.value
+  assign related_products = article.metafields.custom.related_products.value
+  assign has_any = false
+  if see_also.size > 0 or related_products.size > 0
+    assign has_any = true
+  endif
+-%}
+
+{%- if has_any -%}
+  {{ 'guide.css' | asset_url | stylesheet_tag }}
+
+  <div class="guide">
+    <div
+      class="guide-section"
+      id="relaterede"
+      {% if related_products.size > 0 %}
+        data-guide-toc-label="{{ section.settings.products_heading | escape }}"
+      {% elsif see_also.size > 0 %}
+        data-guide-toc-label="{{ section.settings.see_also_heading | escape }}"
+      {% endif %}
+    >
+      {%- if related_products.size > 0 -%}
+        <h2 class="guide-heading">{{ section.settings.products_heading | escape }}</h2>
+
+        <div class="guide-card-grid">
+          {%- for product in related_products -%}
+            {%- assign product_variant = product.selected_or_first_available_variant -%}
+            <div class="guide-product-card">
+              <div class="guide-product-card__image">
+                {%- render 'lazy-image',
+                  image: product.featured_image,
+                  alt: product.title,
+                  ratio: '1',
+                  sizes: '(max-width: 749px) 50vw, 25vw'
+                -%}
+              </div>
+              <div class="guide-product-card__body">
+                <div class="guide-product-card__title">{{ product.title | escape }}</div>
+                <div class="guide-product-card__price">
+                  {%- render 'product-price', target: product, variant: product_variant, product_price_varies: product.price_varies -%}
+                </div>
+                <a class="guide-product-card__link" href="{{ product.url }}">
+                  {{- section.settings.product_link_label | escape -}}
+                </a>
+              </div>
+            </div>
+          {%- endfor -%}
+        </div>
+      {%- endif -%}
+
+      {%- if see_also.size > 0 -%}
+        <h3 class="guide-related-links__label">
+          {{- section.settings.see_also_heading | escape -}}
+        </h3>
+        <div class="guide-related-links">
+          {%- for link in see_also -%}
+            {%- if link.fields.url.value != blank -%}
+              <a href="{{ link.fields.url.value }}">{{ link.fields.title.value | escape }}</a>
+            {%- endif -%}
+          {%- endfor -%}
+        </div>
+      {%- endif -%}
+    </div>
+  </div>
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "t:guide.related_products.name",
+  "settings": [
+    {
+      "type": "text",
+      "id": "products_heading",
+      "label": "t:guide.related_products.settings.products_heading.label",
+      "default": "Populære produkter"
+    },
+    {
+      "type": "text",
+      "id": "product_link_label",
+      "label": "t:guide.related_products.settings.product_link_label.label",
+      "default": "Se produkt"
+    },
+    {
+      "type": "text",
+      "id": "see_also_heading",
+      "label": "t:guide.related_products.settings.see_also_heading.label",
+      "default": "Se også"
+    }
+  ],
+  "presets": [
+    {
+      "name": "t:guide.related_products.name"
+    }
+  ]
+}
+{% endschema %}
