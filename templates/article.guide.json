@@ -1,3 +1,12 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
 {
   "sections": {
     "main-article": {
@@ -38,23 +47,40 @@
     },
     "quick-answer": {
       "type": "guide-quick-answer",
-      "settings": {}
+      "settings": {
+        "label": "Hurtigt svar"
+      }
     },
     "toc": {
       "type": "guide-toc",
-      "settings": {}
+      "settings": {
+        "heading": "Indhold"
+      }
     },
     "comparison-table": {
       "type": "guide-comparison-table",
-      "settings": {}
+      "settings": {
+        "heading": "Comparison",
+        "subheading": "",
+        "criteria_label": "Kriterium",
+        "link_row_label": "Se sortimentet"
+      }
     },
     "content": {
       "type": "guide-content",
-      "settings": {}
+      "settings": {
+        "default_link_label": "Se sortimentet",
+        "audience_heading": "Find den rette til dig",
+        "audience_intro": "",
+        "care_heading": "Rengøring og praktisk brug",
+        "care_intro": ""
+      }
     },
     "faq": {
       "type": "guide-faq",
-      "settings": {}
+      "settings": {
+        "heading": "Ofte stillede spørgsmål"
+      }
     },
     "trust": {
       "type": "guide-trust",
@@ -98,15 +124,27 @@
         "badge-3",
         "badge-4"
       ],
-      "settings": {}
+      "settings": {
+        "heading": "Derfor kan du stole på det",
+        "intro": ""
+      }
     },
     "related-products": {
       "type": "guide-related-products",
-      "settings": {}
+      "settings": {
+        "products_heading": "Populære produkter",
+        "product_link_label": "Se produkt",
+        "see_also_heading": "Se også"
+      }
     },
     "cta": {
       "type": "guide-cta",
-      "settings": {}
+      "settings": {
+        "fallback_heading": "Skal du i gang med den plastikfri madpakke?",
+        "subheading": "Fri fragt over 400 kr. og 30 dages returret på hele sortimentet.",
+        "fallback_link": "",
+        "link_label": "Se alle produkter"
+      }
     }
   },
   "order": [
