@@ -19,8 +19,11 @@
     var list = toc.querySelector('[data-guide-toc-list]');
     if (!list) return;
 
-    var article = toc.closest('.guide') || document;
-    var targets = article.querySelectorAll('[data-guide-toc-label]');
+    // Each guide-*.liquid section renders its own independent .guide wrapper
+    // (they're sibling sections on the page, not nested in a shared one), so
+    // the labeled targets must be searched for document-wide, not scoped to
+    // the TOC's own wrapper.
+    var targets = document.querySelectorAll('[data-guide-toc-label]');
     var usedIds = {};
     var items = [];
 
