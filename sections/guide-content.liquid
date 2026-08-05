@@ -5,11 +5,12 @@
   independently and is skipped entirely if its metafield is empty, so a
   guide can ship with only some of the three filled in.
 
-  Metafields (namespace: guide) -- inner metaobject field handles below are
-  still assumed/unconfirmed:
-  - topic_sections -> Guide Topic Section: heading, body, image, link_label, link
-  - audience_cards -> Guide Audience Card: image, title, body, link_label, link
-  - care_cards -> Guide Care Card: title, body
+  Metafields (namespace: guide) -- field handles confirmed against the live
+  metaobject definitions:
+  - topic_sections -> Guide Topic Section: heading, body (rich text), image,
+    badge_1/2/3, cta_text, cta_url
+  - audience_cards -> Guide Audience Card: image, title, description, link_url
+  - care_cards -> Guide Care Card: material_label, icon, tips
 {% endcomment %}
 
 {%- liquid
@@ -50,11 +51,33 @@
                   <h2 class="guide-heading">{{ topic_heading | escape }}</h2>
                 {%- endif -%}
                 {%- if topic.fields.body.value != blank -%}
-                  <div class="rte">{{ topic.fields.body.value }}</div>
+                  <div class="rte">{{ topic.fields.body | metafield_tag }}</div>
                 {%- endif -%}
-                {%- if topic.fields.link.value != blank -%}
-                  <a class="guide-topic__link" href="{{ topic.fields.link.value }}">
-                    {{- topic.fields.link_label.value | default: section.settings.default_link_label | escape -}}
+
+                {%- liquid
+                  assign badges = ''
+                  if topic.fields.badge_1.value != blank
+                    assign badges = badges | append: topic.fields.badge_1.value | append: '||'
+                  endif
+                  if topic.fields.badge_2.value != blank
+                    assign badges = badges | append: topic.fields.badge_2.value | append: '||'
+                  endif
+                  if topic.fields.badge_3.value != blank
+                    assign badges = badges | append: topic.fields.badge_3.value | append: '||'
+                  endif
+                  assign badge_list = badges | split: '||'
+                -%}
+                {%- if badge_list.size > 0 -%}
+                  <div class="guide-topic__pills">
+                    {%- for badge in badge_list -%}
+                      <span class="guide-pill">{{ badge | escape }}</span>
+                    {%- endfor -%}
+                  </div>
+                {%- endif -%}
+
+                {%- if topic.fields.cta_url.value != blank -%}
+                  <a class="guide-topic__link" href="{{ topic.fields.cta_url.value }}">
+                    {{- topic.fields.cta_text.value | default: section.settings.default_link_label | escape -}}
                   </a>
                 {%- endif -%}
               </div>
@@ -94,12 +117,12 @@
         <div class="guide-card-grid">
           {%- for card in audience_cards -%}
             {%- assign card_tag = 'div' -%}
-            {%- if card.fields.link.value != blank -%}
+            {%- if card.fields.link_url.value != blank -%}
               {%- assign card_tag = 'a' -%}
             {%- endif -%}
             <{{ card_tag }}
               class="guide-card"
-              {% if card_tag == 'a' %}href="{{ card.fields.link.value }}"{% endif %}
+              {% if card_tag == 'a' %}href="{{ card.fields.link_url.value }}"{% endif %}
             >
               {%- if card.fields.image.value != blank -%}
                 <div class="guide-card__image">
@@ -114,11 +137,11 @@
               {%- if card.fields.title.value != blank -%}
                 <h3 class="guide-card__title">{{ card.fields.title.value | escape }}</h3>
               {%- endif -%}
-              {%- if card.fields.body.value != blank -%}
-                <p class="guide-card__body">{{ card.fields.body.value | escape }}</p>
+              {%- if card.fields.description.value != blank -%}
+                <p class="guide-card__body">{{ card.fields.description.value | escape | newline_to_br }}</p>
               {%- endif -%}
-              {%- if card.fields.link.value != blank and card.fields.link_label.value != blank -%}
-                <span class="guide-card__link">{{ card.fields.link_label.value | escape }}</span>
+              {%- if card.fields.link_url.value != blank -%}
+                <span class="guide-card__link">{{ section.settings.default_link_label | escape }}</span>
               {%- endif -%}
             </{{ card_tag }}>
           {%- endfor -%}
@@ -156,11 +179,21 @@
             -%}
             <div class="guide-card">
               <div class="guide-card__shape {{ shape_class }}" aria-hidden="true"></div>
-              {%- if card.fields.title.value != blank -%}
-                <h3 class="guide-card__title">{{ card.fields.title.value | escape }}</h3>
+              {%- if card.fields.material_label.value != blank -%}
+                <h3 class="guide-card__title">{{ card.fields.material_label.value | escape }}</h3>
               {%- endif -%}
-              {%- if card.fields.body.value != blank -%}
-                <div class="guide-card__body">{{ card.fields.body.value }}</div>
+              {%- if card.fields.tips.value != blank -%}
+                {%- assign tip_lines = card.fields.tips.value | newline_to_br | split: '<br />' -%}
+                <div class="guide-card__body">
+                  <ul>
+                    {%- for tip in tip_lines -%}
+                      {%- assign trimmed_tip = tip | strip -%}
+                      {%- if trimmed_tip != blank -%}
+                        <li>{{ trimmed_tip | escape }}</li>
+                      {%- endif -%}
+                    {%- endfor -%}
+                  </ul>
+                </div>
               {%- endif -%}
             </div>
           {%- endfor -%}

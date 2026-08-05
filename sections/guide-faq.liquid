@@ -54,7 +54,7 @@
                   class="toggle__content rte"
                   role="region"
                 >
-                  {{ answer }}
+                  {{ answer | escape | newline_to_br }}
                 </div>
               </toggle-tab>
             {%- endif -%}

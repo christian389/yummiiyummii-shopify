@@ -16,7 +16,7 @@
     <div class="guide-section guide-section--first">
       <div class="guide-callout">
         <h2 class="guide-callout__label">{{ section.settings.label | escape }}</h2>
-        <div class="guide-callout__text rte">{{ quick_answer | newline_to_br }}</div>
+        <div class="guide-callout__text rte">{{ quick_answer | escape | newline_to_br }}</div>
       </div>
     </div>
   </div>

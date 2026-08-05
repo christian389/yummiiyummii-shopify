@@ -3,7 +3,7 @@
   the CTA band which is its own section: guide-cta.liquid).
 
   Reads article.metafields.guide.see_also_links (metaobject list, "Guide
-  Related Link": title, url) and article.metafields.guide.related_products
+  Related Link": label, url) and article.metafields.guide.related_products
   (product list). Either subgroup renders independently and is skipped if
   empty.
 {% endcomment %}
@@ -66,7 +66,7 @@
         <div class="guide-related-links">
           {%- for link in see_also -%}
             {%- if link.fields.url.value != blank -%}
-              <a href="{{ link.fields.url.value }}">{{ link.fields.title.value | escape }}</a>
+              <a href="{{ link.fields.url.value }}">{{ link.fields.label.value | escape }}</a>
             {%- endif -%}
           {%- endfor -%}
         </div>

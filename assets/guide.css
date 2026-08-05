@@ -173,6 +173,22 @@
   background: var(--guide-cream-light);
 }
 
+.guide-topic__pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 24px;
+}
+
+.guide-pill {
+  font-size: 13px;
+  padding: 7px 14px;
+  border-radius: 999px;
+  background: var(--guide-cream);
+  color: var(--guide-green-dark);
+  font-weight: var(--font-weight-body-primary-medium);
+}
+
 .guide-topic__link {
   margin-top: 24px;
   display: inline-block;
