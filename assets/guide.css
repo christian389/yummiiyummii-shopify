@@ -160,6 +160,10 @@
   margin-top: 72px;
 }
 
+.guide-topic .guide-heading {
+  margin-bottom: 16px;
+}
+
 .guide-topic__grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
@@ -202,6 +206,10 @@
 }
 
 /* Card grids (audience/use-case + practical/care cards) */
+#relaterede .guide-heading {
+  margin-bottom: 32px;
+}
+
 .guide-card-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
@@ -308,6 +316,10 @@ a.guide-card:hover {
    toggle-group web component (component-toggle.js/css), same contract as
    sections/content-toggles.liquid. Rules are scoped under .guide-faq so
    they never affect other toggle-tab usages elsewhere on the site. */
+#faq .guide-heading {
+  margin-bottom: 32px;
+}
+
 .guide-faq {
   max-width: var(--guide-max-width);
 }
