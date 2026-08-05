@@ -67,4 +67,17 @@
   document.addEventListener('DOMContentLoaded', function () {
     document.querySelectorAll('[data-guide-toc]').forEach(init);
   });
+
+  // Smooth-scrolls TOC jump links without setting html{scroll-behavior}
+  // globally (mirrors the [data-yylp-anchor] handler in yy-landing.js).
+  document.addEventListener('click', function (e) {
+    var link = e.target.closest('[data-guide-toc-list] a');
+    if (!link) return;
+    var href = link.getAttribute('href') || '';
+    if (href.charAt(0) !== '#' || href.length < 2) return;
+    var target = document.getElementById(href.slice(1));
+    if (!target) return;
+    e.preventDefault();
+    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  });
 })();

@@ -23,6 +23,7 @@
   max-width: 1080px;
   margin: 0 auto;
   padding: 64px 24px 0;
+  scroll-margin-top: 24px;
 }
 
 .guide-section--first {
