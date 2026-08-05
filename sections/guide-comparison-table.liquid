@@ -6,12 +6,17 @@
   article.metafields.guide.comparison_caveat (single line text).
   Renders nothing if no options are set.
 
-  Row order/labels are driven by a known-field map (Danish labels) with a
-  humanized fallback for any field handle not in the map, so the table
-  degrades gracefully if the live metaobject definition's exact handles
-  differ slightly from the ones assumed here -- confirm against
-  Settings > Custom data > Metaobjects and adjust `known_row_keys` below
-  if needed.
+  Field handles (name, material, best_for, temp_retention, dishwasher_safe,
+  oven_microwave, leak_proof, chemical_free, warranty, collection_url)
+  confirmed against the live "Guide Comparison Option" metaobject
+  definition. Row order/labels are driven by a known-field map (Danish
+  labels) with a humanized fallback for any unrecognized field key, so the
+  table still degrades gracefully if a handle changes later.
+
+  Cell values are looked up via `for field in option.fields` + `field.key ==`
+  rather than dynamic bracket access (`option.fields[row_key]`), since only
+  the enumeration pattern is documented/confirmed to work on metaobject
+  field collections.
 {% endcomment %}
 
 {%- liquid
@@ -49,10 +54,11 @@
               {%- liquid
                 assign row_has_data = false
                 for option in options
-                  assign row_value = option.fields[row_key].value
-                  if row_value != blank
-                    assign row_has_data = true
-                  endif
+                  for field in option.fields
+                    if field.key == row_key and field.value != blank
+                      assign row_has_data = true
+                    endif
+                  endfor
                 endfor
               -%}
 
@@ -81,7 +87,15 @@
                 <tr>
                   <th scope="row">{{ row_label }}</th>
                   {%- for option in options -%}
-                    <td>{{ option.fields[row_key].value }}</td>
+                    {%- liquid
+                      assign cell_value = ''
+                      for field in option.fields
+                        if field.key == row_key
+                          assign cell_value = field.value
+                        endif
+                      endfor
+                    -%}
+                    <td>{{ cell_value }}</td>
                   {%- endfor -%}
                 </tr>
               {%- endif -%}
