@@ -17,7 +17,7 @@
 {%- liquid
   assign options = article.metafields.guide.comparison_options.value
   assign caveat = article.metafields.guide.comparison_caveat.value
-  assign known_row_keys = 'material,best_for,holds_temperature,dishwasher_safe,oven_microwave,leak_proof,chemical_free,warranty' | split: ','
+  assign known_row_keys = 'material,best_for,temp_retention,dishwasher_safe,oven_microwave,leak_proof,chemical_free,warranty' | split: ','
 -%}
 
 {%- if options and options.size > 0 -%}
@@ -62,7 +62,7 @@
                     {%- assign row_label = 'Materiale' -%}
                   {%- when 'best_for' -%}
                     {%- assign row_label = 'Bedst til' -%}
-                  {%- when 'holds_temperature' -%}
+                  {%- when 'temp_retention' -%}
                     {%- assign row_label = 'Holder temperatur' -%}
                   {%- when 'dishwasher_safe' -%}
                     {%- assign row_label = 'Opvaskemaskine' -%}
@@ -90,7 +90,7 @@
             {%- liquid
               assign any_link = false
               for option in options
-                if option.fields.link.value != blank
+                if option.fields.collection_url.value != blank
                   assign any_link = true
                 endif
               endfor
@@ -100,8 +100,8 @@
                 <th scope="row">{{ section.settings.link_row_label | escape }}</th>
                 {%- for option in options -%}
                   <td>
-                    {%- if option.fields.link.value != blank -%}
-                      <a href="{{ option.fields.link.value }}">{{ section.settings.link_row_label | escape }}</a>
+                    {%- if option.fields.collection_url.value != blank -%}
+                      <a href="{{ option.fields.collection_url.value }}">{{ section.settings.link_row_label | escape }}</a>
                     {%- endif -%}
                   </td>
                 {%- endfor -%}
