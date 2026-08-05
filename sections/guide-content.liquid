@@ -25,6 +25,17 @@
   if topics.size > 0 or audience_cards.size > 0 or care_cards.size > 0
     assign has_any = true
   endif
+
+  assign topics_is_last = false
+  assign audience_cards_is_last = false
+  assign care_cards_is_last = false
+  if care_cards.size > 0
+    assign care_cards_is_last = true
+  elsif audience_cards.size > 0
+    assign audience_cards_is_last = true
+  elsif topics.size > 0
+    assign topics_is_last = true
+  endif
 -%}
 
 {%- if has_any -%}
@@ -32,7 +43,7 @@
 
   <div class="guide">
     {%- if topics.size > 0 -%}
-      <div class="guide-section">
+      <div class="guide-section{% if topics_is_last %} guide-section--last{% endif %}">
         {%- for topic in topics -%}
           {%- liquid
             assign topic_heading = topic.heading.value
@@ -105,7 +116,7 @@
 
     {%- if audience_cards.size > 0 -%}
       <div
-        class="guide-section"
+        class="guide-section{% if audience_cards_is_last %} guide-section--last{% endif %}"
         id="maalgruppe"
         {% if section.settings.audience_heading != blank %}
           data-guide-toc-label="{{ section.settings.audience_heading | escape }}"
@@ -155,7 +166,7 @@
 
     {%- if care_cards.size > 0 -%}
       <div
-        class="guide-section"
+        class="guide-section{% if care_cards_is_last %} guide-section--last{% endif %}"
         id="rengoering"
         {% if section.settings.care_heading != blank %}
           data-guide-toc-label="{{ section.settings.care_heading | escape }}"

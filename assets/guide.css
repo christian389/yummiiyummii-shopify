@@ -29,6 +29,10 @@
   padding-top: 40px;
 }
 
+.guide-section--last {
+  padding-bottom: 64px;
+}
+
 .guide-heading {
   margin: 0;
   font-family: var(--font-stack-headings-primary), sans-serif;
@@ -345,6 +349,10 @@ a.guide-card:hover {
   max-width: 1080px;
   margin: 0 auto;
   padding: 64px 24px;
+}
+
+.guide-trust .guide-heading {
+  margin-bottom: 32px;
 }
 
 .guide-trust__grid {
