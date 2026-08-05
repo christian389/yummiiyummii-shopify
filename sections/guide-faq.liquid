@@ -34,8 +34,8 @@
       <div class="guide-faq">
         <toggle-group>
           {%- for item in faq_items -%}
-            {%- assign question = item.fields.question.value -%}
-            {%- assign answer = item.fields.answer.value -%}
+            {%- assign question = item.question.value -%}
+            {%- assign answer = item.answer.value -%}
             {%- if question != blank and answer != blank -%}
               <toggle-tab class="toggle">
                 <div

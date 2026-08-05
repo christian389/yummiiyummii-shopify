@@ -11,6 +11,10 @@
     badge_1/2/3, cta_text, cta_url
   - audience_cards -> Guide Audience Card: image, title, description, link_url
   - care_cards -> Guide Care Card: material_label, icon, tips
+
+  Field values are read directly off each metaobject entry (e.g.
+  topic.heading.value), not via a `.fields.` accessor -- see the note in
+  sections/guide-comparison-table.liquid.
 {% endcomment %}
 
 {%- liquid
@@ -31,7 +35,7 @@
       <div class="guide-section">
         {%- for topic in topics -%}
           {%- liquid
-            assign topic_heading = topic.fields.heading.value
+            assign topic_heading = topic.heading.value
             assign topic_id = topic_heading | handleize
             if topic_id == blank
               assign topic_id = 'emne-' | append: forloop.index
@@ -50,20 +54,20 @@
                 {%- if topic_heading != blank -%}
                   <h2 class="guide-heading">{{ topic_heading | escape }}</h2>
                 {%- endif -%}
-                {%- if topic.fields.body.value != blank -%}
-                  <div class="rte">{{ topic.fields.body | metafield_tag }}</div>
+                {%- if topic.body.value != blank -%}
+                  <div class="rte">{{ topic.body | metafield_tag }}</div>
                 {%- endif -%}
 
                 {%- liquid
                   assign badges = ''
-                  if topic.fields.badge_1.value != blank
-                    assign badges = badges | append: topic.fields.badge_1.value | append: '||'
+                  if topic.badge_1.value != blank
+                    assign badges = badges | append: topic.badge_1.value | append: '||'
                   endif
-                  if topic.fields.badge_2.value != blank
-                    assign badges = badges | append: topic.fields.badge_2.value | append: '||'
+                  if topic.badge_2.value != blank
+                    assign badges = badges | append: topic.badge_2.value | append: '||'
                   endif
-                  if topic.fields.badge_3.value != blank
-                    assign badges = badges | append: topic.fields.badge_3.value | append: '||'
+                  if topic.badge_3.value != blank
+                    assign badges = badges | append: topic.badge_3.value | append: '||'
                   endif
                   assign badge_list = badges | split: '||'
                 -%}
@@ -75,17 +79,17 @@
                   </div>
                 {%- endif -%}
 
-                {%- if topic.fields.cta_url.value != blank -%}
-                  <a class="guide-topic__link" href="{{ topic.fields.cta_url.value }}">
-                    {{- topic.fields.cta_text.value | default: section.settings.default_link_label | escape -}}
+                {%- if topic.cta_url.value != blank -%}
+                  <a class="guide-topic__link" href="{{ topic.cta_url.value }}">
+                    {{- topic.cta_text.value | default: section.settings.default_link_label | escape -}}
                   </a>
                 {%- endif -%}
               </div>
 
-              {%- if topic.fields.image.value != blank -%}
+              {%- if topic.image.value != blank -%}
                 <div class="guide-topic__image">
                   {%- render 'lazy-image',
-                    image: topic.fields.image.value,
+                    image: topic.image.value,
                     alt: topic_heading,
                     ratio: '1.33333',
                     sizes: '(max-width: 749px) 100vw, 50vw',
@@ -117,30 +121,30 @@
         <div class="guide-card-grid">
           {%- for card in audience_cards -%}
             {%- assign card_tag = 'div' -%}
-            {%- if card.fields.link_url.value != blank -%}
+            {%- if card.link_url.value != blank -%}
               {%- assign card_tag = 'a' -%}
             {%- endif -%}
             <{{ card_tag }}
               class="guide-card"
-              {% if card_tag == 'a' %}href="{{ card.fields.link_url.value }}"{% endif %}
+              {% if card_tag == 'a' %}href="{{ card.link_url.value }}"{% endif %}
             >
-              {%- if card.fields.image.value != blank -%}
+              {%- if card.image.value != blank -%}
                 <div class="guide-card__image">
                   {%- render 'lazy-image',
-                    image: card.fields.image.value,
-                    alt: card.fields.title.value,
+                    image: card.image.value,
+                    alt: card.title.value,
                     ratio: '1.5',
                     sizes: '(max-width: 749px) 100vw, 33vw'
                   -%}
                 </div>
               {%- endif -%}
-              {%- if card.fields.title.value != blank -%}
-                <h3 class="guide-card__title">{{ card.fields.title.value | escape }}</h3>
+              {%- if card.title.value != blank -%}
+                <h3 class="guide-card__title">{{ card.title.value | escape }}</h3>
               {%- endif -%}
-              {%- if card.fields.description.value != blank -%}
-                <p class="guide-card__body">{{ card.fields.description.value | escape | newline_to_br }}</p>
+              {%- if card.description.value != blank -%}
+                <p class="guide-card__body">{{ card.description.value | escape | newline_to_br }}</p>
               {%- endif -%}
-              {%- if card.fields.link_url.value != blank -%}
+              {%- if card.link_url.value != blank -%}
                 <span class="guide-card__link">{{ section.settings.default_link_label | escape }}</span>
               {%- endif -%}
             </{{ card_tag }}>
@@ -179,11 +183,11 @@
             -%}
             <div class="guide-card">
               <div class="guide-card__shape {{ shape_class }}" aria-hidden="true"></div>
-              {%- if card.fields.material_label.value != blank -%}
-                <h3 class="guide-card__title">{{ card.fields.material_label.value | escape }}</h3>
+              {%- if card.material_label.value != blank -%}
+                <h3 class="guide-card__title">{{ card.material_label.value | escape }}</h3>
               {%- endif -%}
-              {%- if card.fields.tips.value != blank -%}
-                {%- assign tip_lines = card.fields.tips.value | newline_to_br | split: '<br />' -%}
+              {%- if card.tips.value != blank -%}
+                {%- assign tip_lines = card.tips.value | newline_to_br | split: '<br />' -%}
                 <div class="guide-card__body">
                   <ul>
                     {%- for tip in tip_lines -%}

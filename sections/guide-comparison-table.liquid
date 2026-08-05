@@ -13,10 +13,14 @@
   labels) with a humanized fallback for any unrecognized field key, so the
   table still degrades gracefully if a handle changes later.
 
-  Cell values are looked up via `for field in option.fields` + `field.key ==`
-  rather than dynamic bracket access (`option.fields[row_key]`), since only
-  the enumeration pattern is documented/confirmed to work on metaobject
-  field collections.
+  Per Shopify's Liquid metaobject reference
+  (https://shopify.dev/docs/api/liquid/objects/metaobject), a metaobject
+  entry's field values are read directly off the entry by field key --
+  `option.<key>.value`, or `option[<key>].value` for a dynamic key -- not
+  through a `.fields.<key>` accessor. `.fields` (an array of field objects)
+  is a GraphQL Admin/Storefront API shape, not a documented Liquid property,
+  so `option.fields.x.value` / `option.fields[x].value` silently resolve to
+  nothing instead of erroring.
 {% endcomment %}
 
 {%- liquid
@@ -45,7 +49,7 @@
             <tr>
               <th scope="col">{{ section.settings.criteria_label | escape }}</th>
               {%- for option in options -%}
-                <th scope="col">{{ option.fields.name.value | escape }}</th>
+                <th scope="col">{{ option.name.value | escape }}</th>
               {%- endfor -%}
             </tr>
           </thead>
@@ -54,11 +58,10 @@
               {%- liquid
                 assign row_has_data = false
                 for option in options
-                  for field in option.fields
-                    if field.key == row_key and field.value != blank
-                      assign row_has_data = true
-                    endif
-                  endfor
+                  assign row_value = option[row_key].value
+                  if row_value != blank
+                    assign row_has_data = true
+                  endif
                 endfor
               -%}
 
@@ -87,15 +90,7 @@
                 <tr>
                   <th scope="row">{{ row_label }}</th>
                   {%- for option in options -%}
-                    {%- liquid
-                      assign cell_value = ''
-                      for field in option.fields
-                        if field.key == row_key
-                          assign cell_value = field.value
-                        endif
-                      endfor
-                    -%}
-                    <td>{{ cell_value }}</td>
+                    <td>{{ option[row_key].value }}</td>
                   {%- endfor -%}
                 </tr>
               {%- endif -%}
@@ -104,7 +99,7 @@
             {%- liquid
               assign any_link = false
               for option in options
-                if option.fields.collection_url.value != blank
+                if option.collection_url.value != blank
                   assign any_link = true
                 endif
               endfor
@@ -114,8 +109,8 @@
                 <th scope="row">{{ section.settings.link_row_label | escape }}</th>
                 {%- for option in options -%}
                   <td>
-                    {%- if option.fields.collection_url.value != blank -%}
-                      <a href="{{ option.fields.collection_url.value }}">{{ section.settings.link_row_label | escape }}</a>
+                    {%- if option.collection_url.value != blank -%}
+                      <a href="{{ option.collection_url.value }}">{{ section.settings.link_row_label | escape }}</a>
                     {%- endif -%}
                   </td>
                 {%- endfor -%}

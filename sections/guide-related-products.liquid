@@ -65,8 +65,8 @@
         </h3>
         <div class="guide-related-links">
           {%- for link in see_also -%}
-            {%- if link.fields.url.value != blank -%}
-              <a href="{{ link.fields.url.value }}">{{ link.fields.label.value | escape }}</a>
+            {%- if link.url.value != blank -%}
+              <a href="{{ link.url.value }}">{{ link.label.value | escape }}</a>
             {%- endif -%}
           {%- endfor -%}
         </div>

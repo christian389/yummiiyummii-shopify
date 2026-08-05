@@ -9,9 +9,9 @@
   outputs an empty/invalid FAQPage block.
 
   Assumes article.metafields.guide.faq_items is a metaobject list with
-  "question" and "answer" fields (Guide FAQ Item definition) -- confirm the
-  exact handles against Settings > Custom data > Metaobjects before relying
-  on this in production; adjust the assign below if they differ.
+  "question" and "answer" fields (Guide FAQ Item definition). Field values
+  are read directly off each entry (item.question.value), not via a
+  `.fields.` accessor -- see the note in sections/guide-comparison-table.liquid.
 
   Usage:
   {% render 'guide-schema' %}
@@ -32,8 +32,8 @@
       "mainEntity": [
         {%- for item in faq_items -%}
           {%- liquid
-            assign question = item.fields.question.value
-            assign answer = item.fields.answer.value | strip_html | strip_newlines
+            assign question = item.question.value
+            assign answer = item.answer.value | strip_html | strip_newlines
           -%}
           {%- if question != blank and answer != blank -%}
             {%- if rendered_count > 0 -%},{%- endif -%}
