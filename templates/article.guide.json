@@ -76,12 +76,6 @@
         "care_intro": "The three materials need to be treated differently. Follow this, and the lunch box will last as long as the warranty promises."
       }
     },
-    "faq": {
-      "type": "guide-faq",
-      "settings": {
-        "heading": "Ofte stillede spørgsmål"
-      }
-    },
     "trust": {
       "type": "guide-trust",
       "blocks": {
@@ -129,6 +123,12 @@
         "intro": "All figures in this guide come from our own product information and supplier certificates. We also write about the cases where a product isn't the right choice — material data and certificates can be found on each product page."
       }
     },
+    "faq": {
+      "type": "guide-faq",
+      "settings": {
+        "heading": "Ofte stillede spørgsmål"
+      }
+    },
     "related-products": {
       "type": "guide-related-products",
       "settings": {
@@ -153,8 +153,8 @@
     "toc",
     "comparison-table",
     "content",
-    "faq",
     "trust",
+    "faq",
     "related-products",
     "cta"
   ]
