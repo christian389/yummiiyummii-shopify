@@ -24,13 +24,15 @@
   `date:` format string.
 {% endcomment %}
 
-{%- render 'breadcrumb',
-  container: 'compact',
-  vertical_space: 'vertical-space-xsmall',
-  style: 'breadcrumb-main--margin'
--%}
-
 {{ 'guide.css' | asset_url | stylesheet_tag }}
+
+<div class="guide-header__breadcrumb-wrap">
+  {%- render 'breadcrumb',
+    container: 'compact',
+    vertical_space: 'vertical-space-xsmall',
+    style: 'breadcrumb-main--margin'
+  -%}
+</div>
 
 {%- liquid
   assign guide_last_updated = article.metafields.guide.last_updated.value
