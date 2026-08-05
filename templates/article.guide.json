@@ -10,39 +10,7 @@
 {
   "sections": {
     "main-article": {
-      "type": "main-article",
-      "blocks": {
-        "featured-image": {
-          "type": "featured_image",
-          "settings": {
-            "aspect_ratio": "1.33333",
-            "image_border_radius": 16
-          }
-        },
-        "title": {
-          "type": "title",
-          "settings": {
-            "blog_show_date": true,
-            "blog_show_author": false,
-            "blog_show_comments": false,
-            "blog_show_title_tags": false
-          }
-        },
-        "content": {
-          "type": "content",
-          "disabled": true,
-          "settings": {
-            "has_social_buttons": false,
-            "blog_show_content_tags": false,
-            "blog_show_content_back": false
-          }
-        }
-      },
-      "block_order": [
-        "featured-image",
-        "title",
-        "content"
-      ],
+      "type": "guide-header",
       "settings": {}
     },
     "quick-answer": {

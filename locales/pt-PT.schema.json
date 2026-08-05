@@ -3826,6 +3826,26 @@
           "label": "Link label"
         }
       }
+    },
+    "header": {
+      "name": "Guide: Header",
+      "settings": {
+        "eyebrow": {
+          "label": "Eyebrow label"
+        },
+        "updated_label": {
+          "label": "\"Last updated\" label"
+        },
+        "reading_time_label": {
+          "label": "Reading-time label"
+        },
+        "author_label": {
+          "label": "\"Written by\" label"
+        },
+        "fallback_author": {
+          "label": "Fallback author name"
+        }
+      }
     }
   }
 }

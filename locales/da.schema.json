@@ -3697,6 +3697,26 @@
     }
   },
   "guide": {
+    "header": {
+      "name": "Guide: Header",
+      "settings": {
+        "eyebrow": {
+          "label": "Label over titlen"
+        },
+        "updated_label": {
+          "label": "Label for \"Sidst opdateret\""
+        },
+        "reading_time_label": {
+          "label": "Label for læsetid"
+        },
+        "author_label": {
+          "label": "Label for \"Skrevet af\""
+        },
+        "fallback_author": {
+          "label": "Reserve-forfatternavn"
+        }
+      }
+    },
     "quick_answer": {
       "name": "Guide: Hurtigt svar",
       "settings": {

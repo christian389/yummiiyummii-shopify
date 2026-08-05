@@ -1,0 +1,154 @@
+{% comment %}
+  Guide -- Breadcrumb + title block (playbook section 1).
+
+  Dedicated replacement for the native `main-article` section on the Guide
+  article template (templates/article.guide.json). main-article.liquid is
+  still used as-is by the regular article template (templates/article.json)
+  -- this section only ever renders on Guide articles, so it can commit to
+  the Guide-specific layout (breadcrumb, "GUIDE" eyebrow, title, a combined
+  last-updated/reading-time/author meta line, then a 16:9 image below the
+  title block) without any block/setting toggles for cases that don't apply
+  here.
+
+  Reads:
+  - article.metafields.guide.last_updated (date) -- falls back to
+    article.published_at when blank.
+  - article.author -- falls back to section.settings.fallback_author when
+    blank (e.g. onboarding/placeholder articles).
+  - article.content -- word-counted for the reading-time estimate (~200
+    words/minute), same as any other reading-time estimate; Shopify has no
+    built-in equivalent.
+
+  Shopify's `date` filter has no Danish locale output, so the month name
+  for the meta line is resolved via a manual lookup below rather than a
+  `date:` format string.
+{% endcomment %}
+
+{%- render 'breadcrumb',
+  container: 'compact',
+  vertical_space: 'vertical-space-xsmall',
+  style: 'breadcrumb-main--margin'
+-%}
+
+{{ 'guide.css' | asset_url | stylesheet_tag }}
+
+{%- liquid
+  assign guide_last_updated = article.metafields.guide.last_updated.value
+  if guide_last_updated != blank
+    assign updated_date = guide_last_updated
+  else
+    assign updated_date = article.published_at
+  endif
+  assign updated_month_num = updated_date | date: '%m'
+  assign updated_year = updated_date | date: '%Y'
+
+  case updated_month_num
+    when '01'
+      assign updated_month_name = 'januar'
+    when '02'
+      assign updated_month_name = 'februar'
+    when '03'
+      assign updated_month_name = 'marts'
+    when '04'
+      assign updated_month_name = 'april'
+    when '05'
+      assign updated_month_name = 'maj'
+    when '06'
+      assign updated_month_name = 'juni'
+    when '07'
+      assign updated_month_name = 'juli'
+    when '08'
+      assign updated_month_name = 'august'
+    when '09'
+      assign updated_month_name = 'september'
+    when '10'
+      assign updated_month_name = 'oktober'
+    when '11'
+      assign updated_month_name = 'november'
+    when '12'
+      assign updated_month_name = 'december'
+  endcase
+
+  assign word_count = article.content | strip_html | split: ' ' | size
+  assign reading_minutes = word_count | divided_by: 200.0 | ceil
+  if reading_minutes < 1
+    assign reading_minutes = 1
+  endif
+
+  assign author_name = article.author
+  if author_name == blank
+    assign author_name = section.settings.fallback_author
+  endif
+-%}
+
+<div class="guide">
+  <header class="guide-section guide-section--first guide-header">
+    <div class="guide-header__intro">
+      {%- if section.settings.eyebrow != blank -%}
+        <p class="guide-header__eyebrow">{{ section.settings.eyebrow | escape }}</p>
+      {%- endif -%}
+      <h1 class="guide-header__title">{{ article.title | escape }}</h1>
+      <p class="guide-header__meta">
+        {{- section.settings.updated_label | escape }} {{ updated_month_name }} {{ updated_year }}
+        · {{ reading_minutes }} {{ section.settings.reading_time_label | escape }}
+        · {{ section.settings.author_label | escape }} {{ author_name | escape -}}
+      </p>
+    </div>
+
+    {%- if article.image -%}
+      <div class="guide-header__image">
+        {%- render 'lazy-image',
+          image: article.image.src,
+          alt: article.title,
+          ratio: '1.77778',
+          sizes: '(max-width: 1080px) 100vw, 1080px',
+          class: 'lazy-image--to-reveal',
+          preload: true
+        -%}
+      </div>
+    {%- endif -%}
+  </header>
+</div>
+
+{% schema %}
+{
+  "name": "t:guide.header.name",
+  "settings": [
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "t:guide.header.settings.eyebrow.label",
+      "default": "GUIDE"
+    },
+    {
+      "type": "text",
+      "id": "updated_label",
+      "label": "t:guide.header.settings.updated_label.label",
+      "default": "Sidst opdateret:"
+    },
+    {
+      "type": "text",
+      "id": "reading_time_label",
+      "label": "t:guide.header.settings.reading_time_label.label",
+      "default": "min. læsning"
+    },
+    {
+      "type": "text",
+      "id": "author_label",
+      "label": "t:guide.header.settings.author_label.label",
+      "default": "Skrevet af"
+    },
+    {
+      "type": "text",
+      "id": "fallback_author",
+      "label": "t:guide.header.settings.fallback_author.label",
+      "default": "redaktionen hos Yummii Yummii"
+    }
+  ],
+  "presets": [
+    {
+      "name": "t:guide.header.name"
+    }
+  ]
+}
+{% endschema %}
