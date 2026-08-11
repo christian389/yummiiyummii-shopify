@@ -147,14 +147,14 @@
 }
 
 .guide-toc__list a {
-  color: var(--guide-ink);
+  color: var(--guide-green);
   text-decoration: none;
-  border-bottom: 1px solid var(--guide-border);
+  border-bottom: 1px solid var(--guide-green);
 }
 
 .guide-toc__list a:hover {
-  color: var(--guide-green);
-  border-bottom-color: var(--guide-green);
+  color: var(--guide-green-dark);
+  border-bottom-color: var(--guide-green-dark);
 }
 
 /* Comparison table */
