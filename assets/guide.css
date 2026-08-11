@@ -436,7 +436,7 @@ a.guide-card:hover {
 
 /* See also + related products */
 .guide-related-links__label {
-  font-size: 15px;
+  font-size: 13px;
   letter-spacing: 0.1em;
   text-transform: uppercase;
   color: var(--guide-grey);
@@ -453,6 +453,13 @@ a.guide-card:hover {
 
 .guide-related-links a {
   color: var(--guide-green);
+  text-decoration: none;
+  border-bottom: 1px solid var(--guide-green);
+}
+
+.guide-related-links a:hover {
+  color: var(--guide-green-dark);
+  border-bottom-color: var(--guide-green-dark);
 }
 
 .guide-product-card {
