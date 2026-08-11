@@ -3798,13 +3798,8 @@
         "badge": {
           "name": "Mærke",
           "settings": {
-            "shape": {
-              "label": "Form",
-              "options": {
-                "circle": "Cirkel",
-                "square": "Kvadrat",
-                "diamond": "Diamant"
-              }
+            "icon": {
+              "label": "Ikonbillede"
             },
             "title": {
               "label": "Titel"

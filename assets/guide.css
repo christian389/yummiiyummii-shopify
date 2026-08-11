@@ -323,6 +323,19 @@ a.guide-card:hover {
   transform: rotate(45deg);
 }
 
+.guide-trust__icon {
+  width: 32px;
+  height: 32px;
+  margin-bottom: 18px;
+}
+
+.guide-trust__icon img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
 .guide-card__title {
   font-family: var(--font-stack-headings-primary), sans-serif;
   font-weight: var(--font-weight-body-primary-bold);

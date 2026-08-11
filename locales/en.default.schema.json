@@ -3798,13 +3798,8 @@
         "badge": {
           "name": "Badge",
           "settings": {
-            "shape": {
-              "label": "Shape",
-              "options": {
-                "circle": "Circle",
-                "square": "Square",
-                "diamond": "Diamond"
-              }
+            "icon": {
+              "label": "Icon image"
             },
             "title": {
               "label": "Title"

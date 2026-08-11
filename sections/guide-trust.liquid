@@ -23,7 +23,12 @@
         <div class="guide-trust__grid">
           {%- for block in section.blocks -%}
             <div class="guide-trust__badge" {{ block.shopify_attributes }}>
-              <div class="guide-card__shape guide-card__shape--{{ block.settings.shape }}" aria-hidden="true"></div>
+              {%- if block.settings.icon != blank -%}
+                <div class="guide-trust__icon">
+                  {%- assign badge_alt = block.settings.title | escape -%}
+                  {{ block.settings.icon | image_url: width: 64 | image_tag: width: 32, height: 32, alt: badge_alt, loading: 'lazy' }}
+                </div>
+              {%- endif -%}
               {%- if block.settings.title != blank -%}
                 <div class="guide-trust__title">{{ block.settings.title | escape }}</div>
               {%- endif -%}
@@ -60,24 +65,9 @@
       "name": "t:guide.trust.blocks.badge.name",
       "settings": [
         {
-          "type": "select",
-          "id": "shape",
-          "label": "t:guide.trust.blocks.badge.settings.shape.label",
-          "options": [
-            {
-              "value": "circle",
-              "label": "t:guide.trust.blocks.badge.settings.shape.options.circle"
-            },
-            {
-              "value": "square",
-              "label": "t:guide.trust.blocks.badge.settings.shape.options.square"
-            },
-            {
-              "value": "diamond",
-              "label": "t:guide.trust.blocks.badge.settings.shape.options.diamond"
-            }
-          ],
-          "default": "circle"
+          "type": "image_picker",
+          "id": "icon",
+          "label": "t:guide.trust.blocks.badge.settings.icon.label"
         },
         {
           "type": "text",
@@ -99,7 +89,6 @@
         {
           "type": "badge",
           "settings": {
-            "shape": "circle",
             "title": "Fødevaregodkendt i EU",
             "caption": "Testet efter EU-forordning 1935/2004."
           }
@@ -107,7 +96,6 @@
         {
           "type": "badge",
           "settings": {
-            "shape": "square",
             "title": "Fri for BPA og ftalater",
             "caption": "Ingen mikroplastik i kontakt med maden."
           }
@@ -115,7 +103,6 @@
         {
           "type": "badge",
           "settings": {
-            "shape": "diamond",
             "title": "10 års garanti på stål",
             "caption": "Gælder materiale- og fabrikationsfejl."
           }
@@ -123,7 +110,6 @@
         {
           "type": "badge",
           "settings": {
-            "shape": "circle",
             "title": "4,5 på Trustpilot",
             "caption": "Baseret på over 1.200 anmeldelser."
           }
