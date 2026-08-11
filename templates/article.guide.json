@@ -11,7 +11,13 @@
   "sections": {
     "main-article": {
       "type": "guide-header",
-      "settings": {}
+      "settings": {
+        "eyebrow": "GUIDE",
+        "updated_label": "Sidst opdateret:",
+        "reading_time_label": "min. læsning",
+        "author_label": "Skrevet af",
+        "fallback_author": "redaktionen hos Yummii Yummii"
+      }
     },
     "quick-answer": {
       "type": "guide-quick-answer",
@@ -108,7 +114,7 @@
     "cta": {
       "type": "guide-cta",
       "settings": {
-        "fallback_heading": "Skal du i gang med den plastikfri madpakke?",
+        "fallback_heading": "Skal du i gang med den plastikfri madpakke?s",
         "subheading": "Fri fragt over 400 kr. og 30 dages returret på hele sortimentet.",
         "fallback_link": "",
         "link_label": "Se alle produkter"
