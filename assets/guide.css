@@ -334,16 +334,15 @@ a.guide-card:hover {
 }
 
 .guide-trust__icon {
-  width: 32px;
   height: 32px;
   margin-bottom: 18px;
 }
 
 .guide-trust__icon img {
   display: block;
-  width: 100%;
   height: 100%;
-  object-fit: contain;
+  width: auto;
+  max-width: 100%;
 }
 
 .guide-card__title {
