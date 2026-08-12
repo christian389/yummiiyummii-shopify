@@ -56,7 +56,7 @@
         "badge-1": {
           "type": "badge",
           "settings": {
-            "shape": "circle",
+            "icon": "shopify://shop_images/circle.svg",
             "title": "Fødevaregodkendt i EU",
             "caption": "Testet efter EU-forordning 1935/2004."
           }
@@ -64,7 +64,7 @@
         "badge-2": {
           "type": "badge",
           "settings": {
-            "shape": "square",
+            "icon": "shopify://shop_images/square-round.svg",
             "title": "Fri for BPA og ftalater",
             "caption": "Ingen mikroplastik i kontakt med maden."
           }
@@ -72,7 +72,7 @@
         "badge-3": {
           "type": "badge",
           "settings": {
-            "shape": "diamond",
+            "icon": "shopify://shop_images/big-square-round.svg",
             "title": "10 års garanti på stål",
             "caption": "Gælder materiale- og fabrikationsfejl."
           }
@@ -80,7 +80,7 @@
         "badge-4": {
           "type": "badge",
           "settings": {
-            "shape": "circle",
+            "icon": "shopify://shop_images/trustpilot-stars.svg",
             "title": "4,5 på Trustpilot",
             "caption": "Baseret på over 1.200 anmeldelser."
           }
