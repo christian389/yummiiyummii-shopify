@@ -267,6 +267,12 @@
   margin-top: 48px;
 }
 
+#rengoering .guide-card-grid,
+#maalgruppe .guide-card-grid {
+  grid-template-columns: repeat(auto-fit, 240px);
+  justify-content: start;
+}
+
 .guide-card {
   background: #fff;
   border: 1px solid var(--guide-border);
