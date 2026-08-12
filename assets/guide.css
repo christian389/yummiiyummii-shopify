@@ -269,7 +269,7 @@
 
 #rengoering .guide-card-grid,
 #maalgruppe .guide-card-grid {
-  grid-template-columns: repeat(auto-fit, 240px);
+  grid-template-columns: repeat(auto-fit, 330px);
   justify-content: start;
 }
 
