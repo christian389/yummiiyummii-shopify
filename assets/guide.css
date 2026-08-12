@@ -481,6 +481,11 @@ a.guide-card:hover {
   border-bottom-color: var(--guide-green-dark);
 }
 
+.guide-product-grid {
+  grid-template-columns: repeat(auto-fit, 241px);
+  justify-content: start;
+}
+
 .guide-product-card {
   background: #fff;
   border: 1px solid var(--guide-border);

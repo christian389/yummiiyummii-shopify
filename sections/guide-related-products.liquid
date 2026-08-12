@@ -33,7 +33,7 @@
       {%- if related_products.size > 0 -%}
         <h2 class="guide-heading">{{ section.settings.products_heading | escape }}</h2>
 
-        <div class="guide-card-grid">
+        <div class="guide-card-grid guide-product-grid">
           {%- for product in related_products -%}
             {%- assign product_variant = product.selected_or_first_available_variant -%}
             <div class="guide-product-card">
