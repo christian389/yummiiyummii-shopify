@@ -399,7 +399,7 @@ a.guide-card:hover {
 }
 
 .guide-faq .toggle__title {
-  padding: 22px 0;
+  padding: 22px 0 !important;
   cursor: pointer;
   display: flex;
   gap: 20px;
